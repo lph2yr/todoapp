@@ -3,3 +3,8 @@
 env/
 .vscode
 db.sqlite3
+
+Lib/
+Scripts/
+Include/
+pyvenv.cfg
