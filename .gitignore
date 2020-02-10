@@ -2,3 +2,8 @@
 *__pycache__
 env/
 .vscode
+
+Lib/
+Scripts/
+Include/
+pyvenv.cfg
