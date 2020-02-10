@@ -6,6 +6,11 @@ Team BOGO Sorters
 
 Mac: `source env/bin/activate`
 
-Windows: `.\env\Scripts\activate
+Windows: `.\env\Scripts\activate`
+
+## Keeping track of python packages
+
+`pip freeze > requirements.txt`
+
 
 
