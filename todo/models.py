@@ -10,6 +10,7 @@ class toDoList(models.Model):
     time = models.DateTimeField()
     date = models.DateField()
     location = models.CharField(max_length=50)
+    completed = models.BooleanField(default=False) 
     def __str__(self):
     	return self.title
 
