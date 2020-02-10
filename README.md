@@ -4,6 +4,8 @@ Team BOGO Sorters
 
 ## Start Virtual Environment
 
-`source env/bin/activate`
+Mac: `source env/bin/activate`
+
+Windows: `.\env\Scripts\activate
 
 
