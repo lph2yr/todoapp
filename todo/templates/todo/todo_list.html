@@ -1,17 +1,7 @@
-<!doctype html>
-<head>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-</head>
+{% extends 'todo/base.html' %}
 
-<body>
-
-  <div class="d-flex justify-content-center">
-    
-  </div>
-
-  <div>
-    <h4>Here's your to-do list!</h4>
-  </div>
+{% block content %}
+  <h4>Here's your to-do list!</h4>
 
   <div class="d-flex justify-content-center">
     <table>
@@ -22,7 +12,6 @@
             <div class="d-flex justify-content-end">
               <small>due {{todo_item.duedate}}</small>
             </div>
-            
           </li>
         {% endfor %}
       </ul>
@@ -33,4 +22,5 @@
       
     </table>
   </div>
-</body>
+
+{% endblock %}
