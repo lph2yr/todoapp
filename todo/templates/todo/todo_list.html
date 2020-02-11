@@ -13,7 +13,9 @@
       {% if todo_list %}
       <ul class="list-group">
         {% for todo_item in todo_list %}
-          <li class = "list-group-item">{{todo_item.title}}</li>
+          <li class = "list-group-item">{{todo_item.title}}
+            <small>due {{todo_item.duedate}}</small>
+          </li>
         {% endfor %}
       </ul>
         
