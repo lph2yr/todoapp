@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.views import generic
 
 from .models import ToDoItem
 
@@ -10,4 +11,4 @@ class ToDoListView(generic.ListView):
 
     #This is how the tasks are gathered!
     def get_queryset(self):
-        return ToDoItem.objects().order_by(date)
+        return ToDoItem.objects#.order_by(date)
