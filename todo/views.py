@@ -13,4 +13,4 @@ class ToDoListView(generic.ListView):
 
     #This is how the tasks are gathered!
     def get_queryset(self):
-        return ToDoItem.objects.order_by('date')
+        return ToDoItem.objects.order_by('duedate')
