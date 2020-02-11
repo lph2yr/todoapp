@@ -4,17 +4,25 @@
 </head>
 
 <body>
+
+  <div class="d-flex justify-content-center">
+    
+  </div>
+
   <div>
     <h4>Here's your to-do list!</h4>
   </div>
 
-  <div>
+  <div class="d-flex justify-content-center">
     <table>
       {% if todo_list %}
-      <ul class="list-group">
+      <ul class="w-50 list-group">
         {% for todo_item in todo_list %}
           <li class = "list-group-item">{{todo_item.title}}
-            <small>due {{todo_item.duedate}}</small>
+            <div class="d-flex justify-content-end">
+              <small>due {{todo_item.duedate}}</small>
+            </div>
+            
           </li>
         {% endfor %}
       </ul>
