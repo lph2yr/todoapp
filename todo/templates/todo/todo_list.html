@@ -4,11 +4,23 @@
 </head>
 
 <body>
-    <ul class="list-group">
-        <li class="list-group-item">Cras justo odio</li>
-        <li class="list-group-item">Dapibus ac facilisis in</li>
-        <li class="list-group-item">Morbi leo risus</li>
-        <li class="list-group-item">Porta ac consectetur ac</li>
-        <li class="list-group-item">Vestibulum at eros</li>
+  <div>
+    <h4>Here's your to-do list!</h4>
+  </div>
+
+  <div>
+    <table>
+      {% if todo_list %}
+      <ul class="list-group">
+        {% for todo_item in todo_list %}
+          <li class = "list-group-item">{{todo_item.title}}</li>
+        {% endfor %}
       </ul>
+        
+      {% else %}
+        <p>You have no to-do items!</p>
+      {% endif %}
+      
+    </table>
+  </div>
 </body>
