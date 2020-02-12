@@ -1,26 +1,55 @@
 {% extends 'todo/base.html' %}
-
+<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template-->
 {% block content %}
   <h4>Here's your to-do list!</h4>
 
   <div class="d-flex justify-content-center">
-    <table>
+      <table>
       {% if todo_list %}
-      <ul class="w-50 list-group">
-        {% for todo_item in todo_list %}
-          <li class = "list-group-item">{{todo_item.title}}
-            <div class="d-flex justify-content-end">
-              <small>due {{todo_item.duedate}}</small>
-            </div>
-          </li>
-        {% endfor %}
-      </ul>
-        
-      {% else %}
-        <p>You have no to-do items!</p>
-      {% endif %}
-      
-    </table>
+        <ul class="w-50 list-group">
+          <div id="accordion"> <!-- accordion is the template for collapsing bars -->
+              {% for todo_item in todo_list %}
+                  <div class="card" >
+                    <li class = "list-group-item">
+                      <div class="card-header" id="header{{forloop.counter}}"> <!-- the header, the darker gray box-->
+                        <h5 class="mb-0"> <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                          <button class="btn btn-link collapsed" data-toggle="collapse" data-target="#collapse{{forloop.counter}}" >
+                            {{todo_item.title}}
+                          </button>
+                          <div class="d-flex justify-content-end">
+                            <small>due {{todo_item.duedate}}</small>
+                          </div>
+                        </h5>
+                      </div>
+
+                    <div id="collapse{{forloop.counter}}" class="collapse" > <!--body of the card -->
+                      <div class="card-body">
+                        <ul style="list-style-type:none">
+                          <li><strong>Description:</strong> {{ todo_item.description }} </li>
+                          <li><strong>Location:</strong> {{ todo_item.location }} </li>
+                          <li><strong>Completed:</strong> {{ todo_item.completed }}
+                        </ul>
+                        <div class="d-flex justify-content-end">
+                            <small><a href="">Edit</a></small> <!--edit link doesn't go anywhere yet-->
+                          </div>
+
+                      </div>
+                    </div>
+                    </li>
+
+                  </div>
+
+
+              {% endfor %}
+              </div>
+          </ul>
+
+        {% else %}
+          <p>You have no to-do items!</p>
+        {% endif %}
+
+      </table>
   </div>
+
 
 {% endblock %}
