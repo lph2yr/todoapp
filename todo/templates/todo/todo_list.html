@@ -1,5 +1,7 @@
 {% extends 'todo/base.html' %}
-<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template-->
+<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template
+https://getbootstrap.com/docs/4.0/components/collapse/
+-->
 {% block content %}
   <h4>Here's your to-do list!</h4>
 
@@ -30,7 +32,7 @@
                           <li><strong>Completed:</strong> {{ todo_item.completed }}
                         </ul>
                         <div class="d-flex justify-content-end">
-                            <small><a href="">Edit</a></small> <!--edit link doesn't go anywhere yet-->
+                            <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
                           </div>
 
                       </div>

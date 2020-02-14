@@ -1,0 +1,28 @@
+{% extends 'todo/base.html' %}
+<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template
+https://getbootstrap.com/docs/4.0/components/collapse/
+https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_datetime-local
+-->
+{% block content %}
+<h1>{{todo_item.title}}</h1>
+
+<ul>
+    <li>
+        <form action="{% url 'todo_list:detail' todo_item.id %}" method="post"> <!--action form to get input data and pass it to detail-->
+            {% csrf_token %}
+            {{ form }}<input type="submit" value="Submit" /> <!--submit button-->
+        </form>
+    </li>
+    <li><strong>Description:</strong> {{todo_item.description}}</li>
+    <li><strong>Location:</strong> {{todo_item.location}}</li>
+    <!--https://eonasdan.github.io/bootstrap-datetimepicker/
+     https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input-->
+    <li><strong>Completed:</strong> {{todo_item.completed}}</li>
+</ul>
+
+
+
+
+
+
+{% endblock %}
