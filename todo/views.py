@@ -1,9 +1,6 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render
 from django.views import generic
-from django.http import HttpResponse, Http404,HttpResponseRedirect
-from django.urls import reverse
 from .forms import ToDoForm
-
 from .models import ToDoItem
 
 
@@ -33,3 +30,10 @@ def detail(request, todo_item_id ):
         form = ToDoForm() #reset blank form
     context = {'todo_item': todo_item, 'form':form}
     return render(request, 'todo/detail.html', context)
+
+
+class CompletedView(generic.ListView):
+    template_name = 'todo/todo_list.html'
+    context_object_name = 'todo_list'
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=True).order_by('duedate')
