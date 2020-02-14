@@ -10,4 +10,5 @@ urlpatterns = [
 
     path('completed/', views.CompletedView.as_view(), name='completed'),
 
+    path('<int:todo_item_id>/complete_todo', views.completeToDo, name="complete_todo")
 ]

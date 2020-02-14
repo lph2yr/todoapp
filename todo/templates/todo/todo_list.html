@@ -34,22 +34,26 @@
           {% for todo_item in todo_list %}
           <div class="card">
             <li class="list-group-item">
-              <div class="card-header" id="header{{forloop.counter}}">
-                <!-- the header, the darker gray box-->
-                <h5 class="mb-0">
-                  <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
-                  <button
-                    class="btn btn-link collapsed"
-                    data-toggle="collapse"
-                    data-target="#collapse{{forloop.counter}}"
-                  >
-                    {{todo_item.title}}
-                  </button>
-                  <div class="d-flex justify-content-end">
-                    <small>due {{todo_item.duedate}}</small>
-                  </div>
-                </h5>
-              </div>
+              {% if todo_item.completed %}
+              <div class="card-header bg-success" id="header{{forloop.counter}}">
+              {% else %}
+                <div class="card-header" id="header{{forloop.counter}}">
+              {% endif %}
+                  <!-- the header, the darker gray box-->
+                  <h5 class="mb-0">
+                    <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                    <button
+                      class="btn btn-link collapsed"
+                      data-toggle="collapse"
+                      data-target="#collapse{{forloop.counter}}"
+                    >
+                      {{todo_item.title}}
+                    </button>
+                    <div class="d-flex justify-content-end">
+                      <small>due {{todo_item.duedate}}</small>
+                    </div>
+                  </h5>
+                </div>
 
               <div id="collapse{{forloop.counter}}" class="collapse">
                 <!--body of the accordion card -->
@@ -64,9 +68,9 @@
                     {% endif %}
                     <!-- <li><strong>Completed:</strong> {{ todo_item.completed }} -->
                   </ul>
-                  <div class="d-flex justify-content-end">
+                  <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
-
+                    <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}">Complete Task</a></small>
                   </div>
                 </div>
               </div>
