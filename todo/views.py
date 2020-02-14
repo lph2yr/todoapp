@@ -5,7 +5,6 @@ from .models import ToDoItem
 
 
 # Create your views here.
-
 class ToDoListView(generic.ListView):
     #the template this view uses
     template_name = 'todo/todo_list.html'
@@ -17,7 +16,8 @@ class ToDoListView(generic.ListView):
         return ToDoItem.objects.order_by('-duedate')
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
-def detail(request, todo_item_id ):
+#@param: request, todo_item_id
+def detail( request, todo_item_id ):
     todo_item = ToDoItem.objects.get(id=todo_item_id) #get current todo_item with the id
     form = ToDoForm(request.POST) #get data from form
     if form.is_valid():
