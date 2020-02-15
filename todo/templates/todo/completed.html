@@ -12,8 +12,8 @@
   </div>
   
   <div class="col">
-    <a href="{% url 'todo_list:completed' %}" class="float-right"
-      >Completed Tasks</a
+    <a href="{% url 'todo_list:todo_list' %}" class="float-right"
+      >Back to Full List</a
     >
   </div>
 </div>
@@ -47,16 +47,10 @@
                     >
                       {{todo_item.title}}
                     </button>
-                    {% if todo_item.completed %}
-                      <div class="d-flex justify-content-around">
-                        <small><i>Task Completed!</i></small>
-                        <small>due {{todo_item.duedate}}</small>
-                      </div>
-                    {% else %}
-                      <div class="d-flex justify-content-end">
-                        <small>due {{todo_item.duedate}}</small>
-                      </div>
-                    {% endif %}
+                    <div class="d-flex justify-content-around">
+                      <small><i>Task Completed!</i></small>
+                      <small>due {{todo_item.duedate}}</small>
+                    </div>
                   </h5>
                 </div>
 
@@ -75,11 +69,7 @@
                   </ul>
                   <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
-                    {% if todo_item.completed %}
-                      <small>Task Complete!</small>
-                    {% else %}
-                      <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}">Complete Task</a></small>
-                    {% endif %}
+                    <small>Task Complete!</small>
                   </div>
                 </div>
               </div>

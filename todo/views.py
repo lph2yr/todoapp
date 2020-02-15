@@ -41,7 +41,7 @@ def completeToDo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 class CompletedView(generic.ListView):
-    template_name = 'todo/todo_list.html'
+    template_name = 'todo/completed.html'
     context_object_name = 'todo_list'
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True).order_by('duedate')
