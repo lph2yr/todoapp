@@ -10,7 +10,7 @@
 
     <h4>Here's your to-do list!</h4>
   </div>
-  
+
   <div class="col">
     <a href="{% url 'todo_list:completed' %}" class="float-right"
       >Completed Tasks</a
@@ -43,9 +43,12 @@
                     <button
                       class="btn btn-link collapsed"
                       data-toggle="collapse"
-                      data-target="#collapse{{forloop.counter}}"
-                    >
+                      data-target="#collapse{{forloop.counter}}">
+                    {% if todo_item.completed %}
+                      <del>{{todo_item.title}}</del>
+                    {% else %}
                       {{todo_item.title}}
+                    {% endif %}
                     </button>
                     {% if todo_item.completed %}
                       <div class="d-flex justify-content-around">
