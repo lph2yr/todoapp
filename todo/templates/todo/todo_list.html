@@ -34,11 +34,7 @@
           {% for todo_item in todo_list %}
           <div class="card">
             <li class="list-group-item">
-              {% if todo_item.completed %}
-              <div class="card-header bg-success" id="header{{forloop.counter}}">
-              {% else %}
                 <div class="card-header" id="header{{forloop.counter}}">
-              {% endif %}
                   <!-- the header, the darker gray box-->
                   <h5 class="mb-0">
                     <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
@@ -49,9 +45,16 @@
                     >
                       {{todo_item.title}}
                     </button>
-                    <div class="d-flex justify-content-end">
-                      <small>due {{todo_item.duedate}}</small>
-                    </div>
+                    {% if todo_item.completed %}
+                      <div class="d-flex justify-content-around">
+                        <small><i>Task Completed!</i></small>
+                        <small>due {{todo_item.duedate}}</small>
+                      </div>
+                    {% else %}
+                      <div class="d-flex justify-content-end">
+                        <small>due {{todo_item.duedate}}</small>
+                      </div>
+                    {% endif %}
                   </h5>
                 </div>
 
@@ -70,7 +73,11 @@
                   </ul>
                   <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
-                    <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}">Complete Task</a></small>
+                    {% if todo_item.completed %}
+                      <small>Task Complete!</small>
+                    {% else %}
+                      <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}">Complete Task</a></small>
+                    {% endif %}
                   </div>
                 </div>
               </div>
