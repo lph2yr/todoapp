@@ -15,7 +15,7 @@ class ToDoListView(generic.ListView):
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False).order_by('-duedate')
 
-#function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+#Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 #@param: request, todo_item_id
 def detail( request, todo_item_id ):
     todo_item = ToDoItem.objects.get(id=todo_item_id) #get current todo_item with the id
