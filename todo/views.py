@@ -35,7 +35,7 @@ def detail( request, todo_item_id ):
 def completeToDo(request, todo_item_id):
     #Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
-    completedToDo.completed = True
+    completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
