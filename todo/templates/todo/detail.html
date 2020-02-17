@@ -2,6 +2,8 @@
 <!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template
 https://getbootstrap.com/docs/4.0/components/collapse/
 https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_datetime-local
+
+EDIT VIEW
 -->
 {% block content %}
 <h1>{{todo_item.title}}</h1>
@@ -20,7 +22,9 @@ https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_datetime-local
     <li><strong>Completed:</strong> {{todo_item.completed}}</li>
 </ul>
 
-
+<!--Edit view: https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView
+https://docs.djangoproject.com/en/3.0/ref/models/instances/
+-->
 
 
 
