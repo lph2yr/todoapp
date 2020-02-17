@@ -11,7 +11,22 @@ class ToDoItem(models.Model):
     duedate = models.DateTimeField()
     #date_added = models.DateTimeField()
     location = models.CharField(max_length=50, blank=True)
-    completed = models.BooleanField(default=False) 
+    completed = models.BooleanField(default=False)
+    
+    # priority choices
+    HIGH = 'HI'
+    MEDIUM = 'MD'
+    LOW = 'LO'
+    PRIORITY_CHOICES = [
+        (HIGH, 'High'),
+        (MEDIUM, 'Medium'),
+        (LOW, 'Low')
+    ]
+    priority = models.CharField(
+        max_length=2,
+        choices=PRIORITY_CHOICES,
+        default=LOW,
+    )
     def __str__(self):
     	return self.title
 
