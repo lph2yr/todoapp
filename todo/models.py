@@ -27,7 +27,7 @@ class ToDoItem(models.Model):
     def __str__(self):
     	return self.title
 
-    def createToDo(self, freq, recur_date, end_date ):
+    def createRecurring(self, freq, recur_date, end_date ):
         # creating new To Do items with same title, description, location
         # changing due date; default false_completed
         recur_todo = self( title = self.title,
