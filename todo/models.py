@@ -24,6 +24,21 @@ class ToDoItem(models.Model):
     #never
     #end after # occurrences
 
+    # priority choices
+    HIGH = 'HI'
+    MEDIUM = 'MD'
+    LOW = 'LO'
+    PRIORITY_CHOICES = [
+        (HIGH, 'High'),
+        (MEDIUM, 'Medium'),
+        (LOW, 'Low')
+    ]
+    priority = models.CharField(
+        max_length=2,
+        choices=PRIORITY_CHOICES,
+        default=LOW,
+    )
+
     def __str__(self):
     	return self.title
 
