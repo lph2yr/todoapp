@@ -13,7 +13,7 @@ class ToDoListView(generic.ListView):
 
     #This is how the tasks are gathered!
     def get_queryset(self):
-        return ToDoItem.objects.order_by('-duedate')
+        return ToDoItem.objects.filter(completed=False).order_by('-duedate')
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 #@param: request, todo_item_id
