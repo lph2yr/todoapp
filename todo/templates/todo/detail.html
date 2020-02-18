@@ -12,7 +12,7 @@ EDIT VIEW
     <li>
         <form method="post"> <!--action form to get input data and pass it to detail-->
             {% csrf_token %}
-            {{ form.as_p }}<input type="submit" value="Value" /> <!--submit button-->
+            {{ form }}<input type="submit" value="Value" /> <!--submit button-->
         </form>
     </li>
     <li><strong>Description:</strong> {{todo_item.description}}</li>
