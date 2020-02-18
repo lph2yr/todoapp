@@ -12,15 +12,30 @@ class ToDoItem(models.Model):
     #date_added = models.DateTimeField()
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
-    recur_freq = models.TextField(max_length=7)
-        #daily, weekly, monthly, yearly
+
+    #recurrence freq choices
+    DAILY = 'DAILY'
+    WEEKLY = 'WEEKLY'
+    MONTHLY = 'MONTHLY'
+    YEARLY = 'YEARLY'
+    FREQ_CHOICES = [
+        (DAILY, 'Daily'),
+        (WEEKLY, 'Weekly'),
+        (MONTHLY, 'Monthly'),
+        (YEARLY, 'Yearly'),
+    ]
+    recur_freq = models.CharField(
+        max_length=7,
+        choices = FREQ_CHOICES,
+        default = DAILY,
+    )
         #customize day of week
         #every other day
         #every other week
 
-    end_recur_date = models.DateTimeField()
+    end_recur_date = models.DateTimeField(auto_now_add=True, blank=True)
     #end repeat date and time
-    #end after a day
+    #end after a specific day
     #never
     #end after # occurrences
 
