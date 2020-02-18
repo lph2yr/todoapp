@@ -33,7 +33,7 @@ class ToDoItem(models.Model):
         #every other day
         #every other week
 
-    end_recur_date = models.DateTimeField(auto_now_add=True, blank=True)
+    end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
     #end after a specific day
     #never
