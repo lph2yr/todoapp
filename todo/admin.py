@@ -7,8 +7,6 @@ class ToDoAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['title']}),
 
-        ('Details', {'fields': [ 'description', 'duedate', 'location', 'completed', 'priority' ] }),
-
         ('Details', {'fields': [ 'description', 'duedate', 'location', 'priority', 'recur_freq', 'end_recur_date', 'completed' ] }),
     ]
 
