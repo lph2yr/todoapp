@@ -2,6 +2,8 @@
 
 from django.db import migrations, models
 
+import django.utils.timezone
+
 
 class Migration(migrations.Migration):
 
@@ -13,13 +15,17 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='todoitem',
             name='end_recur_date',
-            field=models.DateTimeField(default='2020-02-08'),
+
+            field=models.DateTimeField(default=django.utils.timezone.now),
+
             preserve_default=False,
         ),
         migrations.AddField(
             model_name='todoitem',
             name='recur_freq',
+
             field=models.TextField(default='Never', max_length=7),
+
             preserve_default=False,
         ),
     ]
