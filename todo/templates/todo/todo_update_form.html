@@ -1,16 +1,11 @@
 {% extends 'todo/base.html' %}
-<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template
-https://getbootstrap.com/docs/4.0/components/collapse/
-https://www.w3schools.com/html/tryit.asp?filename=tryhtml_input_datetime-local
 
-EDIT VIEW
--->
 {% block content %}
 <h1>{{todo_item.title}}</h1>
 
 <ul>
     <li>
-        <form method="post"> <!--action form to get input data and pass it to detail-->
+        <form action="{% url 'todo_list:detail' todo_item.id %}" method="post"> <!--action form to get input data and pass it to detail-->
             {% csrf_token %}
             {{ form.as_p }}<input type="submit" value="Value" /> <!--submit button-->
         </form>
@@ -25,8 +20,3 @@ EDIT VIEW
 <!--Edit view: https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView
 https://docs.djangoproject.com/en/3.0/ref/models/instances/
 -->
-
-
-
-
-{% endblock %}
