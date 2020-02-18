@@ -12,15 +12,30 @@ class ToDoItem(models.Model):
     #date_added = models.DateTimeField()
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
-    recur_freq = models.TextField(max_length=7)
-        #daily, weekly, monthly, yearly
+
+    #recurrence freq choices
+    DAILY = 'DAILY'
+    WEEKLY = 'WEEKLY'
+    MONTHLY = 'MONTHLY'
+    YEARLY = 'YEARLY'
+    FREQ_CHOICES = [
+        (DAILY, 'Daily'),
+        (WEEKLY, 'Weekly'),
+        (MONTHLY, 'Monthly'),
+        (YEARLY, 'Yearly'),
+    ]
+    recur_freq = models.CharField(
+        max_length=7,
+        choices = FREQ_CHOICES,
+        default = DAILY,
+    )
         #customize day of week
         #every other day
         #every other week
 
-    end_recur_date = models.DateTimeField()
+    end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
-    #end after a day
+    #end after a specific day
     #never
     #end after # occurrences
 
@@ -42,7 +57,7 @@ class ToDoItem(models.Model):
     def __str__(self):
     	return self.title
 
-    def createToDo(self, freq, recur_date, end_date ):
+    def createRecurring(self, freq, recur_date, end_date ):
         # creating new To Do items with same title, description, location
         # changing due date; default false_completed
         recur_todo = self( title = self.title,
