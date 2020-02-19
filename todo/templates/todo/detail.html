@@ -10,9 +10,9 @@ EDIT VIEW
 
 <ul>
     <li>
-        <form method="post"> <!--action form to get input data and pass it to detail-->
+        <form action="{% url 'todo_list:detail' todo_item.id %}" method="post"> <!--action form to get input data and pass it to detail-->
             {% csrf_token %}
-            {{ form }}<input type="submit" value="Value" /> <!--submit button-->
+            {{ form }}<input type="submit" value="Update">
         </form>
     </li>
     <li><strong>Description:</strong> {{todo_item.description}}</li>
@@ -25,8 +25,4 @@ EDIT VIEW
 <!--Edit view: https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-editing/#django.views.generic.edit.UpdateView
 https://docs.djangoproject.com/en/3.0/ref/models/instances/
 -->
-
-
-
-
 {% endblock %}

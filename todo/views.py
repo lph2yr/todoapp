@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm
+from .forms import EditToDoForm
 from .models import ToDoItem
 from django.views.generic.edit import CreateView, UpdateView
 
@@ -22,20 +22,25 @@ class AddToDoItemView(CreateView):
     model = ToDoItem
     fields = ['title', 'description', 'duedate', 'location']
 
+'''
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+class EditToDo(UpdateView):
+    model = ToDoItem
+    fields = ['duedate']
+'''
 
 #@param: request, todo_item_id
 def detail( request, todo_item_id ):
     todo_item = ToDoItem.objects.get(id=todo_item_id) #get current todo_item with the id
-    form = ToDoForm(request.POST) #get data from form
+    form = EditToDoForm(request.POST) #get data from form
     if form.is_valid():
         #https://stackoverflow.com/questions/4706255/how-to-get-value-from-form-field-in-django-framework
         datetime = form['duedate'].value()
         todo_item.duedate = str(datetime) #datetime field is actually string; set the duedate field to the new date
         todo_item.save() #save todo_item
-        form = ToDoForm() #reset blank form
+        form = EditToDoForm() #reset blank form
     else:
-        form = ToDoForm() #reset blank form
+        form = EditToDoForm() #reset blank form
     context = {'todo_item': todo_item, 'form':form}
     return render(request, 'todo/detail.html', context)
 
