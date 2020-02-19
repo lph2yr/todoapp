@@ -8,6 +8,7 @@
 <div class="row">
   <div class="col">
 
+    <h4>Welcome {{user}}!</h4>
     <h4>Here's your to-do list!</h4>
   </div>
 </div>
@@ -33,7 +34,13 @@
             <li class="list-group-item">
                 <div class="card-header" id="header{{forloop.counter}}">
                   <!-- the header, the darker gray box-->
-                  <h5 class="mb-0">
+                  {% if todo_item.priority == "LO" %}
+                  <h5 class="mb-0 bg-light">
+                  {% elif todo_item.priority == "MD" %}
+                  <h5 class="bg-warning">
+                  {% else %}
+                  <h5 class="bg-danger">
+                  {% endif %}
                     <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
                     <button
                       class="btn btn-link collapsed"
@@ -55,6 +62,7 @@
                         <small>due {{todo_item.duedate}}</small>
                       </div>
                     {% endif %}
+
                   </h5>
                 </div>
 
@@ -74,7 +82,7 @@
                   <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
                     {% if todo_item.completed %}
-                      <small>Task Complete!</small>
+                      <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}"><abbr title="undo">Task Complete!</abbr></a></small>
                     {% else %}
                       <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}">Complete Task</a></small>
                     {% endif %}

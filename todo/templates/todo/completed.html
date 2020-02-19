@@ -69,7 +69,7 @@
                   </ul>
                   <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
-                    <small>Task Complete!</small>
+                    <small><a href="{% url 'todo_list:complete_todo' todo_item.id %}"><abbr title="undo">Task Complete!</abbr></a></small>
                   </div>
                 </div>
               </div>

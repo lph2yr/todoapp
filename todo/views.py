@@ -1,9 +1,8 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from .forms import ToDoForm
 from .models import ToDoItem
-from django.views.generic.edit import CreateView
-
+from django.views.generic.edit import CreateView, UpdateView
 
 # Create your views here.
 class ToDoListView(generic.ListView):
@@ -15,12 +14,16 @@ class ToDoListView(generic.ListView):
     #This is how the tasks are gathered!
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False).order_by('-duedate')
+#Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+
+#https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 
 class AddToDoItemView(CreateView):
     model = ToDoItem
     fields = ['title', 'description', 'duedate', 'location']
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+
 #@param: request, todo_item_id
 def detail( request, todo_item_id ):
     todo_item = ToDoItem.objects.get(id=todo_item_id) #get current todo_item with the id
@@ -40,7 +43,7 @@ def detail( request, todo_item_id ):
 def completeToDo(request, todo_item_id):
     #Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
-    completedToDo.completed = True
+    completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
