@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.views import generic
 from .forms import ToDoForm
 from .models import ToDoItem
+from django.views.generic.edit import CreateView
 
 
 # Create your views here.
@@ -14,6 +15,10 @@ class ToDoListView(generic.ListView):
     #This is how the tasks are gathered!
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False).order_by('-duedate')
+
+class AddToDoItemView(CreateView):
+    model = ToDoItem
+    fields = ['title', 'description', 'duedate', 'location']
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 #@param: request, todo_item_id
