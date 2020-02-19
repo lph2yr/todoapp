@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from .forms import ToDoForm
 from .models import ToDoItem
-from django.views.generic.edit import UpdateView
+from django.views.generic.edit import CreateView, UpdateView
 
 # Create your views here.
 class ToDoListView(generic.ListView):
@@ -17,6 +17,10 @@ class ToDoListView(generic.ListView):
 #Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 
 #https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
+
+class AddToDoItemView(CreateView):
+    model = ToDoItem
+    fields = ['title', 'description', 'duedate', 'location']
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 

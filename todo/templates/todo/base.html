@@ -45,10 +45,13 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="/">More links</a>
+            <a class="nav-link" href="{% url 'todo_list:todo_list' %}">To-do list</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="/">More links</a>
+            <a class="nav-link" href="{% url 'todo_list:completed' %}">Completed tasks</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list:add_todo_item' %}">Add a to-do item</a>
           </li>
         </ul>
       </div>
