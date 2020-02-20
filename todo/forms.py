@@ -24,11 +24,13 @@ class AddToDoForm(forms.ModelForm):
     location = forms.CharField(max_length=50)
 
     #recurrence freq choices
+    NEVER = 'Never'
     DAILY = 'DAILY'
     WEEKLY = 'WEEKLY'
     MONTHLY = 'MONTHLY'
     YEARLY = 'YEARLY'
     FREQ_CHOICES = [
+        (NEVER, 'Never')
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
         (MONTHLY, 'Monthly'),
@@ -39,8 +41,9 @@ class AddToDoForm(forms.ModelForm):
         choices=FREQ_CHOICES,
         default=DAILY,
     )
-    end_recur_date = forms.DateTimeField(default=timezone.now, blank=True)
 
+
+    end_recur_date = forms.DateTimeField(default=timezone.now, blank=True)
     # priority choices
     HIGH = 'HI'
     MEDIUM = 'MD'

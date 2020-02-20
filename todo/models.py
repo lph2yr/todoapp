@@ -8,17 +8,19 @@ from django.utils import timezone
 class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
-    duedate = models.DateTimeField()
+    duedate = models.DateTimeField(default=timezone.now, blank=True)
     #date_added = models.DateTimeField()
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
     #recurrence freq choices
+    NEVER = 'NEVER'
     DAILY = 'DAILY'
     WEEKLY = 'WEEKLY'
     MONTHLY = 'MONTHLY'
     YEARLY = 'YEARLY'
     FREQ_CHOICES = [
+        (NEVER, 'Never'),
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
         (MONTHLY, 'Monthly'),
@@ -27,13 +29,13 @@ class ToDoItem(models.Model):
     recur_freq = models.CharField(
         max_length=7,
         choices = FREQ_CHOICES,
-        default = DAILY,
+        default = NEVER,
     )
         #customize day of week
         #every other day
         #every other week
 
-    #no NEVER FOR NOW??????????
+    
     end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
     #end after a specific day
@@ -57,6 +59,8 @@ class ToDoItem(models.Model):
 
     def __str__(self):
     	return self.title
+
+
 
 '''
 ALGORITHM:
