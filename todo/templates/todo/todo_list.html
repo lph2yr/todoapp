@@ -79,6 +79,16 @@
                     <li><strong>Location:</strong> {{ todo_item.location }}</li>
                     {% endif %}
                     <!-- <li><strong>Completed:</strong> {{ todo_item.completed }} -->
+                    {% if todo_item.recur_freq %}
+                    <li>
+                      <strong>Repeat:</strong> {{ todo_item.recur_freq }}
+                    </li>
+                    {% endif %}
+                    {% if todo_item.end_recur_date %}
+                    <li>
+                      <strong>End repeat:</strong> {{ todo_item.end_recur_date }}
+                    </li>
+                    {% endif %}
                   </ul>
                   <div class="d-flex justify-content-around">
                     <small><a href="{% url 'todo_list:detail' todo_item.id %}">Edit</a></small>
