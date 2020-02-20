@@ -33,6 +33,7 @@ class ToDoItem(models.Model):
         #every other day
         #every other week
 
+    #no NEVER FOR NOW??????????
     end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
     #end after a specific day
@@ -57,18 +58,6 @@ class ToDoItem(models.Model):
     def __str__(self):
     	return self.title
 
-    def createRecurring(self, freq, recur_date, end_date ):
-        # creating new To Do items with same title, description, location
-        # changing due date; default false_completed
-        recur_todo = self( title = self.title,
-                           description = self.description,
-                           location = self.location,
-                           duedate = recur_date,
-                           completed = False,
-                           recur_freq = freq,
-                           end_recur_date = end_date )
-        #recur date = current due date + (daily = +1) or (weekly = + 7) or (monthly = ...) or (yearly = ....)
-        return recur_todo
 '''
 ALGORITHM:
 User -> edit 

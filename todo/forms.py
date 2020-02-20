@@ -5,6 +5,7 @@ from django.utils import timezone
 
 
 class EditToDoForm(forms.ModelForm):
+
     class Meta:
         model = ToDoItem
         fields = ['title', 'description', 'duedate','recur_freq','end_recur_date','duedate'] #only changing duedate for now
@@ -15,7 +16,7 @@ class EditToDoForm(forms.ModelForm):
 
 
 
-class AddToDoForm(forms.Form):
+class AddToDoForm(forms.ModelForm):
     title = forms.CharField(max_length=100)
     description = forms.CharField(max_length=600)
     duedate = forms.DateTimeField()
@@ -54,3 +55,4 @@ class AddToDoForm(forms.Form):
         choices=PRIORITY_CHOICES,
         default=LOW,
     )
+
