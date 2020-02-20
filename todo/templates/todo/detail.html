@@ -12,7 +12,7 @@ EDIT VIEW
     <li>
         <form action="{% url 'todo_list:detail' todo_item.id %}" method="post"> <!--action form to get input data and pass it to detail-->
             {% csrf_token %}
-            {{ form }}<input type="submit" value="Update">
+            {{ form.EditToDoForm }}<input type="submit" value="Update">
         </form>
     </li>
     <li><strong>Description:</strong> {{todo_item.description}}</li>
