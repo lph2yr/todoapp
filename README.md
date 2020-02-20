@@ -14,3 +14,7 @@ Windows: `.\env\Scripts\activate`
 
 `pip install -r requirements.txt`
 
+
+## Updating the Database
+
+'python3 manage.py loaddata forceapidata'
