@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,7 +45,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    'allauth.socialaccount.providers.google'
+    'allauth.socialaccount.providers.google',
 
 ]
 
@@ -136,6 +137,22 @@ AUTHENTICATION_BACKENDS = (
     # all-auth specific authentication methods such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': [
+            'profile',
+            'email',
+        ],
+        'AUTH_PARAMS': {
+            'access_type': 'offline',
+        }
+    }
+}
+
+
+SOCIAL_AUTH_GOOGLE_OAUTH2_KEY = '704056378193-8jfog42qh56g1ped1ft18rr75ssokccj.apps.googleusercontent.com'
+SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yfEUj231OhFVGF3NYuXPKGuR'
 
 SITE_ID = 2
 
