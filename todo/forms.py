@@ -6,7 +6,7 @@ from django.template.defaultfilters import mark_safe
 class EditToDoForm(forms.ModelForm):
     class Meta:
         model = ToDoItem
-        fields = ['duedate'] #only changing duedate for now
+        fields = ['title', 'description', 'duedate','recur_freq','end_recur_date','duedate'] #only changing duedate for now
         widgets = {'duedate': forms.DateTimeInput(format='%YYYY-%mm-%dd %HH:%MM:%SS',
                                                   attrs={'type': 'datetime', 'placeholder':'yyyy-mm-dd HH:MM'})}
         #widget formatting a little funky right now. Fix later
