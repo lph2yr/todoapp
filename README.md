@@ -17,4 +17,4 @@ Windows: `.\env\Scripts\activate`
 
 ## Updating the Database
 
-'python3 manage.py loaddata forceapidata'
+`python3 manage.py loaddata forceapidata`
