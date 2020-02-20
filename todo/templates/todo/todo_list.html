@@ -35,9 +35,9 @@
                 <div class="card-header" id="header{{forloop.counter}}">
                   <!-- the header, the darker gray box-->
                   {% if todo_item.priority == "LO" %}
-                  <h5 class="mb-0 bg-light">
+                  <h5 class="mb-0 bg-light"></h5>
                   {% elif todo_item.priority == "MD" %}
-                  <h5 class="bg-warning">
+                  <h5 class="bg-warning"></h5>
                   {% else %}
                   <h5 class="bg-danger">
                   {% endif %}
@@ -63,8 +63,9 @@
                       </div>
                     {% endif %}
 
-                  </h5>
+                    </h5>
                 </div>
+
 
               <div id="collapse{{forloop.counter}}" class="collapse">
                 <!--body of the accordion card -->

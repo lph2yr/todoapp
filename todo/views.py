@@ -26,7 +26,8 @@ class AddToDoItemView(CreateView):
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 class EditToDo(UpdateView):
     model = ToDoItem
-    fields = ['title', 'description', 'duedate', 'recur_freq', 'end_recur_date'] #new fields don't create new obj yet!!!
+    fields = ['title', 'description', 'duedate', 'recur_freq', 'end_recur_date']
+    #new fields (recur_freq, end_recur_date) don't create new obj yet!!!
     def form_valid(self, form):
         form.instance.todo_item = self.request.user
         return super().form_valid(form)
