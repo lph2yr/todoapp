@@ -30,15 +30,15 @@
           {% for todo_item in todo_list %}
           <div class="card">
             <li class="list-group-item">
-              <div class="card-header" id="header{{forloop.counter}}">
+              {% if todo_item.priority == "LO" %}
+              <div class="card-header bg-light" id="header{{forloop.counter}}">
+              {% elif todo_item.priority == "MD" %}
+              <div class="card-header bg-warning" id="header{{forloop.counter}}">
+              {% else %}
+              <div class="card-header bg-danger" id="header{{forloop.counter}}">
+              {% endif %}
                 <!-- the header, the darker gray box-->
-                {% if todo_item.priority == "LO" %}
-                <h5 class="mb-0 bg-light"></h5>
-                {% elif todo_item.priority == "MD" %}
-                <h5 class="bg-warning"></h5>
-                {% else %}
-                <h5 class="bg-danger">
-                  {% endif %}
+                
                   <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
                   <button
                     class="btn btn-link collapsed"
@@ -59,7 +59,7 @@
                     <small>due {{todo_item.duedate}}</small>
                   </div>
                   {% endif %}
-                </h5>
+                
               </div>
 
               <div id="collapse{{forloop.counter}}" class="collapse">
