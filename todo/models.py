@@ -9,7 +9,7 @@ class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=timezone.now, blank=True)
-    #date_added = models.DateTimeField()
+    date_created = models.DateTimeField(default=timezone.now) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
@@ -35,7 +35,7 @@ class ToDoItem(models.Model):
         #every other day
         #every other week
 
-    
+
     end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
     #end after a specific day
