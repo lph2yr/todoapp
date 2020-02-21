@@ -1,0 +1,16 @@
+language: python
+python:
+- '3.8'
+- '3.7'
+- '3.6'
+install:
+- pip install -r requirements-travis.txt
+script:
+- python manage.py test
+deploy:
+  provider: heroku
+  api_key:
+    
+  app:
+  on:
+    repo: uva-cs3240-s20/project-102-bogo-sorters
