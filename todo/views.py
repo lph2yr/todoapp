@@ -22,15 +22,16 @@ class AddToDoItemView(CreateView):
     model = ToDoItem
     fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
 
-'''
+
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
-    fields = ['title', 'description', 'duedate', 'location','recur_freq', 'end_recur_date', 'priority']
+    form_class = EditToDoForm
+    #fields = ['title', 'description', 'duedate', 'location','recur_freq', 'end_recur_date', 'priority']
     #new fields (recur_freq, end_recur_date) don't create new obj yet!!!
-'''
 
+'''
 #@param: request, todo_item_id
 def detail( request, todo_item_id ):
     todo_item = ToDoItem.objects.get(pk=todo_item_id) #get current todo_item with the id
@@ -38,27 +39,30 @@ def detail( request, todo_item_id ):
     if form.is_valid():
         #https://stackoverflow.com/questions/4706255/how-to-get-value-from-form-field-in-django-framework
         new_title = form['title'].value()
-        todo_item.title = str(new_title)
+        if (new_title != None ):
+            todo_item.title = str(new_title)
 
         new_description = form['description'].value()
-        todo_item.description = str(new_description)
+        if (new_description != None):
+            todo_item.description = str(new_description)
 
         new_date = form['duedate'].value()
-        todo_item.duedate = str(new_date) #datetime field is actually string; set the duedate field to the new date
+        if (new_date != None):
+            todo_item.duedate = str(new_date) #datetime field is actually string; set the duedate field to the new date
 
         new_location = form['location'].value()
-        todo_item.location = str(new_location)
+        if (new_location != None):
+            todo_item.location = str(new_location)
 
-        '''
-        new_freq = form[ 'recur_freq' ].value()
-        todo_item.recur_freq = str(new_freq)
 
-        new_end_date = form[ 'end_recur_date' ].value()
-        todo_item.end_recur_date = str(new_end_date).value()
+        #new_freq = form[ 'recur_freq' ].value()
+        #todo_item.recur_freq = str(new_freq)
+
+        #new_end_date = form[ 'end_recur_date' ].value()
+        #todo_item.end_recur_date = str(new_end_date).value()
         
-        new_priority = form ['priority'].value()
-        ....
-        '''
+        #new_priority = form ['priority'].value()
+        #....
 
         todo_item.save() #save todo_item
         form = EditToDoForm() #reset blank form
@@ -66,7 +70,7 @@ def detail( request, todo_item_id ):
         form = EditToDoForm() #reset blank form
     context = { 'todo_item': todo_item, 'form':form, }
     return render(request, 'todo/edit_todoitem_form.html', context)
-
+'''
 #function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):
     #Todo item to be completed

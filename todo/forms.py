@@ -10,15 +10,18 @@ class EditToDoForm(forms.ModelForm):
     class Meta:
         model = ToDoItem
         fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority']
-        widgets = { 'duedate': DateTimePickerInput(
-            options={
-                "format": "MM-DD-YYYY HH:MM",
-                "showClose": True,
-                "showClear": True,
-                "showTodayButton": True,
-            }
-        ), }
-        #widget formatting a little funky right now. Fix later
+        widgets = {
+            'duedate': DateTimePickerInput(
+                attrs={'class': 'datetimepicker'},
+                options={
+                    "format": "YYYY-MM-DD HH:MM",
+                    "showClose": True,
+                    "showClear": True,
+                    "showTodayButton": True,
+                },
+                ),
+
+        }
         labels = { 'recur_freq': mark_safe('Repeat'), 'end_recur_date': mark_safe('End repeat date'), 'duedate' : mark_safe('Due Date'),} #label and bold it
 
 
