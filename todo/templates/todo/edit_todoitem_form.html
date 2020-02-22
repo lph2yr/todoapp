@@ -13,11 +13,17 @@
     <table>
       {{ form.as_table }}
     </table>
+
   </div>
 
   <div class="d-flex justify-content-center">
     <input type="submit" value="Submit" />
   </div>
 </form>
+
+
+<div class="d-flex justify-content-center">
+  <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
+</div>
 
 {% endblock %}

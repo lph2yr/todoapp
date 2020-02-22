@@ -63,11 +63,10 @@
                     {% endif %}
                     {% if todo_item.recur_freq %}
                     <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
-                    {% endif %} {% if todo_item.end_recur_date %}
+                    {% endif %}
+                    {% if todo_item.end_recur_date %}
                     <li>
-                      <strong>End repeat:</strong> {{ todo_item.end_recur_date
-                      }}
-                    </li>
+                      <strong>End repeat:</strong> {{ todo_item.end_recur_date }} (showed to test functionality)</li>
                     {% endif %}
                   </ul>
                   <div class="d-flex justify-content-around">
