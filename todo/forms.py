@@ -2,17 +2,24 @@ from django import forms
 from .models import ToDoItem
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
+from bootstrap_datepicker_plus import DateTimePickerInput #https://pypi.org/project/django-bootstrap-datepicker-plus/
+from django import forms
 
 
 class EditToDoForm(forms.ModelForm):
-
     class Meta:
         model = ToDoItem
-        fields = ['title', 'description', 'duedate','recur_freq','end_recur_date','duedate'] #only changing duedate for now
-        widgets = {'duedate': forms.DateTimeInput(format='%YYYY-%mm-%dd %HH:%MM:%SS',
-                                                  attrs={'type': 'datetime', 'placeholder':'yyyy-mm-dd HH:MM'})}
+        fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority']
+        widgets = { 'duedate': DateTimePickerInput(
+            options={
+                "format": "MM-DD-YYYY HH:MM",
+                "showClose": True,
+                "showClear": True,
+                "showTodayButton": True,
+            }
+        ), }
         #widget formatting a little funky right now. Fix later
-        labels = { 'duedate' : mark_safe('<strong>Due Date </strong>'),} #label and bold it
+        labels = { 'recur_freq': mark_safe('Repeat'), 'end_recur_date': mark_safe('End repeat date'), 'duedate' : mark_safe('Due Date'),} #label and bold it
 
 
 
@@ -23,6 +30,7 @@ class AddToDoForm(forms.ModelForm):
     #date_added = models.DateTimeField()
     location = forms.CharField(max_length=50)
 
+    '''
     #recurrence freq choices
     NEVER = 'Never'
     DAILY = 'DAILY'
@@ -30,7 +38,7 @@ class AddToDoForm(forms.ModelForm):
     MONTHLY = 'MONTHLY'
     YEARLY = 'YEARLY'
     FREQ_CHOICES = [
-        (NEVER, 'Never')
+        (NEVER, 'Never'),
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
         (MONTHLY, 'Monthly'),
@@ -58,4 +66,5 @@ class AddToDoForm(forms.ModelForm):
         choices=PRIORITY_CHOICES,
         default=LOW,
     )
+    '''
 

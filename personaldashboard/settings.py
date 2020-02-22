@@ -29,9 +29,13 @@ ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+BOOTSTRAP4 = {
+    'include_jquery' : True,
+}
 
 INSTALLED_APPS = [
     'bootstrap4',
+    'bootstrap_datepicker_plus',
     'todo.apps.TodoConfig',
     'django.contrib.admin',
     'django.contrib.sites',
