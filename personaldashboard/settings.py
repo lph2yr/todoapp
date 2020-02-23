@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 
 import os
 import django_heroku
-import dj-database-url
+#import dj-database-url
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -90,8 +90,8 @@ WSGI_APPLICATION = 'personaldashboard.wsgi.application'
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 # https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
-db_from_env = dj_database_url.config()
-DATABASES[‘default’].update(db_from_env)
+#db_from_env = dj_database_url.config()
+#DATABASES[‘default’].update(db_from_env)
 
 DATABASES = {
     'default': {
