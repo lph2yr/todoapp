@@ -99,6 +99,11 @@
                         >Undo completion</a>
                         {% endif %}
                       </small>
+                      <small>
+                        <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
+                          Delete
+                        </a>
+                      </small>
                     </div>
                   </div>
                 </div>

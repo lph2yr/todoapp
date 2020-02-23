@@ -11,7 +11,6 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-import django_heroku
 #import dj-database-url
 
 
@@ -139,10 +138,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
-# Activate Django-Heroku.
-django_heroku.settings(locals())
-
 # Django all-auth settings
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of 'allauth'
@@ -171,3 +166,10 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yfEUj231OhFVGF3NYuXPKGuR'
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
+
+try:
+    # Configure Django App for Heroku.
+    import django_heroku
+    django_heroku.settings(locals())
+except ImportError:
+    found = False

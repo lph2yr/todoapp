@@ -27,6 +27,7 @@ class ToDoListView(generic.ListView):
 
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
+
 #Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 
 class CompletedView(generic.ListView):
@@ -47,7 +48,9 @@ class AddToDoItemView(CreateView):
         self.object = form.save()
         if ( self.object.recur_freq != 'NEVER' ):
             return redirect('todo_list:create_recurrences', todo_item_id=self.object.id )
-
+        else:
+            self.object.save()
+            return redirect('todo_list:todo_list')
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 class EditToDo(UpdateView):
@@ -56,9 +59,13 @@ class EditToDo(UpdateView):
     form_class = EditToDoForm
     #new fields (recur_freq, end_recur_date) don't create new obj yet!!!
 
+def delete_todo(request, todo_item_id):
+    item = ToDoItem.objects.get(pk=todo_item_id)
+    item.delete()
+    return redirect('todo_list:todo_list')
+
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)
-    #TODO: if == NEVER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if ( todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date
         current_time = timezone.now()
