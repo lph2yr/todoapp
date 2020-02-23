@@ -49,7 +49,7 @@ def create_recurrences(request, todo_item_id):
             #loop thro day_dif to create and save that many obj
             # fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
             for i in range(0, day_dif):
-                new_obj = ToDoItem.objects.create(
+                ToDoItem.objects.create(
                     title = todo_item.title,
                     description = todo_item.description,
                     location = todo_item.location,
