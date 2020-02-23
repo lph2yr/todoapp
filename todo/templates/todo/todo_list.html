@@ -81,29 +81,31 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }} (showed to test functionality; may be deleted later)</li>
                       {% endif %}
                     </ul>
-                    <div class="d-flex justify-content-around">
-                      <small
-                        ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                          >Edit</a
-                        ></small
-                      >
-                      <small>
+                    <div class="row m-3">
+                      <div>
                         {% if not todo_item.completed %}
-                        <a
+                        <small><a
                           href="{% url 'todo_list:complete_todo' todo_item.id %}"
                           >Complete Task</a
-                        >
+                        ></small>
                         {% else %}
-                        <a
+                        <small><a
                           href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                        >Undo completion</a>
+                        >Undo completion</a></small>
                         {% endif %}
-                      </small>
-                      <small>
-                        <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
-                          Delete
-                        </a>
-                      </small>
+                      </div>
+                      <div class="ml-auto">
+                        <small class="m-1"
+                          ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                            >Edit</a
+                          ></small
+                        >
+                        <small>
+                          <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
+                            Delete
+                          </a>
+                        </small>
+                      </div>
                     </div>
                   </div>
                 </div>
