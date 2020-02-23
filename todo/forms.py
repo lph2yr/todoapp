@@ -15,7 +15,6 @@ class EditToDoForm(forms.ModelForm):
             'duedate': DateTimePickerInput(
                 attrs={'class': 'datetimepicker'},
                 options={
-                    "format": "YYYY-MM-DD HH:MM",
                     "showClose": True,
                     "showClear": True,
                     "showTodayButton": True,
@@ -24,7 +23,6 @@ class EditToDoForm(forms.ModelForm):
             'end_recur_date': DateTimePickerInput(
                 attrs={'class': 'datetimepicker'},
                 options={
-                    "format": "YYYY-MM-DD HH:MM",
                     "showClose": True,
                     "showClear": True,
                     "showTodayButton": True,
@@ -44,7 +42,6 @@ class AddToDoForm(forms.ModelForm):
             'duedate': DateTimePickerInput(
                 attrs={'class': 'datetimepicker'},
                 options={
-                    "format": "YYYY-MM-DD HH:MM",
                     "showClose": True,
                     "showClear": True,
                     "showTodayButton": True,
@@ -53,7 +50,6 @@ class AddToDoForm(forms.ModelForm):
             'end_recur_date': DateTimePickerInput(
                 attrs={'class': 'datetimepicker'},
                 options={
-                    "format": "YYYY-MM-DD HH:MM",
                     "showClose": True,
                     "showClear": True,
                     "showTodayButton": True,
