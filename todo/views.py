@@ -71,9 +71,12 @@ def create_recurrences(request, todo_item_id):
     current_time = timezone.now()
     if ( todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date
+        print( end_date )
         current_time = timezone.now()
         if ( todo_item.recur_freq == 'DAILY'):
-            delta_day = end_date.day - current_time.day #find the time differences
+            delta= end_date - current_time #find the time differences
+            delta_day = delta.days + 1
+            print( delta_day )
             #loop thro day_dif to create and save that many obj
             for i in range(1, delta_day + 1):
                 new_object = ToDoItem.objects.create(
