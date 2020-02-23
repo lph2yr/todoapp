@@ -170,6 +170,7 @@ LOGIN_REDIRECT_URL = '/'
 ACCOUNT_LOGOUT_ON_GET= True
 
 ACCOUNT_LOGOUT_REDIRECT_URL ="/login"
+
 try:
     # Configure Django App for Heroku.
     import django_heroku
