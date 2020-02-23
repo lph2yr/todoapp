@@ -18,6 +18,13 @@ class ToDoListView(generic.ListView):
         return ToDoItem.objects.filter(completed=False).order_by('-duedate')
 #Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 
+class CompletedView(generic.ListView):
+    template_name = 'todo/todo_list.html'
+    context_object_name = 'todo_list'
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=True).order_by('duedate')
+
+
 #https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 
 class AddToDoItemView(CreateView):
@@ -69,13 +76,6 @@ def completeToDo(request, todo_item_id):
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
-
-class CompletedView(generic.ListView):
-    template_name = 'todo/completed.html'
-    context_object_name = 'todo_list'
-    def get_queryset(self):
-        return ToDoItem.objects.filter(completed=True).order_by('duedate')
-
 
 
 
