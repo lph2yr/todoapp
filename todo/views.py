@@ -15,7 +15,8 @@ class ToDoListView(generic.ListView):
 
     #This is how the tasks are gathered!
     def get_queryset(self):
-        return ToDoItem.objects.filter(completed=False).order_by('-duedate')
+        return ToDoItem.objects.filter(completed=False).order_by('duedate')
+
 #Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 
 class CompletedView(generic.ListView):
@@ -36,7 +37,9 @@ class AddToDoItemView(CreateView):
         self.object = form.save()
         if ( self.object.recur_freq != 'NEVER' ):
             return redirect('todo_list:create_recurrences', todo_item_id=self.object.id )
-
+        else:
+            self.object.save()
+            return redirect('todo_list:todo_list')
 
 #function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
 class EditToDo(UpdateView):
