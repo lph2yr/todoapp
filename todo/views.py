@@ -74,7 +74,6 @@ def create_recurrences(request, todo_item_id):
                     priority=todo_item.priority
                 )
 
-        #TODO: FIX
         elif (todo_item.recur_freq == 'WEEKLY'):
             delta = end_date - current_time  # find the time differences
             delta_day = delta.days + 1 # subtract 1 day for the event already made today
