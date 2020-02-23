@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+import django_heroku
+#import dj-database-url
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -87,6 +89,10 @@ WSGI_APPLICATION = 'personaldashboard.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+# https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
+#db_from_env = dj_database_url.config()
+#DATABASES[‘default’].update(db_from_env)
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
@@ -132,6 +138,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Activate Django-Heroku.
+django_heroku.settings(locals())
 
 # Django all-auth settings
 AUTHENTICATION_BACKENDS = (
