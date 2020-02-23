@@ -60,7 +60,17 @@ class ToDoItem(models.Model):
     def __str__(self):
     	return self.title
 
+    def is_past_due(self):
+        now = timezone.now()
+        return now > self.duedate
 
+    def is_today_duedate(self):
+        now = timezone.now().replace(tzinfo=None)
+        due = self.duedate.replace(tzinfo=None)
+        delta = abs( now - due )
+        day_dif = delta.days
+        is_same = day_dif == 0
+        return is_same
 
 '''
 ALGORITHM:
