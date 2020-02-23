@@ -69,29 +69,6 @@ def create_recurrences(request, todo_item_id):
 
     end_date = todo_item.end_recur_date
     current_time = timezone.now()
-    if ( todo_item.recur_freq == 'DAILY'):
-        delta_date = end_date.day - current_time.day #date differenes
-        #loop thro day_dif to create and save that many obj
-    elif (todo_item.recur_freq == 'WEEKLY'):
-        delta = end_date - current_time
-        delta_day = delta.days + 1
-        weeks = delta_day // 7  # number of weeks
-        delta_date = weeks
-    elif (todo_item.recur_freq == 'MONTHLY'):
-        delta_date = end_date.month - current_time.month  #month differences
-    elif (todo_item.recur_freq == 'YEARLY'):
-        delta_date = end_date.year - current_time.year  #year differences
-
-    for i in range(1, delta_date + 1):
-        new_object = ToDoItem.objects.create(
-            title = todo_item.title,
-            description = todo_item.description,
-            location = todo_item.location,
-            duedate = todo_item.duedate + relativedelta(days=+i),
-            recur_freq = todo_item.recur_freq,
-            end_recur_date = todo_item.end_recur_date,
-            priority = todo_item.priority
-        )
     if ( todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date
         current_time = timezone.now()
