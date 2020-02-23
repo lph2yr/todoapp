@@ -29,64 +29,68 @@
         <div id="accordion">
           <!-- accordion is the template for collapsing bars -->
           {% for todo_item in todo_list %}
-          <div class="card">
-            <button
-              class="btn collapsed"
-              id="cardButton"
-              data-toggle="collapse"
-              data-target="#collapse{{forloop.counter}}"
-            >
-            <li class="list-group-item">
-              {% if todo_item.priority == "LO" %}
-              <div class="card-header bg-light" id="header{{forloop.counter}}">
-              {% elif todo_item.priority == "MD" %}
-              <div class="card-header bg-warning" id="header{{forloop.counter}}">
-              {% else %}
-              <div class="card-header bg-danger" id="header{{forloop.counter}}">
-              {% endif %}
-                <p class="d-flex justify-content-start">{{todo_item.title}}</p>
-                <div class="d-flex justify-content-end mt-3">
-                  <small>due {{todo_item.duedate}}</small>
+            {% if todo_item.is_past_due is not True %}
+
+                <div class="card">
+                  <button
+                    class="btn collapsed"
+                    id="cardButton"
+                    data-toggle="collapse"
+                    data-target="#collapse{{forloop.counter}}"
+                  >
+                  <li class="list-group-item">
+                    {% if todo_item.priority == "LO" %}
+                    <div class="card-header bg-light" id="header{{forloop.counter}}">
+                    {% elif todo_item.priority == "MD" %}
+                    <div class="card-header bg-warning" id="header{{forloop.counter}}">
+                    {% else %}
+                    <div class="card-header bg-danger" id="header{{forloop.counter}}">
+                    {% endif %}
+                      <p class="d-flex justify-content-start">{{todo_item.title}}</p>
+                      <div class="d-flex justify-content-end mt-3">
+                        <small>due {{todo_item.duedate}}</small>
+                      </div>
+                    </div>
+                  </button>
+                    <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                    <div id="collapse{{forloop.counter}}" class="collapse">
+                      <!--body of the accordion card -->
+                      <div class="card-body">
+                        <ul style="list-style-type:none">
+                          {% if todo_item.description %}
+                          <li>
+                            <strong>Description:</strong> {{ todo_item.description }}
+                          </li>
+                          {% endif %} {% if todo_item.location %}
+                          <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                          {% endif %}
+                          {% if todo_item.recur_freq %}
+                          <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                          {% endif %}
+                          {% if todo_item.end_recur_date %}
+                          <li>
+                            <strong>End repeat:</strong> {{ todo_item.end_recur_date }} (showed to test functionality; may be deleted later)</li>
+                          {% endif %}
+                        </ul>
+                        <div class="d-flex justify-content-around">
+                          <small
+                            ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                              >Edit</a
+                            ></small
+                          >
+                          <small
+                            ><a
+                              href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                              >Complete Task</a
+                            ></small
+                          >
+                        </div>
+                      </div>
+                    </div>
+                  </li>
                 </div>
-              </div>
-            </button>
-              <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->  
-              <div id="collapse{{forloop.counter}}" class="collapse">
-                <!--body of the accordion card -->
-                <div class="card-body">
-                  <ul style="list-style-type:none">
-                    {% if todo_item.description %}
-                    <li>
-                      <strong>Description:</strong> {{ todo_item.description }}
-                    </li>
-                    {% endif %} {% if todo_item.location %}
-                    <li><strong>Location:</strong> {{ todo_item.location }}</li>
-                    {% endif %}
-                    {% if todo_item.recur_freq %}
-                    <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
-                    {% endif %}
-                    {% if todo_item.end_recur_date %}
-                    <li>
-                      <strong>End repeat:</strong> {{ todo_item.end_recur_date }} (showed to test functionality; may be deleted later)</li>
-                    {% endif %}
-                  </ul>
-                  <div class="d-flex justify-content-around">
-                    <small
-                      ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                        >Edit</a
-                      ></small
-                    >
-                    <small
-                      ><a
-                        href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                        >Complete Task</a
-                      ></small
-                    >
-                  </div>
-                </div>
-              </div>
-            </li>
-          </div>
+
+            {% endif %}
           {% endfor %}
         </div>
       </ul>

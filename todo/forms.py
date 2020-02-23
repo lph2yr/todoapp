@@ -2,6 +2,7 @@ from django import forms
 from .models import ToDoItem
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
+from datetime import timezone
 from bootstrap_datepicker_plus import DateTimePickerInput #https://pypi.org/project/django-bootstrap-datepicker-plus/
 from django import forms
 
