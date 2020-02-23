@@ -7,83 +7,89 @@ from django.utils import timezone
 import datetime
 from dateutil.relativedelta import relativedelta
 
-# Create your views here.
+
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
 
-    # update the priority twice a day if the due date is getting close
-    # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour 
-    for item in ToDoItem.objects.all():
-        timediff = (item.duedate - timezone.now()) / datetime.timedelta(days=1)
-        print(item.title, timediff)
-        if timediff <= 1:
-            item.priority = 'HI'
-        elif timediff <= 2:
-            item.priority = 'MD'
-        else:
-            item.priority = 'LO'
-        item.save()
-
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
 
-#Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+# Edit todo: function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+
 
 class CompletedView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
+
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True).order_by('duedate')
 
 
-#https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
+# https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 
 class AddToDoItemView(CreateView):
     model = ToDoItem
     template_name = "todo/todoitem_form.html"
     form_class = AddToDoForm
     #fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
+
     def form_valid(self, form):
         self.object = form.save()
-        if ( self.object.recur_freq != 'NEVER' ):
-            return redirect('todo_list:create_recurrences', todo_item_id=self.object.id )
+        if (self.object.recur_freq != 'NEVER'):
+            return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         else:
             self.object.save()
             return redirect('todo_list:todo_list')
 
-#function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+# function processes input data of Date and Time and updates it in Database for todo_item at todo_item_id
+
+
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
     form_class = EditToDoForm
-    #new fields (recur_freq, end_recur_date) don't create new obj yet!!!
+    # new fields (recur_freq, end_recur_date) don't create new obj yet!!!
+
 
 def delete_todo(request, todo_item_id):
     item = ToDoItem.objects.get(pk=todo_item_id)
     item.delete()
     return redirect('todo_list:todo_list')
 
+
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)
 
     end_date = todo_item.end_recur_date
     current_time = timezone.now()
-    if ( todo_item.recur_freq != 'NEVER'):
+    if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date
         current_time = timezone.now()
-        if ( todo_item.recur_freq == 'DAILY'):
-            delta_day = end_date.day - current_time.day #find the time differences
-            #loop thro day_dif to create and save that many obj
+        if (todo_item.recur_freq == 'DAILY'):
+            delta_day = end_date.day - current_time.day  # find the time differences
+            # loop thro day_dif to create and save that many obj
             for i in range(1, delta_day + 1):
                 new_object = ToDoItem.objects.create(
-                    title = todo_item.title,
-                    description = todo_item.description,
-                    location = todo_item.location,
-                    duedate = todo_item.duedate + relativedelta(days=+i),
-                    recur_freq = todo_item.recur_freq,
-                    end_recur_date = todo_item.end_recur_date,
-                    priority = todo_item.priority
+                    title=todo_item.title,
+                    description=todo_item.description,
+                    location=todo_item.location,
+                    duedate=todo_item.duedate + relativedelta(days=+i),
+                    recur_freq=todo_item.recur_freq,
+                    end_recur_date=todo_item.end_recur_date,
+                    priority=todo_item.priority
                 )
 
         elif (todo_item.recur_freq == 'WEEKLY'):
@@ -129,20 +135,16 @@ def create_recurrences(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-#function changes a todo from incomplete to complete (completed = False -> True)
+# function changes a todo from incomplete to complete (completed = False -> True)
+
+
 def completeToDo(request, todo_item_id):
-    #Todo item to be completed
+    # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
-
-
-
-
-
-
 
 
 '''
@@ -191,4 +193,3 @@ def detail( request, todo_item_id ):
         
         
 '''
-

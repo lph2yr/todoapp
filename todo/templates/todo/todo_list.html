@@ -4,7 +4,6 @@
 
 {% block content %}
 
-
 <div class="row">
   <div class="col">
     <h4>Welcome {{user}}!</h4>
@@ -81,7 +80,7 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }} (showed to test functionality; may be deleted later)</li>
                       {% endif %}
                     </ul>
-                    <div class="row m-3">
+                    <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
