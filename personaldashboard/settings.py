@@ -170,10 +170,3 @@ SOCIAL_AUTH_GOOGLE_OAUTH2_SECRET = 'yfEUj231OhFVGF3NYuXPKGuR'
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
-
-try:
-    # Configure Django App for Heroku.
-    import django_heroku
-    django_heroku.settings(locals())
-except ImportError:
-    found = False
