@@ -4,6 +4,7 @@ from .forms import EditToDoForm, AddToDoForm
 from .models import ToDoItem
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
+from dateutil.relativedelta import relativedelta
 
 # Create your views here.
 class ToDoListView(generic.ListView):
@@ -45,20 +46,64 @@ def create_recurrences(request, todo_item_id):
         if ( todo_item.recur_freq == 'DAILY'):
             delta = end_date - current_time #find the time differences
             day_dif = delta.days - 1 #subtract 1 day for the event already made today
-            print( day_dif )
-            #loop thro day_dif to create and save that many obj
+            # loop thro day_dif to create and save that many obj
             # fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
             for i in range(0, day_dif):
-                new_obj = ToDoItem.objects.create(
-                    title = todo_item.title,
-                    description = todo_item.description,
-                    location = todo_item.location,
-                    duedate = todo_item.duedate + timezone.timedelta(days=1),
-                    recur_freq = todo_item.recur_freq,
-                    end_recur_date = todo_item.end_recur_date,
-                    priority = todo_item.priority
+                ToDoItem.objects.create(
+                    title=todo_item.title,
+                    description=todo_item.description,
+                    location=todo_item.location,
+                    duedate=todo_item.duedate + timezone.timedelta(days=1),
+                    recur_freq=todo_item.recur_freq,
+                    end_recur_date=todo_item.end_recur_date,
+                    priority=todo_item.priority
                 )
-
+        elif (todo_item.recur_freq == 'WEEKLY'):
+            delta = end_date - current_time  # find the time differences
+            delta_day = delta.days  # subtract 1 day for the event already made today
+            weeks = delta_day // 7  # number of weeks
+            # loop thro day_dif to create and save that many obj
+            # fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
+            for i in range(0, weeks):
+                ToDoItem.objects.create(
+                    title=todo_item.title,
+                    description=todo_item.description,
+                    location=todo_item.location,
+                    duedate=todo_item.duedate + timezone.timedelta(days=7),
+                    recur_freq=todo_item.recur_freq,
+                    end_recur_date=todo_item.end_recur_date,
+                    priority=todo_item.priority
+                )
+        elif (todo_item.recur_freq == 'MONTHLY'):
+            delta = end_date - current_time  # find the time differences
+            delta_month = delta.months  # subtract 1 day for the event already made today
+            # loop thro day_dif to create and save that many obj
+            # fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
+            for i in range(0, delta_month):
+                ToDoItem.objects.create(
+                    title=todo_item.title,
+                    description=todo_item.description,
+                    location=todo_item.location,
+                    duedate=todo_item.duedate + relativedelta(months=+1),
+                    recur_freq=todo_item.recur_freq,
+                    end_recur_date=todo_item.end_recur_date,
+                    priority=todo_item.priority
+                )
+        elif( todo_item.recur_freq == 'YEARLY'):
+            delta = end_date - current_time  # find the time differences
+            delta_year = delta.years # subtract 1 day for the event already made today
+            # loop thro day_dif to create and save that many obj
+            # fields = ['title', 'description', 'duedate', 'location', 'recur_freq', 'end_recur_date', 'priority']
+            for i in range(0, delta_year):
+                ToDoItem.objects.create(
+                    title=todo_item.title,
+                    description=todo_item.description,
+                    location=todo_item.location,
+                    duedate=todo_item.duedate + relativedelta(years=+1),
+                    recur_freq=todo_item.recur_freq,
+                    end_recur_date=todo_item.end_recur_date,
+                    priority=todo_item.priority
+                )
     return redirect('todo_list:todo_list')
 
 #function changes a todo from incomplete to complete (completed = False -> True)
