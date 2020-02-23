@@ -50,7 +50,6 @@ class EditToDo(UpdateView):
 
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)
-    #TODO: if == NEVER!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     if ( todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date
         current_time = timezone.now()
