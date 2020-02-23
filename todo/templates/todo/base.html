@@ -45,13 +45,19 @@
       <div class="collapse navbar-collapse" id="navbarCollapse">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:todo_list' %}">To-do list</a>
+            <a class="nav-link" href="{% url 'todo_list:todo_list' %}"
+              >To-do list</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:completed' %}">Completed tasks</a>
+            <a class="nav-link" href="{% url 'todo_list:completed' %}"
+              >Completed tasks</a
+            >
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:add_todo_item' %}">Add a to-do item</a>
+            <a class="nav-link" href="{% url 'todo_list:add_todo_item' %}"
+              >Add a to-do item</a
+            >
           </li>
         </ul>
       </div>
@@ -86,6 +92,9 @@
       integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
       crossorigin="anonymous"
     ></script>
+
+    <!--datetimepicker -->
+
     <script>
       // collapse navbar when clicking outside of it
       $(document).ready(function() {

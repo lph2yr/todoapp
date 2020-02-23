@@ -8,17 +8,19 @@ from django.utils import timezone
 class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
-    duedate = models.DateTimeField()
-    #date_added = models.DateTimeField()
+    duedate = models.DateTimeField(default=timezone.now, blank=True)
+    date_created = models.DateTimeField(default=timezone.now) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
     #recurrence freq choices
+    NEVER = 'NEVER'
     DAILY = 'DAILY'
     WEEKLY = 'WEEKLY'
     MONTHLY = 'MONTHLY'
     YEARLY = 'YEARLY'
     FREQ_CHOICES = [
+        (NEVER, 'Never'),
         (DAILY, 'Daily'),
         (WEEKLY, 'Weekly'),
         (MONTHLY, 'Monthly'),
@@ -27,11 +29,12 @@ class ToDoItem(models.Model):
     recur_freq = models.CharField(
         max_length=7,
         choices = FREQ_CHOICES,
-        default = DAILY,
+        default = NEVER,
     )
         #customize day of week
         #every other day
         #every other week
+
 
     end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
     #end repeat date and time
@@ -57,18 +60,18 @@ class ToDoItem(models.Model):
     def __str__(self):
     	return self.title
 
-    def createRecurring(self, freq, recur_date, end_date ):
-        # creating new To Do items with same title, description, location
-        # changing due date; default false_completed
-        recur_todo = self( title = self.title,
-                           description = self.description,
-                           location = self.location,
-                           duedate = recur_date,
-                           completed = False,
-                           recur_freq = freq,
-                           end_recur_date = end_date )
-        #recur date = current due date + (daily = +1) or (weekly = + 7) or (monthly = ...) or (yearly = ....)
-        return recur_todo
+    def is_past_due(self):
+        now = timezone.now()
+        return now > self.duedate
+
+    def is_today_duedate(self):
+        now = timezone.now().replace(tzinfo=None)
+        due = self.duedate.replace(tzinfo=None)
+        delta = abs( now - due )
+        day_dif = delta.days
+        is_same = day_dif == 0
+        return is_same
+
 '''
 ALGORITHM:
 User -> edit 

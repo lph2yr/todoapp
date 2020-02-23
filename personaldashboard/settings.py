@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
+#import dj-database-url
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -26,13 +27,17 @@ SECRET_KEY = 'xo#o%k$-)vusm(v(=w$wo(h%%ovxf819d5n*6n=1+u1!btdm1z'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
+BOOTSTRAP4 = {
+    'include_jquery' : True,
+}
 
 INSTALLED_APPS = [
     'bootstrap4',
+    'bootstrap_datepicker_plus',
     'todo.apps.TodoConfig',
     'django.contrib.admin',
     'django.contrib.sites',
@@ -82,6 +87,10 @@ WSGI_APPLICATION = 'personaldashboard.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+# https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
+#db_from_env = dj_database_url.config()
+#DATABASES[‘default’].update(db_from_env)
 
 DATABASES = {
     'default': {
@@ -158,6 +167,15 @@ SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
 
+<<<<<<< HEAD
 ACCOUNT_LOGOUT_ON_GET= True
 
 ACCOUNT_LOGOUT_REDIRECT_URL ="/login"
+=======
+try:
+    # Configure Django App for Heroku.
+    import django_heroku
+    django_heroku.settings(locals())
+except ImportError:
+    found = False
+>>>>>>> master
