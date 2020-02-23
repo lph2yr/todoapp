@@ -1,0 +1,17 @@
+language: python
+python:
+- '3.8'
+- '3.7'
+- '3.6'
+install:
+- pip install -r requirements-travis.txt
+script:
+- python manage.py test
+deploy:
+  provider: heroku
+  api_key:
+    secure: BpAFY2ySCa1I53IMvmv22TfU9lh/Oq0gy/bEeRbAQFe62Dffee/XKrtPSdZd3M75tc1brdYkgPIhbw8n71SWWhxQGd4LFskf/eubniKGElxusTn/mUT55WmjIPw8gDsXw/2Ut2JPgx84Lshm+E28jHvN+HNKv0Nf7EtmZr0knnHE5fxzir7QOyUGTXRV3jLdK24kuk38H+jWDV6sr1s2uMl//XXPYinvLrOHgNDgZ4yELyJODZUV0wsNQnE1zifzirhx2mT7fA4/hbucBvkiJcZzTrBapESKCGAtB9e75nEwaxDh2BIaIauNcJVzf/JDjrN2gG//zBwsdOgEAjkRCpQPm/2U1cWmz4mwOQYbPRrqJGxMSjILlDuFYd5+Ryd9dDVVEcIxe6h6jilRBk4CSHnChexGJuhYXTIh4a7jdXtyvzPN08T+EZVMjSiTjmwL/6oCLwIq2KZBP3gIQkckYbmjFdwkKPks3ApJsskGi1Ss1AdXpWUgKXgT17Oa08anLOsBEtqDOYIHUsWqvRNb9ShnhTtl4cpvTJ4LlgBbmYC4Ga/NHNCaPBulJHEAYMNB2OeNDRM3tdhpKF/mW/Wf6R8MSn6/y9vuGwPlfraeWtuRdcZP40BzlsrOptGS5nvr3HkBD0Wcopl8ytXb3ZKIwMPNFRfZLkdAZJJ1ZamT1+k=
+  app: project-102-bogo-sorters
+  on:
+    repo: uva-cs3240-s20/project-102-bogo-sorters
+    branch: travis-ci
