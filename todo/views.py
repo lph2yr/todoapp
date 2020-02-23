@@ -4,16 +4,27 @@ from .forms import EditToDoForm, AddToDoForm
 from .models import ToDoItem
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
+import datetime
 from dateutil.relativedelta import relativedelta
 
 # Create your views here.
 class ToDoListView(generic.ListView):
-    #the template this view uses
     template_name = 'todo/todo_list.html'
-    #this is what the list with the todo_items is called
     context_object_name = 'todo_list'
 
-    #This is how the tasks are gathered!
+    # update the priority twice a day if the due date is getting close
+    # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour 
+    for item in ToDoItem.objects.all():
+        timediff = (item.duedate - timezone.now()) / datetime.timedelta(days=1)
+        print(item.title, timediff)
+        if timediff <= 1:
+            item.priority = 'HI'
+        elif timediff <= 2:
+            item.priority = 'MD'
+        else:
+            item.priority = 'LO'
+        item.save()
+
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
 
@@ -47,6 +58,11 @@ class EditToDo(UpdateView):
     template_name = "todo/edit_todoitem_form.html"
     form_class = EditToDoForm
     #new fields (recur_freq, end_recur_date) don't create new obj yet!!!
+
+def delete_todo(request, todo_item_id):
+    item = ToDoItem.objects.get(pk=todo_item_id)
+    item.delete()
+    return redirect('todo_list:todo_list')
 
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)
