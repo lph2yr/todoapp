@@ -91,7 +91,7 @@ def create_recurrences(request, todo_item_id):
 
         elif (todo_item.recur_freq == 'WEEKLY'):
             delta = end_date - current_time  # find the time differences
-            delta_day = delta.days + 1
+            delta_day = delta.days
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
