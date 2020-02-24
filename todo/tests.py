@@ -20,7 +20,7 @@ class ToDoItemModelTests(TestCase):
             description = "Testing is_today_duedate",
             location = "",
             recur_freq = "NEVER",
-            duedate = parse_datetime("2020-02-23 09:00").replace(tzinfo=None)
+            duedate = parse_datetime("2020-02-23 09:00")
         )
 
         day_dif = todo.is_today_duedate()
