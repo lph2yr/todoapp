@@ -51,7 +51,7 @@ class AddToDoItemView(CreateView):
             self.object.save()
             return redirect('todo_list:todo_list')
 
-# function processes input data for existing object from user and updates it in database
+
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
@@ -63,19 +63,20 @@ def delete_todo(request, todo_item_id):
     item.delete()
     return redirect('todo_list:todo_list')
 
-#function create_recurrences
+
 def create_recurrences(request, todo_item_id):
-    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
+    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
 
-    #TODO: if recur_freq is changed to NEVER for a current item that's been set as repeated
+    # TODO: if recur_freq is changed to NEVER for a current item that's been set as repeated
 
-    #if recur_freq is not NEVER
+    # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
-        end_date = todo_item.end_recur_date #get end_recur_date from current obj
-        current_time = timezone.now() #find current_time --> may change to date_created!!!!!!!
+        end_date = todo_item.end_recur_date  # get end_recur_date from current obj
+        # find current_time --> may change to date_created!!!!!!!
+        current_time = timezone.now()
         if (todo_item.recur_freq == 'DAILY'):
             delta = end_date - current_time  # find the time differences
-            delta_day = delta.days + 1 #get the day dif of delta
+            delta_day = delta.days + 1  # get the day dif of delta
             # loop thro delta_dif to create and save that many objects
             for i in range(1, delta_day + 1):
                 ToDoItem.objects.create(
@@ -109,9 +110,10 @@ def create_recurrences(request, todo_item_id):
             delta = end_date - current_time  # find the time differences
             DAYS_IN_YR = 365
             MONTHS_IN_YR = 12
-            DAYS_IN_MONTHS = 30 #roughly
+            DAYS_IN_MONTHS = 30  # roughly
             delta_month = (delta.days // DAYS_IN_YR) * MONTHS_IN_YR
-            delta_remainders = (delta.days % DAYS_IN_YR) #days left that's not a year
+            # days left that's not a year
+            delta_remainders = (delta.days % DAYS_IN_YR)
             months_leftover = delta_remainders // DAYS_IN_MONTHS
 
             for i in range(1, delta_month + months_leftover + 1):
@@ -137,12 +139,12 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority
-                    #completed = default False
+                    # completed = default False
                 )
 
     return redirect('todo_list:todo_list')
 
-# function changes a todo from incomplete to complete (completed = False -> True)
+
 def completeToDo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
