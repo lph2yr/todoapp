@@ -37,7 +37,6 @@ BOOTSTRAP4 = {
 
 INSTALLED_APPS = [
     'bootstrap4',
-    'bootstrap_datepicker_plus',
     'todo.apps.TodoConfig',
     'django.contrib.admin',
     'django.contrib.sites',
