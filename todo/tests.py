@@ -9,8 +9,7 @@ class ToDoItemModelTests(TestCase):
 
     def test_same_is_today_duedate(self):
         """
-        was_published_recently() returns False for questions whose pub_date
-        is in the future.
+       returns True if the duedate is the same as currentdate time
         """
         now = timezone.now()
         now = now.replace(tzinfo=None)  # remove timezone info
@@ -25,4 +24,3 @@ class ToDoItemModelTests(TestCase):
 
         day_dif = todo.is_today_duedate()
         self.assertIs(day_dif, True)
-
