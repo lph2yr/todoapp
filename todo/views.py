@@ -74,8 +74,9 @@ def create_recurrences(request, todo_item_id):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
         # find current_time --> may change to date_created!!!!!!!
         current_time = timezone.now()
+        due_date = todo_item.duedate
         if (todo_item.recur_freq == 'DAILY'):
-            delta = end_date - current_time  # find the time differences
+            delta = end_date - due_date  # find the time differences
             delta_day = delta.days + 1  # get the day dif of delta
             # loop thro delta_dif to create and save that many objects
             for i in range(1, delta_day + 1):
@@ -91,7 +92,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'WEEKLY'):
-            delta = end_date - current_time  # find the time differences
+            delta = end_date - due_date  # find the time differences
             delta_day = delta.days
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
@@ -107,7 +108,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'MONTHLY'):
-            delta = end_date - current_time  # find the time differences
+            delta = end_date - due_date  # find the time differences
             DAYS_IN_YR = 365
             MONTHS_IN_YR = 12
             DAYS_IN_MONTHS = 30  # roughly
@@ -128,7 +129,7 @@ def create_recurrences(request, todo_item_id):
                     # completed = default False
                 )
         elif (todo_item.recur_freq == 'YEARLY'):
-            delta_year = end_date.year - current_time.year  # find the time differences
+            delta_year = end_date.year - due_date.year  # find the time differences
             # loop thro day_dif to create and save that many obj
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
