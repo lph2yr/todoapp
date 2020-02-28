@@ -83,29 +83,23 @@ def delete_todo(request, todo_item_id):
 
 
 def create_recurrences(request, todo_item_id):
-<<<<<<< HEAD
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
     #if recur_freq is not NEVER
-=======
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
 
     # TODO: if recur_freq is changed to NEVER for a current item that's been set as repeated
 
     # if recur_freq is not NEVER
->>>>>>> 738fbec96513d1ef3950e67c057250d61a0854e2
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
         # find current_time --> may change to date_created!!!!!!!
         current_time = timezone.now()
         due_date = todo_item.duedate
         if (todo_item.recur_freq == 'DAILY'):
-<<<<<<< HEAD
             delta = end_date - (due_date + relativedelta(days=+1)) # find the time differences
             delta_day = delta.days + 1 #get the day dif of delta
-=======
             delta = end_date - due_date  # find the time differences
             delta_day = delta.days + 1  # get the day dif of delta
->>>>>>> 738fbec96513d1ef3950e67c057250d61a0854e2
             # loop thro delta_dif to create and save that many objects
             for i in range(1, delta_day+1):
                 ToDoItem.objects.create(
@@ -173,7 +167,6 @@ def create_recurrences(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-<<<<<<< HEAD
 '''
 def edit_recurrences(request, todo_item_id, prev_recur):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
@@ -188,9 +181,6 @@ def edit_recurrences(request, todo_item_id, prev_recur):
 
 
 # function changes a todo from incomplete to complete (completed = False -> True)
-=======
-
->>>>>>> 738fbec96513d1ef3950e67c057250d61a0854e2
 def completeToDo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
