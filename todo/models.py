@@ -58,11 +58,11 @@ class ToDoItem(models.Model):
     )
 
     def __str__(self):
-    	return self.title
+    	return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
         now = timezone.now()
-        return now > self.duedate
+        return now > self.duedate.date()
 
     def is_today_duedate(self):
         now = timezone.now().replace(tzinfo=None)

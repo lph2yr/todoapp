@@ -26,7 +26,7 @@ class ToDoListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
-
+#CANNOT CREATE A DIFFERENT PRIORITY
 
 class CompletedView(generic.ListView):
     template_name = 'todo/todo_list.html'
@@ -41,6 +41,13 @@ class AddToDoItemView(CreateView):
     model = ToDoItem
     template_name = "todo/todoitem_form.html"
     form_class = AddToDoForm
+
+    #set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddToDoItemView, self).get_form(form_class)
+        form.fields['title'].required = True
+        form.fields['duedate'].required = True
+        return form
 
     # overriding form_valid function to redirect to create recurrences when add a todo item
     def form_valid(self, form):
@@ -57,7 +64,25 @@ class EditToDo(UpdateView):
     template_name = "todo/edit_todoitem_form.html"
     form_class = EditToDoForm
 
+    def get_form(self, form_class=None):
+        form = super(AddToDoItemView, self).get_form(form_class)
+        form.fields['title'].required = True
+        form.fields['duedate'].required = True
+        return form
 
+    '''
+    #check to see if recur_freq has changed
+    def form_valid(self, form):
+        prev_recur_freq = self.object.recur_freq
+        self.object = form.save()
+        if (self.object.recur_freq != prev_recur_freq):
+            return redirect('todo_list:edit_recurrence', todo_item_id=self.object.id)
+        else:
+            self.object.save()
+            return redirect('todo_list:todo_list')
+    '''
+
+    
 def delete_todo(request, todo_item_id):
     item = ToDoItem.objects.get(pk=todo_item_id)
     item.delete()
@@ -67,18 +92,16 @@ def delete_todo(request, todo_item_id):
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
 
-    #TODO: if recur_freq is changed to NEVER for a current item that's been set as repeated
-
     #if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date #get end_recur_date from current obj
         current_time = timezone.now() #find current_time --> may change to date_created!!!!!!!
         due_date = todo_item.duedate
         if (todo_item.recur_freq == 'DAILY'):
-            delta = end_date - due_date # find the time differences
+            delta = end_date - (due_date + relativedelta(days=+1)) # find the time differences
             delta_day = delta.days + 1 #get the day dif of delta
             # loop thro delta_dif to create and save that many objects
-            for i in range(1, delta_day + 1):
+            for i in range(1, delta_day+1):
                 ToDoItem.objects.create(
                     title=todo_item.title,
                     description=todo_item.description,
@@ -142,6 +165,21 @@ def create_recurrences(request, todo_item_id):
                 )
 
     return redirect('todo_list:todo_list')
+'''
+def edit_recurrence(request, todo_item_id):
+    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
+    if ( todo_item.recur_freq == 'NEVER'):
+        #delete all future events if applicable
+        all_todo = ToDoItem.objects.filter( title__startswith = todo_item.title,
+                                 description__startswith = todo_item.description,
+                                 end_recur_date__contains = todo_item.end_recur_date,
+                                 recur_freq__startswith = todo_item.recur_freq
+                                 )
+        future_todo = all_todo.objects.filter(date__range=[todo_item.duedate, todo_item.end_recur_date])
+        print(future_todo)
+        for i in range( 1, len(future_todo)):
+            future_todo[i].delete()
+'''
 
 # function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):

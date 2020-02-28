@@ -2,7 +2,6 @@ from django import forms
 from .models import ToDoItem
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
-from datetime import timezone
 from django import forms
 
 
