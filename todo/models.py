@@ -1,4 +1,3 @@
-import datetime
 from django.db import models
 from django.db.models import Model
 from django.utils import timezone
@@ -8,8 +7,8 @@ from django.utils import timezone
 class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
-    duedate = models.DateTimeField(default=timezone.now, blank=True)
-    date_created = models.DateTimeField(default=timezone.now) #just added
+    duedate = models.DateTimeField(default=timezone.now(), blank=True)
+    date_created = models.DateTimeField(default=timezone.now()) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
@@ -36,7 +35,7 @@ class ToDoItem(models.Model):
         #every other week
 
 
-    end_recur_date = models.DateTimeField(default=timezone.now, blank=True)
+    end_recur_date = models.DateTimeField(default=timezone.now(), blank=True)
     #end repeat date and time
     #end after a specific day
     #never

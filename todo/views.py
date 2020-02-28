@@ -49,7 +49,7 @@ class AddToDoItemView(CreateView):
         form.fields['duedate'].required = True
         return form
 
-    # overriding form_valid function to redirect to create recurrences when add a todo item
+    # overriding form_valid function to redirect to create_recurrences when add a todo item
     def form_valid(self, form):
         self.object = form.save()
         if (self.object.recur_freq != 'NEVER'):
@@ -64,23 +64,16 @@ class EditToDo(UpdateView):
     template_name = "todo/edit_todoitem_form.html"
     form_class = EditToDoForm
 
+    # set title and duedate fields to be required
     def get_form(self, form_class=None):
-        form = super(AddToDoItemView, self).get_form(form_class)
+        form = super(EditToDo, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
         return form
 
-    '''
     #check to see if recur_freq has changed
-    def form_valid(self, form):
-        prev_recur_freq = self.object.recur_freq
-        self.object = form.save()
-        if (self.object.recur_freq != prev_recur_freq):
-            return redirect('todo_list:edit_recurrence', todo_item_id=self.object.id)
-        else:
-            self.object.save()
-            return redirect('todo_list:todo_list')
-    '''
+
+
 
     
 def delete_todo(request, todo_item_id):
@@ -91,7 +84,6 @@ def delete_todo(request, todo_item_id):
 #function create_recurrences
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
-
     #if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date #get end_recur_date from current obj
@@ -114,7 +106,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'WEEKLY'):
-            delta = end_date - due_date  # find the time differences
+            delta = end_date -  (due_date + relativedelta(days=+1)) # find the time differences
             delta_day = delta.days
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
@@ -165,21 +157,19 @@ def create_recurrences(request, todo_item_id):
                 )
 
     return redirect('todo_list:todo_list')
+
 '''
-def edit_recurrence(request, todo_item_id):
+def edit_recurrences(request, todo_item_id, prev_recur):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
-    if ( todo_item.recur_freq == 'NEVER'):
-        #delete all future events if applicable
-        all_todo = ToDoItem.objects.filter( title__startswith = todo_item.title,
-                                 description__startswith = todo_item.description,
-                                 end_recur_date__contains = todo_item.end_recur_date,
-                                 recur_freq__startswith = todo_item.recur_freq
-                                 )
-        future_todo = all_todo.objects.filter(date__range=[todo_item.duedate, todo_item.end_recur_date])
-        print(future_todo)
-        for i in range( 1, len(future_todo)):
-            future_todo[i].delete()
+    if (todo_item.recur_freq == 'NEVER' ):
+        future_tasks = ToDoItem.objects.filter(title=todo_item.title)
+        #print(future_tasks)
+        for task in future_tasks:
+            if ((task.duedate - todo_item.duedate).days > 0 ):
+                task.recur_freq = 'NEVER'
+    return redirect('todo_list:todo_list')
 '''
+
 
 # function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):

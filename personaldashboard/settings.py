@@ -37,6 +37,7 @@ BOOTSTRAP4 = {
 
 INSTALLED_APPS = [
     'bootstrap4',
+    'tempus_dominus',
     'todo.apps.TodoConfig',
     'django.contrib.admin',
     'django.contrib.sites',
