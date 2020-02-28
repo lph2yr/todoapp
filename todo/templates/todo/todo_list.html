@@ -36,12 +36,12 @@
                 data-target="#collapse{{forloop.counter}}"
               >
               <li class="list-group-item">
-                {% if todo_item.priority == "LO" %}
-                <div class="card-header bg-light" id="header{{forloop.counter}}">
-                {% elif todo_item.priority == "MD" %}
+                {% if todo_item.priority == "HI" and not todo_item.completed %}
+                <div class="card-header bg-danger" id="header{{forloop.counter}}">
+                {% elif todo_item.priority == "MD" and not todo_item.completed %}
                 <div class="card-header bg-warning" id="header{{forloop.counter}}">
                 {% else %}
-                <div class="card-header bg-danger" id="header{{forloop.counter}}">
+                <div class="card-header bg-light" id="header{{forloop.counter}}">
                 {% endif %}
                 
                 <p class="d-flex justify-content-start">

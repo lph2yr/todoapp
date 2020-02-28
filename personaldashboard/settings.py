@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
 import os
-#import dj-database-url
+# import dj-database-url
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -32,7 +32,7 @@ ALLOWED_HOSTS = ['*']
 
 # Application definition
 BOOTSTRAP4 = {
-    'include_jquery' : True,
+    'include_jquery': True,
 }
 
 INSTALLED_APPS = [
@@ -90,7 +90,7 @@ WSGI_APPLICATION = 'personaldashboard.wsgi.application'
 
 # https://medium.com/agatha-codes/9-straightforward-steps-for-deploying-your-django-app-with-heroku-82b952652fb4
 #db_from_env = dj_database_url.config()
-#DATABASES[‘default’].update(db_from_env)
+# DATABASES[‘default’].update(db_from_env)
 
 DATABASES = {
     'default': {
@@ -142,7 +142,7 @@ STATIC_URL = '/static/'
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of 'allauth'
     'django.contrib.auth.backends.ModelBackend',
-    
+
     # all-auth specific authentication methods such as login by e-mail
     'allauth.account.auth_backends.AuthenticationBackend',
 )
@@ -167,9 +167,9 @@ SITE_ID = 2
 
 LOGIN_REDIRECT_URL = '/'
 
-ACCOUNT_LOGOUT_ON_GET= True
+ACCOUNT_LOGOUT_ON_GET = True
 
-ACCOUNT_LOGOUT_REDIRECT_URL ="/login"
+ACCOUNT_LOGOUT_REDIRECT_URL = "/login"
 
 try:
     # Configure Django App for Heroku.

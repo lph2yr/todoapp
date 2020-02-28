@@ -7,7 +7,6 @@ from django.urls import reverse
 from .forms import EditToDoForm
 
 
-# Create your tests here.
 
 def create_todo(new_title, new_description, new_location, new_date_created = timezone.now(), new_duedate = timezone.now(), new_priority = 'LOW', new_completed = False, new_recur_freq = 'NEVER', new_end_recur_date = timezone.now()):
     return ToDoItem.objects.create(
@@ -30,13 +29,18 @@ class ToDoItemModelTests(TestCase):
        returns True if the duedate is the same as currentdate time
         """
         now = timezone.now()
+<<<<<<< HEAD
         #create a new obj
+=======
+        now = now.replace(tzinfo=None)  # remove timezone info
+        # create a new obj
+>>>>>>> 738fbec96513d1ef3950e67c057250d61a0854e2
         todo = ToDoItem(
-            title = "Test case 1",
-            description = "Testing is_today_duedate",
-            location = "",
-            recur_freq = "NEVER",
-            duedate = parse_datetime("2020-02-23 09:00")
+            title="Test case 1",
+            description="Testing is_today_duedate",
+            location="",
+            recur_freq="NEVER",
+            duedate=parse_datetime("2020-02-23 09:00")
         )
 
         day_dif = todo.is_today_duedate()
