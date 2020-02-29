@@ -188,3 +188,13 @@ def completeToDo(request, todo_item_id):
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
+
+
+class DayView(generic.ListView):
+    template_name = 'todo/day.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        #https://stackoverflow.com/questions/4668619/how-do-i-filter-query-objects-by-date-range-in-django used for filter
+        return ToDoItem.objects.order_by('duedate').filter(duedate__gte=datetime.date(2020, 3, 5),
+                                duedate__lte=datetime.date(2020, 3, 6))
