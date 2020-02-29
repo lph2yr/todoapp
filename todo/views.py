@@ -72,6 +72,7 @@ class EditToDo(UpdateView):
         return form
 
     #check to see if recur_freq has changed
+    #https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
 
 
 
