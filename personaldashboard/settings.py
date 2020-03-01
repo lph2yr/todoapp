@@ -171,6 +171,13 @@ ACCOUNT_LOGOUT_ON_GET = True
 
 ACCOUNT_LOGOUT_REDIRECT_URL = "/login"
 
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_HOST_USER = 'personaldashboard.bogosorters@gmail.com'
+EMAIL_HOST_PASSWORD = 'bogosorters'
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+
 try:
     # Configure Django App for Heroku.
     import django_heroku
