@@ -57,6 +57,10 @@ class ToDoItem(models.Model):
         default=LOW,
     )
 
+    #Whether or not to send an email notification for a To-Do
+    #If true, default send 1 hour before due
+    notify = models.BooleanField(default=False)
+
     tracker = FieldTracker() #track changes to fields
 
     def __str__(self):
