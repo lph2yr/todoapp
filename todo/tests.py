@@ -29,12 +29,8 @@ class ToDoItemModelTests(TestCase):
        returns True if the duedate is the same as currentdate time
         """
         now = timezone.now()
-<<<<<<< HEAD
-        #create a new obj
-=======
         now = now.replace(tzinfo=None)  # remove timezone info
         # create a new obj
->>>>>>> 738fbec96513d1ef3950e67c057250d61a0854e2
         todo = ToDoItem(
             title="Test case 1",
             description="Testing is_today_duedate",

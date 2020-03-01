@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import EditToDoForm, AddToDoForm
+from .forms import EditToDoForm, AddToDoForm, DayForm
 from .models import ToDoItem
 from django.views.generic.edit import CreateView, UpdateView
+from django.views.generic.dates import DayArchiveView
 from django.utils import timezone
 import datetime
 from dateutil.relativedelta import relativedelta
@@ -190,11 +191,19 @@ def completeToDo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-class DayView(generic.ListView):
-    template_name = 'todo/day.html'
+class DayView(generic.FormView):
+    template_name = 'todo/day_form.html'
     context_object_name = 'todo_list'
+    form_class = DayForm
 
     def get_queryset(self):
         #https://stackoverflow.com/questions/4668619/how-do-i-filter-query-objects-by-date-range-in-django used for filter
-        return ToDoItem.objects.order_by('duedate').filter(duedate__gte=datetime.date(2020, 3, 5),
-                                duedate__lte=datetime.date(2020, 3, 6))
+        return ToDoItem.objects.all().order_by('duedate')
+
+#https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
+class SpecificDayView(generic.DayArchiveView):
+    template_name = 'todoitem_archive_day.html'
+    queryset = ToDoItem.objects.all()
+    date_field = "duedate"
+    allow_future = True
+    allow_empty = True

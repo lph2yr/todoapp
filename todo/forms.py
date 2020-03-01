@@ -47,3 +47,32 @@ class AddToDoForm(forms.ModelForm):
                                                  ),
                   }
 
+class DayForm(forms.Form):
+    JAN = 'Jan'
+    FEB = 'Feb'
+    MAR = 'Mar'
+    APR = 'Apr'
+    MAY = 'May'
+    JUN = 'Jun'
+    JUL = 'Jul'
+    AUG = 'Aug'
+    SEP = 'Sep'
+    OCT = 'Oct'
+    NOV = 'Nov'
+    DEC = 'Dec'
+
+    MONTH_CHOICES = [
+        (JAN, 'Jan'),
+        (FEB, 'Feb'),
+        (MAR, 'Mar'),
+        (APR, 'Apr'),
+        (MAY, 'May'),
+        (JUN, 'Jun'),
+        (JUL, 'Jul'),
+        (AUG, 'Aug'),
+        (SEP, 'Sep'),
+        (OCT, 'Oct'),
+        (NOV, 'Nov'),
+        (DEC, 'Dec'),
+    ]
+    month = forms.ChoiceField(widget=forms.RadioSelect(choices = MONTH_CHOICES))
