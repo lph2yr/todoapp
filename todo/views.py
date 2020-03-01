@@ -199,11 +199,19 @@ class DayView(generic.FormView):
     def get_queryset(self):
         #https://stackoverflow.com/questions/4668619/how-do-i-filter-query-objects-by-date-range-in-django used for filter
         return ToDoItem.objects.all().order_by('duedate')
+    
+    def get_success_url(self):
+        specific_day_form = DayForm(request.POST)
+
+        return specific_day_form.cleaned_data['year'] + "/" + specific_day_form.cleaned_data['month'] + "/" + specific_day_form.cleaned_data['day'] + "/"
+
 
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.all()
+    queryset = ToDoItem.objects.all().order_by('duedate')
     date_field = "duedate"
+    ordering = 'duedate'
     allow_future = True
     allow_empty = True
+

@@ -75,4 +75,7 @@ class DayForm(forms.Form):
         (NOV, 'Nov'),
         (DEC, 'Dec'),
     ]
-    month = forms.ChoiceField(widget=forms.RadioSelect(choices = MONTH_CHOICES))
+    month = forms.ChoiceField(choices = MONTH_CHOICES)
+    day = forms.CharField()
+    year = forms.CharField()
+    success_url = '<year>/month/day'

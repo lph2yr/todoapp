@@ -15,11 +15,12 @@
   <h4>See all todo items on a certain day</h4>
 </div>
 
-<form action="" method="post">
+
+<form action="{{year}}/{{month}}/{{day}}/" method="post">
   {% csrf_token %}
   <div class="d-flex justify-content-center">
     <table>
-      {{ form.as_table }}
+      {{ form.as_p }}
     </table>
   </div>
 
