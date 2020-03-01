@@ -37,6 +37,7 @@ class CompletedView(generic.ListView):
 
 
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
+#allows adding new obj to database
 class AddToDoItemView(CreateView):
     model = ToDoItem
     template_name = "todo/todoitem_form.html"
@@ -58,50 +59,18 @@ class AddToDoItemView(CreateView):
             self.object.save()
             return redirect('todo_list:todo_list')
 
-
-class EditToDo(UpdateView):
-    model = ToDoItem
-    template_name = "todo/edit_todoitem_form.html"
-    form_class = EditToDoForm
-
-    # set title and duedate fields to be required
-    def get_form(self, form_class=None):
-        form = super(EditToDo, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
-        return form
-
-    #check to see if recur_freq has changed
-    #https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
-
-
-
-    
-def delete_todo(request, todo_item_id):
-    item = ToDoItem.objects.get(pk=todo_item_id)
-    item.delete()
-    return redirect('todo_list:todo_list')
-
-
+#function create recurrence of newly added objects based on recur_freq and end_recur_date fields
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
     #if recur_freq is not NEVER
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
-
-    # TODO: if recur_freq is changed to NEVER for a current item that's been set as repeated
-
     # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
-        # find current_time --> may change to date_created!!!!!!!
-        current_time = timezone.now()
-        due_date = todo_item.duedate
+        due_date = todo_item.duedate #get current duedate
         if (todo_item.recur_freq == 'DAILY'):
             delta = end_date - (due_date + relativedelta(days=+1)) # find the time differences
-            delta_day = delta.days + 1 #get the day dif of delta
-            delta = end_date - due_date  # find the time differences
-            delta_day = delta.days + 1  # get the day dif of delta
-            # loop thro delta_dif to create and save that many objects
+            delta_day = delta.days + 1
             for i in range(1, delta_day+1):
                 ToDoItem.objects.create(
                     title=todo_item.title,
@@ -115,7 +84,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'WEEKLY'):
-            delta = end_date -  (due_date + relativedelta(days=+1)) # find the time differences
+            delta = end_date - due_date # find the time differences
             delta_day = delta.days
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
@@ -168,17 +137,46 @@ def create_recurrences(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-'''
-def edit_recurrences(request, todo_item_id, prev_recur):
+#view allows update/edit of object in database
+class EditToDo(UpdateView):
+    model = ToDoItem
+    template_name = "todo/edit_todoitem_form.html"
+    form_class = EditToDoForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditToDo, self).get_form(form_class)
+        form.fields['title'].required = True
+        form.fields['duedate'].required = True
+        return form
+
+    #override form_valid to check to see if recur_freq has changed
+    #https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
+    def form_valid(self, form):
+        has_freq_changed = self.object.tracker.has_changed('recur_freq') #returns true if recur_freq field has changed
+        self.object = form.save() #save object to get new value of recur_freq
+        if ( has_freq_changed ): #if True find recur_freq field has changed
+            return redirect('todo_list:edit_recurrences', todo_item_id=self.object.id) #redirect to function edit_recurrences
+        else:
+            self.object.save()
+            return redirect('todo_list:todo_list')
+
+#function checks if user has edited recur_freq field and make according changes to all future tasks
+def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
-    if (todo_item.recur_freq == 'NEVER' ):
-        future_tasks = ToDoItem.objects.filter(title=todo_item.title)
-        #print(future_tasks)
-        for task in future_tasks:
-            if ((task.duedate - todo_item.duedate).days > 0 ):
-                task.recur_freq = 'NEVER'
+    # for all changes, delete all future instances and remake others
+    #https://docs.djangoproject.com/en/2.0/ref/models/querysets/
+    ToDoItem.objects.filter(title__startswith = todo_item.title, #filter by title
+                            duedate__gt=todo_item.duedate, #filter by duedate >= todo_item.title
+                            ).delete()
+    #redirect to create_recurrences to make new future instances
+    return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
+
+
+def delete_todo(request, todo_item_id):
+    item = ToDoItem.objects.get(pk=todo_item_id)
+    item.delete()
     return redirect('todo_list:todo_list')
-'''
 
 
 # function changes a todo from incomplete to complete (completed = False -> True)

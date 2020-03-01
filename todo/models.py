@@ -1,6 +1,7 @@
 from django.db import models
 from django.db.models import Model
 from django.utils import timezone
+from model_utils import FieldTracker
 
 # Create your models here.
 
@@ -8,7 +9,7 @@ class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=timezone.now(), blank=True)
-    date_created = models.DateTimeField(default=timezone.now()) #just added
+    #date_created = models.DateTimeField(default=timezone.now()) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
@@ -55,6 +56,8 @@ class ToDoItem(models.Model):
         choices=PRIORITY_CHOICES,
         default=LOW,
     )
+
+    tracker = FieldTracker() #track changes to fields
 
     def __str__(self):
     	return self.title + " " + self.duedate.strftime('%Y-%m-%d')
