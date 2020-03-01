@@ -6,8 +6,6 @@ from django.utils.dateparse import parse_datetime
 from django.urls import reverse
 from .forms import EditToDoForm
 
-
-
 def create_todo(new_title, new_description, new_location, new_date_created = timezone.now(), new_duedate = timezone.now(), new_priority = 'LOW', new_completed = False, new_recur_freq = 'NEVER', new_end_recur_date = timezone.now()):
     return ToDoItem.objects.create(
         title = new_title,
@@ -21,9 +19,7 @@ def create_todo(new_title, new_description, new_location, new_date_created = tim
         date_created = new_date_created
     )
 
-
 class ToDoItemModelTests(TestCase):
-
     def test_same_is_today_duedate(self):
         """
        returns True if the duedate is the same as currentdate time
@@ -43,10 +39,7 @@ class ToDoItemModelTests(TestCase):
         day_dif = todo.is_today_duedate()
         self.assertIs(day_dif, False)
 
-
 #write tests for day view: make sure that only tasks that are due on a certain day are shown
-
-
 class CreateRecurrences(TestCase):
     def setUp(self):
         create_todo(
@@ -67,6 +60,7 @@ class CreateRecurrences(TestCase):
             new_description="Blank title",  # req
             new_location=""  # req
         )
+
     def is_correct_template_used(self):
         todo = ToDoItem.objects.get(title="Daily test")
         pk = todo.id
