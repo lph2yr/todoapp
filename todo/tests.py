@@ -7,7 +7,9 @@ from django.urls import reverse
 from .forms import EditToDoForm
 
 
-def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(), new_duedate=timezone.now(), new_priority='LO', new_completed=False, new_recur_freq='NEVER', new_end_recur_date=timezone.now()):
+def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(),
+                new_duedate=timezone.now(), new_priority='LO', new_completed=False,
+                new_recur_freq='NEVER', new_end_recur_date=timezone.now()):
     return ToDoItem.objects.create(
         title=new_title,
         description=new_description,
@@ -22,7 +24,6 @@ def create_todo(new_title, new_description, new_location, new_date_created=timez
 
 
 class ToDoItemModelTests(TestCase):
-
     def test_same_is_today_duedate(self):
         """
        returns True if the duedate is the same as currentdate time
