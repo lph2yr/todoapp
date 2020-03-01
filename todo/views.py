@@ -154,9 +154,10 @@ class EditToDo(UpdateView):
     #https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
     def form_valid(self, form):
         has_freq_changed = self.object.tracker.has_changed('recur_freq') #returns true if recur_freq field has changed
+        has_end_recur_date_changed = self.object.tracker.has_changed('end_recur_date') #returns true if end_recur_date has changed
         self.object = form.save() #save object to get new value of recur_freq
-        if ( has_freq_changed ): #if True find recur_freq field has changed
-            return redirect('todo_list:edit_recurrences', todo_item_id=self.object.id) #redirect to function edit_recurrences
+        if ( has_freq_changed or has_end_recur_date_changed ): #if either is True, edit recurrences
+            return redirect('todo_list:edit_recurrences', todo_item_id=self.object.id)
         else:
             self.object.save()
             return redirect('todo_list:todo_list')
