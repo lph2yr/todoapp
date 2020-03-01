@@ -76,6 +76,8 @@ class DayForm(forms.Form):
         (DEC, 'Dec'),
     ]
     month = forms.ChoiceField(choices = MONTH_CHOICES)
-    day = forms.CharField()
-    year = forms.CharField()
-    success_url = '<year>/month/day'
+    day = forms.CharField(max_length = 2)
+    year = forms.CharField(max_length = 4)
+    def __str__(self):
+      return "/day/" + self.cleaned_data['year'] + "/" + self.cleaned_data['month'] + "/" + self.cleaned_data['day']
+    #success_url = '<year>/<month>/<day>'
