@@ -22,3 +22,7 @@ body {
   border: none;
   background: none;
 }
+
+.navbar {
+  background-color: aliceblue;
+}
