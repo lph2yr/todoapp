@@ -13,5 +13,5 @@ urlpatterns = [
     path('add_todo_item/<int:todo_item_id>/create_recurrences/', views.create_recurrences, name='create_recurrences'),
     path('day/', views.DayView.as_view(), name='day'),
     path('day/<int:year>/<str:month>/<int:day>/', views.SpecificDayView.as_view(), name='specific_day'),
-    #path('<int:pk>/edit_recurrence/', views.edit_recurrences, name='edit_recurrences' ),
+    path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
 ]

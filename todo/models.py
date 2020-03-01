@@ -1,14 +1,15 @@
 from django.db import models
 from django.db.models import Model
-from django.utils import timezone
+import django.utils
+from model_utils import FieldTracker
 
 # Create your models here.
 
 class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
-    duedate = models.DateTimeField(default=timezone.now(), blank=True)
-    date_created = models.DateTimeField(default=timezone.now()) #just added
+    duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
+    #date_created = models.DateTimeField(default=timezone.now()) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
 
@@ -35,7 +36,7 @@ class ToDoItem(models.Model):
         #every other week
 
 
-    end_recur_date = models.DateTimeField(default=timezone.now(), blank=True)
+    end_recur_date = models.DateTimeField(default=django.utils.timezone.now, blank=True)
     #end repeat date and time
     #end after a specific day
     #never
@@ -56,15 +57,17 @@ class ToDoItem(models.Model):
         default=LOW,
     )
 
+    tracker = FieldTracker() #track changes to fields
+
     def __str__(self):
     	return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
-        now = timezone.now()
+        now = django.utils.timezone.now
         return now > self.duedate.date()
 
     def is_today_duedate(self):
-        now = timezone.now().replace(tzinfo=None)
+        now = django.utils.timezone.now.replace(tzinfo=None)
         due = self.duedate.replace(tzinfo=None)
         delta = abs( now - due )
         day_dif = delta.days
