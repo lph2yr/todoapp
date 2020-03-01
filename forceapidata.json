@@ -1,27 +1,54 @@
+
 [
+
     {
+
         "model": "sites.site",
+
         "pk": 1,
+
         "fields": {
+
             "domain": "127.0.0.1:8000",
+
             "name": "localhost"
+
         }
+
     },
 
 
+
+
+
 {
+
     "model": "socialaccount.socialapp",
+
     "pk": 1,
+
     "fields": {
+
         "provider": "google",
+
         "name": "Google",
+
         "client_id": "704056378193-8jfog42qh56g1ped1ft18rr75ssokccj.apps.googleusercontent.com",
+
         "secret": "yfEUj231OhFVGF3NYuXPKGuR",
+
         "key": "",
+
         "sites": [
+
             1
+
         ]
+
     }
+
 }
+
+
 
 ]
