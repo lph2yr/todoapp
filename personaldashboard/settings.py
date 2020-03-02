@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'background_task',
 
 ]
 
@@ -179,13 +180,6 @@ EMAIL_HOST_USER = 'personaldashboard.bogosorters@gmail.com'
 EMAIL_HOST_PASSWORD = 'bogosorters'
 EMAIL_USE_TLS = True
 EMAIL_USE_SSL = False
-
-# Information for Celery
-
-CELERY_BROKER_URL = 'redis://h:p8f3b28b80eba6beaf346be63c9c58fdb0f7f526865785444ca5296605ce15dbb@ec2-34-225-112-135.compute-1.amazonaws.com:11469'
-
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
 
 try:
     # Configure Django App for Heroku.
