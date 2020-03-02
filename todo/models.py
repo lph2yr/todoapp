@@ -67,7 +67,7 @@ class ToDoItem(models.Model):
         return now > self.duedate.date()
 
     def is_today_duedate(self):
-        now = django.utils.timezone.now.replace(tzinfo=None)
+        now = django.utils.timezone.now().replace(tzinfo=None)
         due = self.duedate.replace(tzinfo=None)
         delta = abs( now - due )
         day_dif = delta.days

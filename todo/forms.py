@@ -78,6 +78,7 @@ class DayForm(forms.Form):
     month = forms.ChoiceField(choices = MONTH_CHOICES)
     day = forms.CharField(max_length = 2)
     year = forms.CharField(max_length = 4)
+    #returns the custom url for the redirect
     def __str__(self):
-      return "/day/" + self.cleaned_data['year'] + "/" + self.cleaned_data['month'] + "/" + self.cleaned_data['day']
-    #success_url = '<year>/<month>/<day>'
+        #https://stackoverflow.com/questions/19901410/django-how-to-get-value-from-charfield-and-modelchoicefield
+        return "/day/" + self.cleaned_data['year'] + "/" + self.cleaned_data['month'] + "/" + self.cleaned_data['day']

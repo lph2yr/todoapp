@@ -18,7 +18,7 @@ class ToDoListView(generic.ListView):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now) / \
+            timediff = (item.duedate - timezone.now()) / \
                 datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
@@ -210,7 +210,7 @@ class DayView(generic.FormView):
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.all().order_by('duedate')
+    queryset = ToDoItem.objects.all().filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True

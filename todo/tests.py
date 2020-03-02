@@ -3,9 +3,9 @@ from .models import ToDoItem
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
-from django.urls import reverse
+from django.urls import reverse, resolve
 from .forms import EditToDoForm
-
+from .views import DayView, SpecificDayView
 
 def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(),
                 new_duedate=timezone.now(), new_priority='LO', new_completed=False,
@@ -93,3 +93,44 @@ class PriorityTest(TestCase):
     def test_check_priority(self):
         todo = ToDoItem.objects.get(title="priority test")
         self.assertEqual(todo.priority, "HI")
+
+
+class DayViewTest(TestCase):
+
+    def setUp(self):
+        create_todo(
+            new_title="March 5th todo", 
+            new_description="", 
+            new_location="", 
+            new_date_created=timezone.now(),
+            new_duedate=make_aware(parse_datetime("2020-03-05 14:00")), 
+            new_priority='LO', 
+            new_completed=False,
+            new_recur_freq='NEVER', 
+            new_end_recur_date=timezone.now())
+        
+        create_todo(
+            new_title="March 5th todo completed", 
+            new_description="", 
+            new_location="", 
+            new_date_created=timezone.now(),
+            new_duedate=make_aware(parse_datetime("2020-03-05 14:00")), 
+            new_priority='LO', 
+            new_completed=True,
+            new_recur_freq='NEVER', 
+            new_end_recur_date=timezone.now())
+
+        create_todo(
+            new_title="March 17th todo", 
+            new_description="", 
+            new_location="", 
+            new_date_created=timezone.now(),
+            new_duedate=make_aware(parse_datetime("2020-03-17 14:00")), 
+            new_priority='LO', 
+            new_completed=False,
+            new_recur_freq='NEVER', 
+            new_end_recur_date=timezone.now())
+
+    def test_check_no_todos(self):
+        #page = resolve('/day/2020/may/4')
+        self.assertEqual(True, True)
