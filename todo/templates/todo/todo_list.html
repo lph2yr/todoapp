@@ -37,9 +37,9 @@
               >
               <li class="list-group-item">
                 {% if todo_item.priority == "HI" and not todo_item.completed %}
-                <div class="card-header border border-danger" id="header{{forloop.counter}}">
+                <div class="card-header border border-danger thick-border" id="header{{forloop.counter}}">
                 {% elif todo_item.priority == "MD" and not todo_item.completed %}
-                <div class="card-header border border-warning" id="header{{forloop.counter}}">
+                <div class="card-header border border-warning thick-border" id="header{{forloop.counter}}">
                 {% else %}
                 <div class="card-header border bg-light" id="header{{forloop.counter}}">
                 {% endif %}
