@@ -84,8 +84,8 @@
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
-                          href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                          >Complete Task</a
+                          class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                          >✅ Complete Task</a
                         ></small>
                         {% else %}
                         <small><a
@@ -94,16 +94,15 @@
                         {% endif %}
                       </div>
                       <div class="ml-auto">
-                        <small class="m-1"
+                        <small class="m-2"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                            >Edit</a
+                            >🖊 Edit</a
                           ></small
                         >
-                        <small>
-                          <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
-                            Delete
-                          </a>
-                        </small>
+                        <small><a 
+                          class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                          >🗑 Delete</a
+                        ></small>
                       </div>
                     </div>
                   </div>
