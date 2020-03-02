@@ -6,7 +6,8 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 import datetime
 from dateutil.relativedelta import relativedelta
-
+from background_task import background
+from django.core.mail import send_mail
 
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
@@ -16,7 +17,7 @@ class ToDoListView(generic.ListView):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now) / \
+            timediff = (item.duedate - timezone.now()) / \
                 datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
@@ -25,6 +26,7 @@ class ToDoListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
+        check_notifications(repeat=10)
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
 #CANNOT CREATE A DIFFERENT PRIORITY
 
@@ -61,8 +63,6 @@ class AddToDoItemView(CreateView):
 
 #function create recurrence of newly added objects based on recur_freq and end_recur_date fields
 def create_recurrences(request, todo_item_id):
-    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
-    #if recur_freq is not NEVER
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
@@ -180,11 +180,47 @@ def delete_todo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-# function changes a todo from incomplete to complete (completed = False -> True)
-def completeToDo(request, todo_item_id):
+# function flips the completion status of a todo (T -> F ; F -> T)
+def complete_todo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
+
+# function flips the notify status of a todo (T -> F ; F -> T)
+def notify_todo(request, todo_item_id):
+    todo_item = ToDoItem.objects.get(id=todo_item_id)
+    todo_item.notify = not todo_item.notify
+    todo_item.save()
+
+    return redirect('todo_list:todo_list')
+
+#background process that runs every 30 minutes to check if any notifications need to be sent
+#@background(schedule=1800)
+#test which runs every 10 seconds
+@background(schedule=10)
+def check_notifications():
+    todos_notify = ToDoItem.objects.filter(notify=True)
+    if todos_notify:
+        for todo in todos_notify:
+            timediff = (todo.duedate - timezone.now()) / \
+                datetime.timedelta(hours=1)
+            if timediff <= 2 and timediff >= 1:
+                notify_time = todo.duedate + relativedelta(hours=-1)
+                notify_email(todo.id, schedule=notify_time)
+
+@background
+def notify_email(todo_item_id):
+    todo_notify = ToDoItem.objects.get(id=todo_item_id)
+    send_mail(
+        todo_notify.title + ' due soon!',
+        'Your todo item is due soon!' + 
+        '\n Title: ' + todo_notify.title + 
+        '\n Description: \t' + todo_notify.description +
+        '\n Due: \t' + todo_notify.duedate.strftime("%m/%d/%Y, %H:%M:%S"),
+        'personaldashboard.bogosorters@gmail.com',
+        ['10myemail30@gmail.com'],
+    )
+    

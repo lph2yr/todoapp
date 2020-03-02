@@ -44,13 +44,20 @@
                 <div class="card-header bg-light" id="header{{forloop.counter}}">
                 {% endif %}
                 
-                <p class="d-flex justify-content-start">
-                  {% if not todo_item.completed %}
-                    {{todo_item.title}}
+                <div class="d-flex justify-content-between">
+                  <p>
+                    {% if not todo_item.completed %}
+                      {{todo_item.title}}
+                    {% else %}
+                      <del>{{todo_item.title}}</del>
+                    {% endif %}
+                  </p>
+                  {% if not todo_item.notify %}
+                    <div></div>
                   {% else %}
-                    <del>{{todo_item.title}}</del>
+                    <span class="oi oi-bell"></span>
                   {% endif %}
-                </p>
+                </div>
 
                 <div class="d-flex justify-content-around mt-3">
                   {% if todo_item.completed %}
@@ -80,7 +87,7 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                     </ul>
-                    <div class="row m-sm-3">
+                    <div class="row m-sm-3 d-flex justify-content-between">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
@@ -93,17 +100,30 @@
                         >Undo completion</a></small>
                         {% endif %}
                       </div>
-                      <div class="ml-auto">
-                        <small class="m-1"
-                          ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                            >Edit</a
-                          ></small
-                        >
-                        <small>
+                      <div class="d-flex justify-content-between">
+                        <small class="mx-2">
+                          <a href="{% url 'todo_list:detail' todo_item.id %}">
+                            Edit
+                          </a>
+                        </small>
+                        <small class="mx-2">
                           <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
                             Delete
                           </a>
                         </small>
+                        {% if not todo_item.notify %}
+                          <small class="mx-2">
+                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
+                              Turn on Notifications
+                            </a>
+                          </small>
+                        {% else %}
+                          <small class="mx-2">
+                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
+                              Turn off Notifications
+                            </a>
+                          </small>
+                        {% endif %}
                       </div>
                     </div>
                   </div>

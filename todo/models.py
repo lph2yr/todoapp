@@ -12,6 +12,9 @@ class ToDoItem(models.Model):
     #date_created = models.DateTimeField(default=timezone.now()) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
+    #Whether or not to send an email notification for a To-Do
+    #If true, default send 1 hour before due
+    notify = models.BooleanField(default=False)
 
     #recurrence freq choices
     NEVER = 'NEVER'
@@ -56,10 +59,6 @@ class ToDoItem(models.Model):
         choices=PRIORITY_CHOICES,
         default=LOW,
     )
-
-    #Whether or not to send an email notification for a To-Do
-    #If true, default send 1 hour before due
-    notify = models.BooleanField(default=False)
 
     tracker = FieldTracker() #track changes to fields
 
