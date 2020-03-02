@@ -16,13 +16,13 @@ class EditToDoForm(forms.ModelForm):
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},
                                                  options={ 'useCurrent': True,
-                                                           'collapse': False,}
+                                                           'collapse': True,}
                                                  ),
                    'end_recur_date': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},
                                                  options={ 'useCurrent': True,
-                                                           'collapse': False,}
+                                                           'collapse': True,}
                                                  ),
                   }
 
@@ -37,13 +37,13 @@ class AddToDoForm(forms.ModelForm):
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},
                                                  options={ 'useCurrent': True,
-                                                           'collapse': False,}
+                                                           'collapse': True,}
                                                  ),
                    'end_recur_date': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},
                                                  options={ 'useCurrent': True,
-                                                           'collapse': False,}
+                                                           'collapse': True,}
                                                  ),
                   }
 
