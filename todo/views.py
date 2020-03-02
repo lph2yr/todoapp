@@ -16,7 +16,7 @@ class ToDoListView(generic.ListView):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now) / \
+            timediff = (item.duedate - timezone.now()) / \
                 datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
@@ -26,7 +26,8 @@ class ToDoListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
-#CANNOT CREATE A DIFFERENT PRIORITY
+# CANNOT CREATE A DIFFERENT PRIORITY
+
 
 class CompletedView(generic.ListView):
     template_name = 'todo/todo_list.html'
@@ -37,13 +38,13 @@ class CompletedView(generic.ListView):
 
 
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
-#allows adding new obj to database
+# allows adding new obj to database
 class AddToDoItemView(CreateView):
     model = ToDoItem
     template_name = "todo/todoitem_form.html"
     form_class = AddToDoForm
 
-    #set title and duedate fields to be required
+    # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(AddToDoItemView, self).get_form(form_class)
         form.fields['title'].required = True
@@ -59,17 +60,20 @@ class AddToDoItemView(CreateView):
             self.object.save()
             return redirect('todo_list:todo_list')
 
-#function create recurrence of newly added objects based on recur_freq and end_recur_date fields
+# function create recurrence of newly added objects based on recur_freq and end_recur_date fields
+
+
 def create_recurrences(request, todo_item_id):
-    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id) #get obj
-    #if recur_freq is not NEVER
+    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
+    # if recur_freq is not NEVER
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
-        due_date = todo_item.duedate #get current duedate
+        due_date = todo_item.duedate  # get current duedate
         if (todo_item.recur_freq == 'DAILY'):
-            delta = end_date - (due_date + relativedelta(days=+1)) # find the time differences
+            # find the time differences
+            delta = end_date - (due_date + relativedelta(days=+1))
             delta_day = delta.days + 1
             for i in range(1, delta_day+1):
                 ToDoItem.objects.create(
@@ -84,7 +88,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'WEEKLY'):
-            delta = end_date - due_date # find the time differences
+            delta = end_date - due_date  # find the time differences
             delta_day = delta.days
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
@@ -137,7 +141,9 @@ def create_recurrences(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-#view allows update/edit of object in database
+# view allows update/edit of object in database
+
+
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
@@ -150,27 +156,31 @@ class EditToDo(UpdateView):
         form.fields['duedate'].required = True
         return form
 
-    #override form_valid to check to see if recur_freq has changed
-    #https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
+    # override form_valid to check to see if recur_freq has changed
+    # https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
     def form_valid(self, form):
-        has_freq_changed = self.object.tracker.has_changed('recur_freq') #returns true if recur_freq field has changed
-        has_end_recur_date_changed = self.object.tracker.has_changed('end_recur_date') #returns true if end_recur_date has changed
-        self.object = form.save() #save object to get new value of recur_freq
-        if ( has_freq_changed or has_end_recur_date_changed ): #if either is True, edit recurrences
+        has_freq_changed = self.object.tracker.has_changed(
+            'recur_freq')  # returns true if recur_freq field has changed
+        has_end_recur_date_changed = self.object.tracker.has_changed(
+            'end_recur_date')  # returns true if end_recur_date has changed
+        self.object = form.save()  # save object to get new value of recur_freq
+        if (has_freq_changed or has_end_recur_date_changed):  # if either is True, edit recurrences
             return redirect('todo_list:edit_recurrences', todo_item_id=self.object.id)
         else:
             self.object.save()
             return redirect('todo_list:todo_list')
 
-#function checks if user has edited recur_freq field and make according changes to all future tasks
+# function checks if user has edited recur_freq field and make according changes to all future tasks
+
+
 def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # for all changes, delete all future instances and remake others
-    #https://docs.djangoproject.com/en/2.0/ref/models/querysets/
-    ToDoItem.objects.filter(title__startswith = todo_item.title, #filter by title
-                            duedate__gt=todo_item.duedate, #filter by duedate >= todo_item.title
+    # https://docs.djangoproject.com/en/2.0/ref/models/querysets/
+    ToDoItem.objects.filter(title__startswith=todo_item.title,  # filter by title
+                            duedate__gt=todo_item.duedate,  # filter by duedate >= todo_item.title
                             ).delete()
-    #redirect to create_recurrences to make new future instances
+    # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
 

@@ -1,4 +1,4 @@
-from django.test import TestCase
+from django.test import TestCase, Client
 from .models import ToDoItem
 from django.utils import timezone
 from django.utils.timezone import make_aware
@@ -93,3 +93,13 @@ class PriorityTest(TestCase):
     def test_check_priority(self):
         todo = ToDoItem.objects.get(title="priority test")
         self.assertEqual(todo.priority, "HI")
+
+
+class TodoListViewsTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    def test_todo_list_view(self):
+        response = client.get(reverse('todo_list:todo_list'))
+        self.assertEqual(response.status_code, 200)
+        # this view doesn't have a context object...it only has context_data
