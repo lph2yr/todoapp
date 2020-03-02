@@ -23,6 +23,24 @@ body {
   background: none;
 }
 
+/* https://github.com/twbs/bootstrap/issues/21943#issuecomment-591427539 */
+/* make the width 50% in medium and large screens */
+@media (min-width: 768px) {
+  .w-md-50 {
+    width: 50% !important;
+  }
+}
+
+.card-header {
+  border-width: 2px !important;
+}
+
+.card-description {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 .navbar {
   background-color: aliceblue;
 }

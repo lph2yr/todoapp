@@ -24,11 +24,11 @@
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if todo_list %}
-      <ul class="w-50 list-group">
-        <div id="accordion">
+      <!-- <ul class="list-group"> -->
+        <div id="accordion" class="w-md-50">
           <!-- accordion is the template for collapsing bars -->
           {% for todo_item in todo_list %}
-            <div class="card">
+            <div class="card m-3">
               <button
                 class="btn collapsed"
                 id="cardButton"
@@ -64,7 +64,7 @@
                 <div id="collapse{{forloop.counter}}" class="collapse">
                   <!--body of the accordion card -->
                   <div class="card-body">
-                    <ul style="list-style-type:none">
+                    <ul class="card-description">
                       {% if todo_item.description %}
                       <li>
                         <strong>Description:</strong> {{ todo_item.description }}
@@ -80,7 +80,7 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                     </ul>
-                    <div class="row m-sm-3">
+                    <div class="row m-1 mt-3">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
@@ -111,7 +111,7 @@
             </div>
           {% endfor %}
         </div>
-      </ul>
+      <!-- </ul> -->
       {% else %}
       <p>You have no to-do items!</p>
       {% endif %}
