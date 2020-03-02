@@ -16,7 +16,7 @@ class ToDoListView(generic.ListView):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now()) / \
+            timediff = (item.duedate - timezone.now) / \
                 datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
