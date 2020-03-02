@@ -85,7 +85,7 @@
                         {% if not todo_item.completed %}
                         <small><a
                           href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                          >Complete Task</a
+                          >✅ Complete Task</a
                         ></small>
                         {% else %}
                         <small><a
@@ -96,12 +96,12 @@
                       <div class="ml-auto">
                         <small class="m-1"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                            >Edit</a
+                          >🖊 Edit</a
                           ></small
                         >
                         <small>
                           <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
-                            Delete
+                            🗑 Delete
                           </a>
                         </small>
                       </div>
