@@ -100,6 +100,6 @@ class TodoListViewsTest(TestCase):
         self.client = Client()
 
     def test_todo_list_view(self):
-        response = client.get(reverse('todo_list:todo_list'))
+        response = self.client.get(reverse('todo_list:todo_list'))
         self.assertEqual(response.status_code, 200)
         # this view doesn't have a context object...it only has context_data
