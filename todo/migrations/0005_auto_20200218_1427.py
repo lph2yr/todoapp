@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='todoitem',
             name='end_recur_date',
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
 
             preserve_default=False,
         ),
-        migrations.AddField(
+        migrations.AlterField(
             model_name='todoitem',
             name='recur_freq',
 
