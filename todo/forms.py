@@ -77,7 +77,7 @@ class DayForm(forms.Form):
     ]
     month = forms.ChoiceField(choices = MONTH_CHOICES)
     day = forms.CharField(max_length = 2)
-    year = forms.CharField(max_length = 4)
+    year = forms.CharField(max_length = 4) #add default to be current year 
     #returns the custom url for the redirect
     def __str__(self):
         #https://stackoverflow.com/questions/19901410/django-how-to-get-value-from-charfield-and-modelchoicefield
