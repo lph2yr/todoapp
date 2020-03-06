@@ -9,9 +9,9 @@ from tempus_dominus.widgets import DateTimePicker #https://pypi.org/project/djan
 class EditToDoForm(forms.ModelForm):
     class Meta:
         model = ToDoItem
-        fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority']
+        fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority', 'category']
         labels = { 'recur_freq': mark_safe('Repeat'), 'end_recur_date': mark_safe('End repeat'), 'duedate' : mark_safe('Due Date'),} #label and bold it
-        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 4}),
+        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 3}),
                   'duedate': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},
@@ -30,9 +30,9 @@ class EditToDoForm(forms.ModelForm):
 class AddToDoForm(forms.ModelForm):
     class Meta:
         model = ToDoItem
-        fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority']
+        fields = ['title', 'description', 'duedate', 'location', 'recur_freq','end_recur_date', 'priority', 'category']
         labels = { 'recur_freq': mark_safe('Repeat'), 'end_recur_date': mark_safe('End repeat'), 'duedate' : mark_safe('Due Date'),} #label and bold it
-        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 4}),
+        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 3}),
                   'duedate': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
                                                         'append': 'fa fa-calendar',
                                                         'icon_toggle': True,},

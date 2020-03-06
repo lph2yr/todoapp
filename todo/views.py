@@ -8,6 +8,15 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 
+#filter by categories
+    #academic:
+        #classes #new Foreign Key model? because must be inputted by user
+        #events: group meetings, ...
+    #non-academic
+        #social
+        #clubs
+        #job #foreign key too?
+
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
@@ -30,7 +39,7 @@ class ToDoListView(generic.ListView):
 
 
 class CompletedView(generic.ListView):
-    template_name = 'todo/todo_list.html'
+    template_name = 'todo/completed_list.html'
     context_object_name = 'todo_list'
 
     def get_queryset(self):
@@ -61,8 +70,6 @@ class AddToDoItemView(CreateView):
             return redirect('todo_list:todo_list')
 
 # function create recurrence of newly added objects based on recur_freq and end_recur_date fields
-
-
 def create_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # if recur_freq is not NEVER
@@ -83,7 +90,8 @@ def create_recurrences(request, todo_item_id):
                     duedate=todo_item.duedate + relativedelta(days=+i),
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
-                    priority=todo_item.priority
+                    priority=todo_item.priority,
+                    category = todo_item.category
                     # completed = default False
                 )
 
@@ -99,7 +107,8 @@ def create_recurrences(request, todo_item_id):
                     duedate=todo_item.duedate + relativedelta(weeks=+i),
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
-                    priority=todo_item.priority
+                    priority=todo_item.priority,
+                    category=todo_item.category
                     # completed = default False
                 )
 
@@ -121,7 +130,8 @@ def create_recurrences(request, todo_item_id):
                     duedate=todo_item.duedate + relativedelta(months=+i),
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
-                    priority=todo_item.priority
+                    priority=todo_item.priority,
+                    category=todo_item.category,
                     # completed = default False
                 )
         elif (todo_item.recur_freq == 'YEARLY'):
@@ -135,7 +145,8 @@ def create_recurrences(request, todo_item_id):
                     duedate=todo_item.duedate + relativedelta(years=+i),
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
-                    priority=todo_item.priority
+                    priority=todo_item.priority,
+                    category=todo_item.category,
                     # completed = default False
                 )
 
@@ -171,8 +182,6 @@ class EditToDo(UpdateView):
             return redirect('todo_list:todo_list')
 
 # function checks if user has edited recur_freq field and make according changes to all future tasks
-
-
 def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # for all changes, delete all future instances and remake others
@@ -182,6 +191,123 @@ def edit_recurrences(request, todo_item_id):
                             ).delete()
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
+
+class AcademicsListView(generic.ListView):
+    template_name = 'todo/academics_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='AC').order_by('duedate')
+
+#Extracurricular list view
+class ECListView(generic.ListView):
+    template_name = 'todo/ec_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='EC').order_by('duedate')
+
+
+class JobListView(generic.ListView):
+    template_name = 'todo/job_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='JB').order_by('duedate')
+
+class SocialListView(generic.ListView):
+    template_name = 'todo/social_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='SC').order_by('duedate')
+
+class PersonalListView(generic.ListView):
+    template_name = 'todo/personal_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='PS').order_by('duedate')
+
+class OtherListView(generic.ListView):
+    template_name = 'todo/other_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        for item in ToDoItem.objects.all():
+            timediff = (item.duedate - timezone.now()) / \
+                datetime.timedelta(days=1)
+            if timediff <= 1:
+                item.priority = 'HI'
+            elif timediff <= 2:
+                item.priority = 'MD'
+            else:
+                item.priority = 'LO'
+            item.save()
+        return ToDoItem.objects.filter(completed=False, category='OT').order_by('duedate')
+
 
 
 def delete_todo(request, todo_item_id):

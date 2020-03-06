@@ -47,15 +47,34 @@ class ToDoItem(models.Model):
     MEDIUM = 'MD'
     LOW = 'LO'
     PRIORITY_CHOICES = [
-        (HIGH, 'High'),
+        (LOW, 'Low'),
         (MEDIUM, 'Medium'),
-        (LOW, 'Low')
+        (HIGH, 'High')
     ]
     priority = models.CharField(
         max_length=2,
         choices=PRIORITY_CHOICES,
         default=LOW,
     )
+
+    #category choices
+    CATEGORIES = [
+        ('NN', 'None'),
+        ('AC', 'Academics'),
+        ('EC', 'Extracurriculars'),
+        ('JB', 'Job'),
+        ('SC', 'Social'),
+        ('PS', 'Personal'),
+        ('OT', 'Other')
+    ]
+    category = models.CharField(
+        max_length=2,
+        choices = CATEGORIES,
+        default='NN',
+        verbose_name='Category',
+    )
+
+    #tags???????????????????????????????
 
     tracker = FieldTracker() #track changes to fields
 
@@ -75,14 +94,10 @@ class ToDoItem(models.Model):
         return is_same
 
 '''
-ALGORITHM:
-User -> edit 
-Recur_freq -> list drop down --> choose --> update recur_freq field
-    end_date appears --> if don't provide end_date --> error message
-    if provide end_date --> change end_recur_date field
-        #never --> have it end in 2500
-        #after date --> change end_recur_date field
-        #after # occurrences --> count occurences
-    create object
-'''
+class Course(models.Model):
+    todo = models.ForeignKey(ToDoItem, on_delete=models.CASCADE)
+    title = models.CharField(max_length=30)
     
+    def __str__(self):
+        return self.title
+'''

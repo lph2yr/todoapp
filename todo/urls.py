@@ -12,4 +12,11 @@ urlpatterns = [
     path('delete_todo_item/<int:todo_item_id>/', views.delete_todo, name='delete_todo_item'),
     path('add_todo_item/<int:todo_item_id>/create_recurrences/', views.create_recurrences, name='create_recurrences'),
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
+    path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
+    path('extracurriculars/', views.ECListView.as_view(), name='ec_list'),
+    path('job/', views.JobListView.as_view(), name='job_list'),
+    path('social/', views.SocialListView.as_view(), name='social_list'),
+    path('personal/', views.PersonalListView.as_view(), name='personal_list'),
+    path('other/', views.OtherListView.as_view(), name='other_list'),
+
 ]
