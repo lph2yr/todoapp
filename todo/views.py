@@ -35,7 +35,6 @@ class ToDoListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False).order_by('duedate')
-# CANNOT CREATE A DIFFERENT PRIORITY
 
 
 class CompletedView(generic.ListView):
@@ -153,8 +152,6 @@ def create_recurrences(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 # view allows update/edit of object in database
-
-
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
