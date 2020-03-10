@@ -9,6 +9,11 @@
     <h4>Welcome {{user}}!</h4>
     <h4>Here's your to-do list!</h4>
   </div>
+
+
+  <div class="d-flex justify-content-center">
+    <a href="{% url 'todo_list:add_todo_item' %}">Add Todo</a>
+  </div>
 </div>
 
 {% endblock %}

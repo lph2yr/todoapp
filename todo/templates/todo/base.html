@@ -54,11 +54,6 @@
               >Completed tasks</a
             >
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:add_todo_item' %}"
-              >Add a to-do item</a
-            >
-          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Filter by
@@ -72,6 +67,11 @@
               <div class="dropdown-divider"></div>
               <a class="dropdown-item" href="{% url 'todo_list:other_list' %}">Other</a>
             </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list:course_list' %}"
+              >Course List</a
+            >
           </li>
         </ul>
       </div>

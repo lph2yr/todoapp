@@ -4,7 +4,19 @@ import django.utils
 from model_utils import FieldTracker
 
 # Create your models here.
+
+class Course(models.Model):
+    course_name = models.CharField(max_length=50, verbose_name='Course Name')
+    course_abbrev = models.CharField(max_length=10, verbose_name='Course Abbreviation')
+    course_prof = models.CharField(max_length=20, verbose_name='Course Professor')
+
+    def __str__(self):
+        return self.course_name
+
+
+
 class ToDoItem(models.Model):
+    course = models.ForeignKey( Course, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
@@ -92,11 +104,4 @@ class ToDoItem(models.Model):
         is_same = day_dif == 0
         return is_same
 
-'''
-class Course(models.Model):
-    todo = models.ForeignKey(ToDoItem, on_delete=models.CASCADE)
-    title = models.CharField(max_length=30)
-    
-    def __str__(self):
-        return self.title
-'''
+

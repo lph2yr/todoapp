@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import EditToDoForm, AddToDoForm
-from .models import ToDoItem
+from .forms import EditToDoForm, AddToDoForm, AddCourseForm, EditCourseForm
+from .models import ToDoItem, Course
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 import datetime
@@ -17,32 +17,6 @@ from dateutil.relativedelta import relativedelta
         #clubs
         #job #foreign key too?
 
-class ToDoListView(generic.ListView):
-    template_name = 'todo/todo_list.html'
-    context_object_name = 'todo_list'
-
-    def get_queryset(self):
-        # update the priority twice a day if the due date is getting close
-        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
-        return ToDoItem.objects.filter(completed=False).order_by('duedate')
-
-
-class CompletedView(generic.ListView):
-    template_name = 'todo/completed_list.html'
-    context_object_name = 'todo_list'
-
-    def get_queryset(self):
-        return ToDoItem.objects.filter(completed=True).order_by('duedate')
 
 
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
@@ -57,6 +31,7 @@ class AddToDoItemView(CreateView):
         form = super(AddToDoItemView, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
+        form.fields['course'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -162,6 +137,7 @@ class EditToDo(UpdateView):
         form = super(EditToDo, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
+        form.fields['course'].required = False
         return form
 
     # override form_valid to check to see if recur_freq has changed
@@ -189,8 +165,46 @@ def edit_recurrences(request, todo_item_id):
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
-class AcademicsListView(generic.ListView):
-    template_name = 'todo/academics_list.html'
+class AddCourseView( CreateView ):
+    model = Course
+    template_name = "todo/add_course_form.html"
+    form_class = AddCourseForm
+    success_url = 'todo_list:course_list'
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:course_list')
+
+class EditCourseView( UpdateView ):
+    model = Course
+    template_name = "todo/edit_course_form.html"
+    form_class = EditCourseForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:course_list')
+
+
+class ToDoListView(generic.ListView):
+    template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
 
     def get_queryset(self):
@@ -206,7 +220,24 @@ class AcademicsListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False, category='AC').order_by('duedate')
+        return ToDoItem.objects.filter(completed=False).order_by('duedate')
+
+
+class CompletedView(generic.ListView):
+    template_name = 'todo/completed_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=True).order_by('duedate')
+
+class AcademicsListView(generic.ListView):
+    template_name = 'todo/academics_list.html'
+    context_object_name = 'course_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        return Course.objects.all().order_by('course_name')
 
 #Extracurricular list view
 class ECListView(generic.ListView):
@@ -306,12 +337,22 @@ class OtherListView(generic.ListView):
         return ToDoItem.objects.filter(completed=False, category='OT').order_by('duedate')
 
 
+class CourseListView(generic.ListView):
+    template_name = 'todo/course_list.html'
+    context_object_name = 'course_list'
+
+    def get_queryset(self):
+        return Course.objects.all().order_by('course_name')
+
+def delete_course( request, course_id ):
+    course = Course.objects.get(pk = course_id)
+    course.delete()
+    return redirect('todo_list:course_list')
 
 def delete_todo(request, todo_item_id):
     item = ToDoItem.objects.get(pk=todo_item_id)
     item.delete()
     return redirect('todo_list:todo_list')
-
 
 # function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):
