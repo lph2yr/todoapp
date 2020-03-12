@@ -20,9 +20,9 @@ class ToDoItem(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
-    #date_created = models.DateTimeField(default=timezone.now()) #just added
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
+
 
     #recurrence freq choices
     NEVER = 'NEVER'
@@ -86,6 +86,17 @@ class ToDoItem(models.Model):
     )
 
     #tags???????????????????????????????
+    has_title_changed = models.BooleanField(default=False)
+    has_description_changed = models.BooleanField(default=False)
+    has_duedate_changed = models.BooleanField(default=False)
+    has_location_changed = models.BooleanField(default=False)
+    #has_completed_changed =
+    has_recur_freq_changed = models.BooleanField(default=False)
+    has_end_recur_date_changed = models.BooleanField(default=False)
+    has_category_changed = models.BooleanField(default=False)
+    has_priority_changed = models.BooleanField(default=False)
+
+    count_future_events = models.IntegerField(default=1)
 
     tracker = FieldTracker() #track changes to fields
 
