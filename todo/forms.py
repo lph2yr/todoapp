@@ -41,6 +41,7 @@ class ToDoForm(forms.ModelForm):
                 self.fields['specific'].queryset = self.instance.category.specific_set.order_by('name')
             '''
 
+
 class CategoryForm( forms.ModelForm ):
     class Meta:
         model = Category
