@@ -54,16 +54,27 @@
               >Completed tasks</a
             >
           </li>
-
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:specific_list' %}"
-              >Specifics</a
-            >
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Filter by
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}">Academics</a>
+              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Extracurriculars</a>
+              <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
+              <a class="dropdown-item" href="{% url 'todo_list:social_list' %}">Social</a>
+              <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}">Personal</a>
+              <div class="dropdown-divider"></div>
+              <a class="dropdown-item" href="{% url 'todo_list:other_list' %}">Other</a>
+            </div>
           </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:category_list' %}"
-              >Categories</a
-            >
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              {{ user }}
+            </a>
+            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+              <a class="dropdown-item" href="{% url 'todo_list:course_list' %}">Your Courses</a>
+            </div>
           </li>
         </ul>
       </div>
@@ -113,3 +124,4 @@
     </script>
   </body>
 </html>
+

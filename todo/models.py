@@ -1,36 +1,28 @@
 from django.db import models
-from django.db.models import Model
 import django.utils
 from model_utils import FieldTracker
 
 # Create your models here.
 
-class Category( models.Model ):
-    # category choices
 
-    cat = models.CharField(
-        max_length=30, verbose_name='Category Name',
-    )
-
-    def __str__(self):
-        return self.cat
-
-class Specific( models.Model ):
-    category = models.ForeignKey( Category, on_delete=models.CASCADE, null=True)
-    name = models.CharField(max_length=20)
-    detail = models.CharField(max_length=500)
+class Course(models.Model):
+    course_name = models.CharField(max_length=50, verbose_name='Course Name')
+    course_abbrev = models.CharField(max_length=10, verbose_name='Course Abbreviation')
+    course_prof = models.CharField(max_length=20, verbose_name='Course Professor')
 
     def __str__(self):
-        return self.name
+        return self.course_name
+
+
 
 class ToDoItem(models.Model):
+    course = models.ForeignKey( Course, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
-    category = models.ForeignKey( Category, on_delete=models.SET_NULL, null=True)
-    specific = models.ForeignKey( Specific, on_delete=models.SET_NULL, null=True)
+
 
     #recurrence freq choices
     NEVER = 'NEVER'
@@ -76,7 +68,22 @@ class ToDoItem(models.Model):
         default=LOW,
     )
 
-    
+    #category choices
+    CATEGORIES = [
+        ('NN', 'None'),
+        ('AC', 'Academics'),
+        ('EC', 'Extracurriculars'),
+        ('JB', 'Job'),
+        ('SC', 'Social'),
+        ('PS', 'Personal'),
+        ('OT', 'Other')
+    ]
+    category = models.CharField(
+        max_length=2,
+        choices = CATEGORIES,
+        default='NN',
+        verbose_name='Category',
+    )
 
     #tags???????????????????????????????
     has_title_changed = models.BooleanField(default=False)
@@ -86,6 +93,7 @@ class ToDoItem(models.Model):
     #has_completed_changed =
     has_recur_freq_changed = models.BooleanField(default=False)
     has_end_recur_date_changed = models.BooleanField(default=False)
+    has_category_changed = models.BooleanField(default=False)
     has_priority_changed = models.BooleanField(default=False)
 
     count_future_events = models.IntegerField(default=1)
@@ -93,7 +101,7 @@ class ToDoItem(models.Model):
     tracker = FieldTracker() #track changes to fields
 
     def __str__(self):
-    	return self.title + " " + self.duedate.strftime('%Y-%m-%d')
+       return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
         now = django.utils.timezone.now

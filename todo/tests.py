@@ -1,11 +1,10 @@
-'''
 from django.test import TestCase, Client
 from .models import ToDoItem
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from django.urls import reverse
-from .forms import EditToDoForm
+from .forms import ToDoForm
 
 
 def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(),
@@ -104,4 +103,3 @@ class TodoListViewsTest(TestCase):
         response = self.client.get(reverse('todo_list:todo_list'))
         self.assertEqual(response.status_code, 200)
         # this view doesn't have a context object...it only has context_data
-'''

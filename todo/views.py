@@ -1,22 +1,21 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, SpecificForm, CategoryForm
-from .models import ToDoItem, Specific, Category
+from .forms import ToDoForm, CourseForm
+from .models import ToDoItem, Course
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 import datetime
 from dateutil.relativedelta import relativedelta
 
 
-#filter by categories
-    #academic:
-        #classes #new Foreign Key model? because must be inputted by user
-        #events: group meetings, ...
-    #non-academic
-        #social
-        #clubs
-        #job #foreign key too?
-
+# filter by categories
+# academic:
+# classes #new Foreign Key model? because must be inputted by user
+# events: group meetings, ...
+# non-academic
+# social
+# clubs
+# job #foreign key too?
 
 
 ######################## TO DO view ################################
@@ -32,8 +31,7 @@ class AddToDoItemView(CreateView):
         form = super(AddToDoItemView, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
-        form.fields['category'].required = False
-        form.fields['specific'].required = False
+        form.fields['course'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -44,6 +42,7 @@ class AddToDoItemView(CreateView):
         else:
             self.object.save()
             return redirect('todo_list:todo_list')
+
 
 # function create recurrence of newly added objects based on recur_freq and end_recur_date fields
 def create_recurrences(request, todo_item_id):
@@ -57,8 +56,9 @@ def create_recurrences(request, todo_item_id):
             # find the time differences
             delta = end_date - (due_date + relativedelta(days=+1))
             delta_day = delta.days + 1
-            for i in range(1, delta_day+1):
+            for i in range(1, delta_day + 1):
                 ToDoItem.objects.create(
+                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -66,8 +66,7 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category = todo_item.category,
-                    specific = todo_item.specific
+                    category=todo_item.category
                     # completed = default False
                 )
 
@@ -77,6 +76,7 @@ def create_recurrences(request, todo_item_id):
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
+                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -84,8 +84,7 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category,
-                    specific=todo_item.specific
+                    category=todo_item.category
                     # completed = default False
                 )
 
@@ -102,6 +101,7 @@ def create_recurrences(request, todo_item_id):
 
             for i in range(1, delta_month + months_leftover + 1):
                 ToDoItem.objects.create(
+                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -110,7 +110,6 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    specific=todo_item.specific
                     # completed = default False
                 )
 
@@ -119,6 +118,7 @@ def create_recurrences(request, todo_item_id):
             # loop thro day_dif to create and save that many obj
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
+                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -127,12 +127,12 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    specific=todo_item.specific
                     # completed = default False
                 )
     return redirect('todo_list:todo_list')
 
-#TODO: put in no changes made???????????????????????????????????
+
+# TODO: put in no changes made???????????????????????????????????
 # view allows update/edit of object in database
 class EditToDo(UpdateView):
     model = ToDoItem
@@ -144,81 +144,82 @@ class EditToDo(UpdateView):
         form = super(EditToDo, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
-        form.fields['category'].required = False
-        form.fields['specific'].required = False
+        form.fields['course'].required = False
         return form
 
     # override form_valid to check to see if recur_freq has changed
     # https://django-model-utils.readthedocs.io/en/latest/utilities.html#field-tracker
     def form_valid(self, form):
         todo = form.save(commit=False)
-        if (self.request.POST.get("change-once")): #only change fields for one instance
+        if (self.request.POST.get("change-once")):  # only change fields for one instance
             todo.save()
             form.save_m2m()
             return redirect('todo_list:todo_list')
-        elif (self.request.POST.get("change-all")): #if changed for all future events and current instance
+        elif (self.request.POST.get("change-all")):  # if changed for all future events and current instance
             fields_changed = self.object.tracker.changed()
-            if ( len( fields_changed ) == 0 ):
+            if (len(fields_changed) == 0):
                 todo.save()
                 form.save_m2m()
                 return redirect('todo_list:todo_list')
             else:
-                #TODO: how to track course changes?????????/
+                # TODO: how to track course changes?????????/
                 todo.has_title_changed = self.object.tracker.has_changed('title')
                 todo.has_description_changed = self.object.tracker.has_changed('description')
                 todo.has_location_changed = self.object.tracker.has_changed('location')
+                todo.has_category_changed = self.object.tracker.has_changed('category')
                 todo.has_priority_changed = self.object.tracker.has_changed('priority')
 
-                #date changes
+                # date changes
                 todo.has_duedate_changed = self.object.tracker.has_changed('duedate')
-                todo.has_recur_freq_changed = self.object.tracker.has_changed('recur_freq')  # returns true if recur_freq field has changed
-                todo.has_end_recur_date_changed = self.object.tracker.has_changed('end_recur_date')  # returns true if end_recur_date has changed
+                todo.has_recur_freq_changed = self.object.tracker.has_changed(
+                    'recur_freq')  # returns true if recur_freq field has changed
+                todo.has_end_recur_date_changed = self.object.tracker.has_changed(
+                    'end_recur_date')  # returns true if end_recur_date has changed
 
-
-
-                if ( not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed ):
+                if (
+                        not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.duedate,
                                                             end_recur_date__lte=todo.end_recur_date)
                     todo.count_future_events = len(future_events)
-                elif ( todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed ):
+                elif (todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
                                                             duedate__gt=todo.duedate,
                                                             end_recur_date__lte=todo.end_recur_date)
                     todo.count_future_events = len(future_events)
-                elif ( not todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed ):
+                elif (not todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.tracker.previous('duedate'),
                                                             end_recur_date__lte=todo.end_recur_date)
                     todo.count_future_events = len(future_events)
-                elif ( not todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed ):
+                elif (not todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.duedate,
                                                             end_recur_date__lte=todo.tracker.previous('end_recur_date'))
                     todo.count_future_events = len(future_events)
-                elif ( todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed ):
+                elif (todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
                                                             duedate__gt=todo.tracker.previous('duedate'),
                                                             end_recur_date__lte=todo.end_recur_date)
                     todo.count_future_events = len(future_events)
-                elif ( todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed ):
+                elif (todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
                                                             duedate__gt=todo.duedate,
-                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date') )
+                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date'))
                     todo.count_future_events = len(future_events)
-                elif ( not todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed ):
+                elif (not todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.tracker.previous('duedate'),
                                                             end_recur_date__lte=todo.tracker.previous('end_recur_date'))
                     todo.count_future_events = len(future_events)
-                elif ( todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed ):
+                elif (todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
                                                             duedate__gt=todo.tracker.previous('duedate'),
@@ -228,47 +229,48 @@ class EditToDo(UpdateView):
                 todo.save()
                 form.save_m2m()
 
-                return redirect('todo_list:change_all', todo_item_id=self.object.id )
+                return redirect('todo_list:change_all', todo_item_id=self.object.id)
 
-def change_all( request, todo_item_id ):
+
+def change_all(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
-    if ( todo_item.has_title_changed ):
+    if (todo_item.has_title_changed):
         for i in range(1, todo_item.count_future_events + 1):
             future_event = ToDoItem.objects.get(pk=todo_item_id + i)
             future_event.title = todo_item.title
             future_event.save()
             todo_item.has_title_changed = False
             todo_item.save()
-    if ( todo_item.has_description_changed ):
+    if (todo_item.has_description_changed):
         for i in range(1, todo_item.count_future_events + 1):
             future_event = ToDoItem.objects.get(pk=todo_item_id + i)
             future_event.description = todo_item.description
             future_event.save()
             todo_item.has_description_changed = False
             todo_item.save()
-    if ( todo_item.has_location_changed ):
+    if (todo_item.has_location_changed):
         for i in range(1, todo_item.count_future_events + 1):
             future_event = ToDoItem.objects.get(pk=todo_item_id + i)
             future_event.location = todo_item.location
             future_event.save()
             todo_item.has_location_changed = False
             todo_item.save()
-    if ( todo_item.has_category_changed ):
+    if (todo_item.has_category_changed):
         for i in range(1, todo_item.count_future_events + 1):
             future_event = ToDoItem.objects.get(pk=todo_item_id + i)
             future_event.category = todo_item.category
             future_event.save()
             todo_item.has_category_changed = False
             todo_item.save()
-    if ( todo_item.has_priority_changed ):
+    if (todo_item.has_priority_changed):
         for i in range(1, todo_item.count_future_events + 1):
             future_event = ToDoItem.objects.get(pk=todo_item_id + i)
-            future_event.priority= todo_item.priority
+            future_event.priority = todo_item.priority
             future_event.save()
             todo_item.has_priority_changed = False
             todo_item.save()
-    if ( todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed ):
-        return redirect('todo_list:edit_recurrences', todo_item_id = todo_item_id)
+    if (todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed):
+        return redirect('todo_list:edit_recurrences', todo_item_id=todo_item_id)
 
     return redirect('todo_list:todo_list')
 
@@ -280,7 +282,7 @@ def edit_recurrences(request, todo_item_id):
     # https://docs.djangoproject.com/en/2.0/ref/models/querysets/
     ToDoItem.objects.filter(title__startswith=todo_item.title,  # filter by title
                             duedate__gt=todo_item.duedate,  # filter by duedate >= todo_item.title
-                            end_recur_date__lte = todo_item.end_recur_date
+                            end_recur_date__lte=todo_item.end_recur_date
                             ).delete()
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
@@ -295,7 +297,7 @@ class ToDoListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -313,10 +315,12 @@ class CompletedView(generic.ListView):
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True).order_by('duedate')
 
+
 def delete_todo(request, todo_item_id):
     item = ToDoItem.objects.get(pk=todo_item_id)
     item.delete()
     return redirect('todo_list:todo_list')
+
 
 # function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):
@@ -327,105 +331,58 @@ def completeToDo(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-def load_specifics(request):
-    category_id = request.GET.get('category')
-    specifics = Specific.objects.filter(category_id=category_id).order_by('name')
-    return render(request, 'hr/specific_dropdown_list_options.html', {'specifics': specifics})
 
-############### Specific view ###########################3
-class AddSpecificView( CreateView ):
-    model = Specific
-    template_name = "todo/add_specific_form.html"
-    form_class = SpecificForm
+############### Course view ###########################3
+class AddCourseView(CreateView):
+    model = Course
+    template_name = "todo/add_course_form.html"
+    form_class = CourseForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
-        form = super(AddSpecificView, self).get_form(form_class)
-        form.fields['name'].required = True
-        form.fields['detail'].required = False
-        form.fields['category'].required = True
+        form = super(AddCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
         return form
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.save()
-        return redirect('todo_list:specific_list')
+        return redirect('todo_list:course_list')
 
-class EditSpecificView( UpdateView ):
-    model = Specific
-    template_name = "todo/edit_specific_form.html"
-    form_class = SpecificForm
+
+class EditCourseView(UpdateView):
+    model = Course
+    template_name = "todo/edit_course_form.html"
+    form_class = CourseForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
-        form = super(EditSpecificView, self).get_form(form_class)
-        form.fields['name'].required = True
-        form.fields['detail'].required = False
-        form.fields['category'].required = True
+        form = super(EditCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
         return form
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.save()
-        return redirect('todo_list:specific_list')
+        return redirect('todo_list:course_list')
 
 
-class SpecificListView(generic.ListView):
-    template_name = 'todo/specific_list.html'
-    context_object_name = 'specific_list'
-    queryset = Specific.objects.all().order_by('name')
+class CourseListView(generic.ListView):
+    template_name = 'todo/course_list.html'
+    context_object_name = 'course_list'
+    queryset = Course.objects.all().order_by('course_name')
 
 
-def delete_specific( request, sp_id ):
-    course = Specific.objects.get(pk = sp_id)
+def delete_course(request, course_id):
+    course = Course.objects.get(pk=course_id)
     course.delete()
-    return redirect('todo_list:sp_list')
-
-###################### Category views #############################3
-class AddCategoryView( CreateView ):
-    model = Category
-    template_name = "todo/add_category_form.html"
-    form_class = CategoryForm
-
-    # set title and duedate fields to be required
-    def get_form(self, form_class=None):
-        form = super(AddCategoryView, self).get_form(form_class)
-        form.fields['cat'].required = True
-        return form
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.save()
-        return redirect('todo_list:category_list')
-
-class EditCategoryView( UpdateView ):
-    model = Category
-    template_name = "todo/edit_category_form.html"
-    form_class = CategoryForm
-
-    # set title and duedate fields to be required
-    def get_form(self, form_class=None):
-        form = super(EditCategoryView, self).get_form(form_class)
-        form.fields['cat'].required = True
-        return form
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.save()
-        return redirect('todo_list:category_list')
+    return redirect('todo_list:course_list')
 
 
-class CategoryListView(generic.ListView):
-    template_name = 'todo/category_list.html'
-    context_object_name = 'category_list'
-    queryset = Category.objects.all().order_by('cat')
-
-
-def delete_category( request, category_id ):
-    category = Category.objects.get(pk = category_id)
-    category.delete()
-    return redirect('todo_list:category_list')
-'''
 #############################################################################
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
@@ -437,12 +394,15 @@ class AcademicsListView(generic.ListView):
         return Course.objects.all().order_by('course_name')
 
         # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None)
         return context
+
+
 ###############################################################################
-#Extracurricular list view
+# Extracurricular list view
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'todo_list'
@@ -452,7 +412,7 @@ class ECListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -472,7 +432,7 @@ class JobListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -481,6 +441,7 @@ class JobListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='JB').order_by('duedate')
+
 
 class SocialListView(generic.ListView):
     template_name = 'todo/social_list.html'
@@ -491,7 +452,7 @@ class SocialListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -500,6 +461,7 @@ class SocialListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='SC').order_by('duedate')
+
 
 class PersonalListView(generic.ListView):
     template_name = 'todo/personal_list.html'
@@ -510,7 +472,7 @@ class PersonalListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -519,6 +481,7 @@ class PersonalListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='PS').order_by('duedate')
+
 
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'
@@ -529,7 +492,7 @@ class OtherListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
+                       datetime.timedelta(days=1)
             if timediff <= 1:
                 item.priority = 'HI'
             elif timediff <= 2:
@@ -539,8 +502,4 @@ class OtherListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='OT').order_by('duedate')
 
-
-
-
-#https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
-'''
+# https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
