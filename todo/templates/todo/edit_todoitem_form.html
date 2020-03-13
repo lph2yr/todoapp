@@ -17,7 +17,7 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
   <h4>Edit a to-do item</h4>
 </div>
 
-<form action="" method="post">
+<form method="post" id="toDoForm" data-specifics-url="{% url 'todo_list:ajax_load_specifics' %}" novalidate>
   {% csrf_token %}
   <div class="d-flex justify-content-center">
     <table>
@@ -34,5 +34,24 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
 <div class="d-flex justify-content-center">
   <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+  <script>
+    $("#id_category").change(function () {
+      var url = $("#toDoForm").attr("data-specifics-url");  // get the url of the `load_specifics` view
+      var categoryId = $(this).val();  // get the selected category ID from the HTML input
+
+      $.ajax({                       // initialize an AJAX request
+        url: url,                    // set the url of the request (= localhost:8000/hr/ajax/load-cities/)
+        data: {
+          'category': categoryId       // add the category id to the GET parameters
+        },
+        success: function (data) {   // `data` is the return of the `load_specifics` view function
+          $("#id_specific").html(data);  // replace the contents of the specific input with the data that came from the server
+        }
+      });
+
+    });
+  </script>
 
 {% endblock %}

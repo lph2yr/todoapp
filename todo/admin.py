@@ -1,7 +1,9 @@
 from django.contrib import admin
 
 # Register your models here.
-from .models import ToDoItem, Course
+
+
+from .models import ToDoItem, Specific, Category
 
 class ToDoAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -14,15 +16,18 @@ class ToDoAdmin(admin.ModelAdmin):
     list_filter = ['duedate']
     search_fields = ['title']
     
-
-class CourseAdmin( admin.ModelAdmin ):
+class SpecificAdmin( admin.ModelAdmin ):
     fieldsets = [
-        (None,                {'fields': ['course_name']}),
-        ('Details', {'fields': ['course_abbrev', 'course_prof']}        ),
+        (None, {'fields': ['name']}),
+
+        ('Details',
+         {'fields': ['detail', 'category']}),
     ]
 
-    list_display = ('course_name', 'course_abbrev', 'course_prof')
-    search_fields = ['course_name']
+    list_display = ('name', 'category')
+    list_filter = ['name']
+    search_fields = ['name']
 
 admin.site.register(ToDoItem, ToDoAdmin )
-admin.site.register( Course, CourseAdmin )
+admin.site.register( Specific, SpecificAdmin )
+

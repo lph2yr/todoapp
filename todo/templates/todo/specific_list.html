@@ -5,14 +5,14 @@
 <div class="row">
   <div class="col">
     <div class="d-flex justify-content-end">
-      <a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_course' %}">+ Add Course</a>
+      <a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_specific' %}">+ Add Specific</a>
     </div>
     <div class="d-flex justify-content-center">
-      {% if course_list %}
+      {% if specific_list %}
         <ul class="w-50 list-group">
           <div id="accordion">
             <!-- accordion is the template for collapsing bars -->
-            {% for course in course_list %}
+            {% for sp in specific_list %}
               <div class="card">
                 <button
                   class="btn collapsed"
@@ -22,7 +22,7 @@
                 >
                 <li class="list-group-item">
                   <p class="d-flex justify-content-start">
-                      {{course.course_name}}
+                      {{sp.name}}
                   </p>
                 </button>
                   <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
@@ -30,20 +30,16 @@
                     <!--body of the accordion card -->
                     <div class="card-body">
                       <ul style="list-style-type:none">
-                        {% if course.course_abbrev %}
-                        <li>
-                          <strong>Course Abbreviation:</strong> {{ course.course_abbrev }}
-                        </li>
-                        {% endif %} {% if course.course_prof %}
-                        <li><strong>Course Professor:</strong> {{ course.course_prof }}</li>
+                        {% if sp.detail %}
+                          {{ sp.detail }}
                         {% endif %}
                         <div class="ml-auto">
                           <small class="m-2"
-                          ><a href="{% url 'todo_list:edit_course' course.id %}"
+                          ><a href="{% url 'todo_list:edit_specific' sp.id %}"
                             >🖊 Edit</a
                           ></small>
                           <small><a
-                            class="text-danger" href="{% url 'todo_list:delete_course' course.id %}"
+                            class="text-danger" href="{% url 'todo_list:delete_specific' sp.id %}"
                             >🗑 Delete</a
                           ></small>
                         </div>
@@ -56,7 +52,7 @@
           </div>
         </ul>
       {% else %}
-        <p>You have no courses!</p>
+        <p>You have no specifics!</p>
       {% endif %}
     </div>
 

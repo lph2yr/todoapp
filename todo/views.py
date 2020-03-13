@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm
-from .models import ToDoItem, Course
+from .forms import ToDoForm, SpecificForm, CategoryForm
+from .models import ToDoItem, Specific, Category
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 import datetime
@@ -32,7 +32,8 @@ class AddToDoItemView(CreateView):
         form = super(AddToDoItemView, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
-        form.fields['course'].required = False
+        form.fields['category'].required = False
+        form.fields['specific'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -58,7 +59,6 @@ def create_recurrences(request, todo_item_id):
             delta_day = delta.days + 1
             for i in range(1, delta_day+1):
                 ToDoItem.objects.create(
-                    course = todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -66,7 +66,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category = todo_item.category
+                    category = todo_item.category,
+                    specific = todo_item.specific
                     # completed = default False
                 )
 
@@ -76,7 +77,6 @@ def create_recurrences(request, todo_item_id):
             weeks = delta_day // 7  # number of weeks
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
-                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -84,7 +84,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category
+                    category=todo_item.category,
+                    specific=todo_item.specific
                     # completed = default False
                 )
 
@@ -101,7 +102,6 @@ def create_recurrences(request, todo_item_id):
 
             for i in range(1, delta_month + months_leftover + 1):
                 ToDoItem.objects.create(
-                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -110,6 +110,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    specific=todo_item.specific
                     # completed = default False
                 )
 
@@ -118,7 +119,6 @@ def create_recurrences(request, todo_item_id):
             # loop thro day_dif to create and save that many obj
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
-                    course=todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -127,6 +127,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    specific=todo_item.specific
                     # completed = default False
                 )
     return redirect('todo_list:todo_list')
@@ -143,7 +144,8 @@ class EditToDo(UpdateView):
         form = super(EditToDo, self).get_form(form_class)
         form.fields['title'].required = True
         form.fields['duedate'].required = True
-        form.fields['course'].required = False
+        form.fields['category'].required = False
+        form.fields['specific'].required = False
         return form
 
     # override form_valid to check to see if recur_freq has changed
@@ -165,7 +167,6 @@ class EditToDo(UpdateView):
                 todo.has_title_changed = self.object.tracker.has_changed('title')
                 todo.has_description_changed = self.object.tracker.has_changed('description')
                 todo.has_location_changed = self.object.tracker.has_changed('location')
-                todo.has_category_changed = self.object.tracker.has_changed('category')
                 todo.has_priority_changed = self.object.tracker.has_changed('priority')
 
                 #date changes
@@ -285,7 +286,6 @@ def edit_recurrences(request, todo_item_id):
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
 
-
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
@@ -327,57 +327,105 @@ def completeToDo(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
+def load_specifics(request):
+    category_id = request.GET.get('category')
+    specifics = Specific.objects.filter(category_id=category_id).order_by('name')
+    return render(request, 'hr/specific_dropdown_list_options.html', {'specifics': specifics})
 
-############### Course view ###########################3
-class AddCourseView( CreateView ):
-    model = Course
-    template_name = "todo/add_course_form.html"
-    form_class = CourseForm
-    success_url = 'todo_list:course_list'
+############### Specific view ###########################3
+class AddSpecificView( CreateView ):
+    model = Specific
+    template_name = "todo/add_specific_form.html"
+    form_class = SpecificForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
-        form = super(AddCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
-        form.fields['course_abbrev'].required = False
-        form.fields['course_prof'].required = False
+        form = super(AddSpecificView, self).get_form(form_class)
+        form.fields['name'].required = True
+        form.fields['detail'].required = False
+        form.fields['category'].required = True
         return form
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.save()
-        return redirect('todo_list:course_list')
+        return redirect('todo_list:specific_list')
 
-class EditCourseView( UpdateView ):
-    model = Course
-    template_name = "todo/edit_course_form.html"
-    form_class = CourseForm
+class EditSpecificView( UpdateView ):
+    model = Specific
+    template_name = "todo/edit_specific_form.html"
+    form_class = SpecificForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
-        form = super(EditCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
-        form.fields['course_abbrev'].required = False
-        form.fields['course_prof'].required = False
+        form = super(EditSpecificView, self).get_form(form_class)
+        form.fields['name'].required = True
+        form.fields['detail'].required = False
+        form.fields['category'].required = True
         return form
 
     def form_valid(self, form):
         self.object = form.save()
         self.object.save()
-        return redirect('todo_list:course_list')
+        return redirect('todo_list:specific_list')
 
 
-class CourseListView(generic.ListView):
-    template_name = 'todo/course_list.html'
-    context_object_name = 'course_list'
-    queryset = Course.objects.all().order_by('course_name')
+class SpecificListView(generic.ListView):
+    template_name = 'todo/specific_list.html'
+    context_object_name = 'specific_list'
+    queryset = Specific.objects.all().order_by('name')
 
-    
-def delete_course( request, course_id ):
-    course = Course.objects.get(pk = course_id)
+
+def delete_specific( request, sp_id ):
+    course = Specific.objects.get(pk = sp_id)
     course.delete()
-    return redirect('todo_list:course_list')
+    return redirect('todo_list:sp_list')
 
+###################### Category views #############################3
+class AddCategoryView( CreateView ):
+    model = Category
+    template_name = "todo/add_category_form.html"
+    form_class = CategoryForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddCategoryView, self).get_form(form_class)
+        form.fields['cat'].required = True
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:category_list')
+
+class EditCategoryView( UpdateView ):
+    model = Category
+    template_name = "todo/edit_category_form.html"
+    form_class = CategoryForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditCategoryView, self).get_form(form_class)
+        form.fields['cat'].required = True
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:category_list')
+
+
+class CategoryListView(generic.ListView):
+    template_name = 'todo/category_list.html'
+    context_object_name = 'category_list'
+    queryset = Category.objects.all().order_by('cat')
+
+
+def delete_category( request, category_id ):
+    category = Category.objects.get(pk = category_id)
+    category.delete()
+    return redirect('todo_list:category_list')
+'''
 #############################################################################
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
@@ -495,3 +543,4 @@ class OtherListView(generic.ListView):
 
 
 #https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
+'''
