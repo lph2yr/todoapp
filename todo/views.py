@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import EditToDoForm, AddToDoForm, AddCourseForm, EditCourseForm
+from .forms import ToDoForm, CourseForm
 from .models import ToDoItem, Course
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
@@ -19,12 +19,13 @@ from dateutil.relativedelta import relativedelta
 
 
 
+######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 # allows adding new obj to database
 class AddToDoItemView(CreateView):
     model = ToDoItem
     template_name = "todo/todoitem_form.html"
-    form_class = AddToDoForm
+    form_class = ToDoForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
@@ -135,7 +136,7 @@ def create_recurrences(request, todo_item_id):
 class EditToDo(UpdateView):
     model = ToDoItem
     template_name = "todo/edit_todoitem_form.html"
-    form_class = EditToDoForm
+    form_class = ToDoForm
 
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
@@ -283,42 +284,6 @@ def edit_recurrences(request, todo_item_id):
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
-class AddCourseView( CreateView ):
-    model = Course
-    template_name = "todo/add_course_form.html"
-    form_class = AddCourseForm
-    success_url = 'todo_list:course_list'
-
-    # set title and duedate fields to be required
-    def get_form(self, form_class=None):
-        form = super(AddCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
-        form.fields['course_abbrev'].required = False
-        form.fields['course_prof'].required = False
-        return form
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.save()
-        return redirect('todo_list:course_list')
-
-class EditCourseView( UpdateView ):
-    model = Course
-    template_name = "todo/edit_course_form.html"
-    form_class = EditCourseForm
-
-    # set title and duedate fields to be required
-    def get_form(self, form_class=None):
-        form = super(EditCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
-        form.fields['course_abbrev'].required = False
-        form.fields['course_prof'].required = False
-        return form
-
-    def form_valid(self, form):
-        self.object = form.save()
-        self.object.save()
-        return redirect('todo_list:course_list')
 
 
 class ToDoListView(generic.ListView):
@@ -348,6 +313,72 @@ class CompletedView(generic.ListView):
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True).order_by('duedate')
 
+def delete_todo(request, todo_item_id):
+    item = ToDoItem.objects.get(pk=todo_item_id)
+    item.delete()
+    return redirect('todo_list:todo_list')
+
+# function changes a todo from incomplete to complete (completed = False -> True)
+def completeToDo(request, todo_item_id):
+    # Todo item to be completed
+    completedToDo = ToDoItem.objects.get(id=todo_item_id)
+    completedToDo.completed = not completedToDo.completed
+    completedToDo.save()
+
+    return redirect('todo_list:todo_list')
+
+
+############### Course view ###########################3
+class AddCourseView( CreateView ):
+    model = Course
+    template_name = "todo/add_course_form.html"
+    form_class = CourseForm
+    success_url = 'todo_list:course_list'
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:course_list')
+
+class EditCourseView( UpdateView ):
+    model = Course
+    template_name = "todo/edit_course_form.html"
+    form_class = CourseForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditCourseView, self).get_form(form_class)
+        form.fields['course_name'].required = True
+        form.fields['course_abbrev'].required = False
+        form.fields['course_prof'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:course_list')
+
+
+class CourseListView(generic.ListView):
+    template_name = 'todo/course_list.html'
+    context_object_name = 'course_list'
+    queryset = Course.objects.all().order_by('course_name')
+
+    
+def delete_course( request, course_id ):
+    course = Course.objects.get(pk = course_id)
+    course.delete()
+    return redirect('todo_list:course_list')
+
+#############################################################################
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
@@ -357,6 +388,12 @@ class AcademicsListView(generic.ListView):
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         return Course.objects.all().order_by('course_name')
 
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None)
+        return context
+###############################################################################
 #Extracurricular list view
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
@@ -455,28 +492,6 @@ class OtherListView(generic.ListView):
         return ToDoItem.objects.filter(completed=False, category='OT').order_by('duedate')
 
 
-class CourseListView(generic.ListView):
-    template_name = 'todo/course_list.html'
-    context_object_name = 'course_list'
 
-    def get_queryset(self):
-        return Course.objects.all().order_by('course_name')
 
-def delete_course( request, course_id ):
-    course = Course.objects.get(pk = course_id)
-    course.delete()
-    return redirect('todo_list:course_list')
-
-def delete_todo(request, todo_item_id):
-    item = ToDoItem.objects.get(pk=todo_item_id)
-    item.delete()
-    return redirect('todo_list:todo_list')
-
-# function changes a todo from incomplete to complete (completed = False -> True)
-def completeToDo(request, todo_item_id):
-    # Todo item to be completed
-    completedToDo = ToDoItem.objects.get(id=todo_item_id)
-    completedToDo.completed = not completedToDo.completed
-    completedToDo.save()
-
-    return redirect('todo_list:todo_list')
+#https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value

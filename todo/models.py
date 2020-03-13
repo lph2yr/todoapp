@@ -116,3 +116,4 @@ class ToDoItem(models.Model):
         return is_same
 
 
+#https://simpleisbetterthancomplex.com/tutorial/2018/01/29/how-to-implement-dependent-or-chained-dropdown-list-with-django.html

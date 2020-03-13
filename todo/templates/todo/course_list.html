@@ -1,16 +1,12 @@
 {% extends 'todo/base.html' %} {% block content %}
 
+
+
 <div class="row">
-  <!-- sidebar? -->
-  <!-- <div class="col">
-      <div id="list-example" class="list-group">
-        <a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
-      </div>
-    </div> -->
   <div class="col">
+    <div class="d-flex justify-content-end">
+      <a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_course' %}">+ Add Course</a>
+    </div>
     <div class="d-flex justify-content-center">
       {% if course_list %}
         <ul class="w-50 list-group">
@@ -63,9 +59,7 @@
         <p>You have no courses!</p>
       {% endif %}
     </div>
-    <div class="d-flex justify-content-center">
-      <a href="{% url 'todo_list:add_course' %}">Add Course</a>
-    </div>
+
   </div>
 </div>
 
