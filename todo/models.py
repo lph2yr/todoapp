@@ -90,7 +90,6 @@ class ToDoItem(models.Model):
     has_description_changed = models.BooleanField(default=False)
     has_duedate_changed = models.BooleanField(default=False)
     has_location_changed = models.BooleanField(default=False)
-    #has_completed_changed =
     has_recur_freq_changed = models.BooleanField(default=False)
     has_end_recur_date_changed = models.BooleanField(default=False)
     has_category_changed = models.BooleanField(default=False)
@@ -110,9 +109,7 @@ class ToDoItem(models.Model):
     def is_today_duedate(self):
         now = django.utils.timezone.now().replace(tzinfo=None)
         due = self.duedate.replace(tzinfo=None)
-        delta = abs( now - due )
-        day_dif = delta.days
-        is_same = day_dif == 0
+        is_same = now.day == due.day
         return is_same
 
 

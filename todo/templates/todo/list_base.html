@@ -67,10 +67,18 @@
                       {% endif %} {% if todo_item.location %}
                       <li><strong>Location:</strong> {{ todo_item.location }}</li>
                       {% endif %}
-                      {% if todo_item.recur_freq %}
-                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                      {% if todo_item.category %}
+                      <li>
+                        <strong>Category:</strong> {{ todo_item.get_category_display }}
+                      </li>
                       {% endif %}
-                      {% if todo_item.end_recur_date %}
+                      {% if todo_item.course %}
+                      <li>
+                        <strong>Course:</strong> {{ todo_item.course }}
+                      </li>
+                      {% endif %}
+                      {% if todo_item.recur_freq != 'NEVER' %}
+                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
                       <li>
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
@@ -108,7 +116,7 @@
         </div>
       </ul>
       {% else %}
-      <p>You have no to-do items!</p>
+        {% block gifs %}{% endblock %}
       {% endif %}
     </div>
   </div>
