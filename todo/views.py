@@ -8,6 +8,16 @@ import datetime
 from dateutil.relativedelta import relativedelta
 
 
+# filter by categories
+# academic:
+# classes #new Foreign Key model? because must be inputted by user
+# events: group meetings, ...
+# non-academic
+# social
+# clubs
+# job #foreign key too?
+
+
 ######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 # allows adding new obj to database
@@ -166,7 +176,8 @@ class EditToDo(UpdateView):
                 todo.has_end_recur_date_changed = self.object.tracker.has_changed(
                     'end_recur_date')  # returns true if end_recur_date has changed
 
-                if (not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
+                if (
+                        not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.duedate,
@@ -311,9 +322,9 @@ def delete_todo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-# function changes a to do from incomplete to complete (completed = False -> True)
+# function changes a todo from incomplete to complete (completed = False -> True)
 def completeToDo(request, todo_item_id):
-    # To do item to be completed
+    # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
@@ -321,7 +332,7 @@ def completeToDo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-################################ Course view ######################################
+############### Course view ###########################3
 class AddCourseView(CreateView):
     model = Course
     template_name = "todo/add_course_form.html"
@@ -372,13 +383,17 @@ def delete_course(request, course_id):
     return redirect('todo_list:course_list')
 
 
-############################# Academics view ###########################################
+#############################################################################
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         return Course.objects.all().order_by('course_name')
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -386,13 +401,15 @@ class AcademicsListView(generic.ListView):
         return context
 
 
-############################Extracurricular list view###################################################
-
+###############################################################################
+# Extracurricular list view
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'todo_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
@@ -411,6 +428,8 @@ class JobListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
@@ -429,6 +448,8 @@ class SocialListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
@@ -447,6 +468,8 @@ class PersonalListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
@@ -465,6 +488,8 @@ class OtherListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
         for item in ToDoItem.objects.all():
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)

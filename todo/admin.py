@@ -9,15 +9,13 @@ class ToDoAdmin(admin.ModelAdmin):
     fieldsets = [
         (None,               {'fields': ['title']}),
 
-        ('Details', {'fields': [ 'description', 'duedate', 'location', 'priority', 'recur_freq', 'end_recur_date', 'completed', 'category', 'course' ] }),
+        ('Details', {'fields': [ 'description', 'duedate', 'location', 'priority', 'recur_freq', 'end_recur_date', 'completed' ] }),
     ]
 
-    list_display = ('title', 'duedate', 'priority','recur_freq', 'completed', 'category')
+    list_display = ('title', 'duedate', 'priority','recur_freq', 'completed')
     list_filter = ['duedate']
     search_fields = ['title']
-
-admin.site.register(ToDoItem, ToDoAdmin )
-
+    
 class CourseAdmin( admin.ModelAdmin ):
     fieldsets = [
         (None, {'fields': ['course_name']}),
@@ -30,4 +28,6 @@ class CourseAdmin( admin.ModelAdmin ):
     list_filter = ['course_name']
     search_fields = ['course_name']
 
+admin.site.register(ToDoItem, ToDoAdmin )
 admin.site.register( Course, CourseAdmin )
+
