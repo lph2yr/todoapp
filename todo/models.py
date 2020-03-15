@@ -14,7 +14,6 @@ class Course(models.Model):
         return self.course_name
 
 
-
 class ToDoItem(models.Model):
     course = models.ForeignKey( Course, on_delete=models.SET_NULL, null=True)
     title = models.CharField(max_length=100)

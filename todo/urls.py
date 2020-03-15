@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'todo_list'
 urlpatterns = [
+    #path('', views.default_page, name='success page'),]
     path('', views.ToDoListView.as_view(), name='todo_list'),
     path('<int:pk>/', views.EditToDo.as_view(), name='detail' ),
     path('completed/', views.CompletedView.as_view(), name='completed'),
