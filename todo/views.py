@@ -176,8 +176,7 @@ class EditToDo(UpdateView):
                 todo.has_end_recur_date_changed = self.object.tracker.has_changed(
                     'end_recur_date')  # returns true if end_recur_date has changed
 
-                if (
-                        not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
+                if (not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.duedate,
