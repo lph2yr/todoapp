@@ -519,11 +519,11 @@ class CreateMonthlyRecurrencesTests(TestCase):
 
     def test_create_less_than_a_full_month_time(self):
         """
-        end_recur_date is not a full 4 months --> should create only 3 instances
+        end_recur_date is not a full 4 months by time --> should create only 3 instances
         """
         self.data_form['title'] = "Test creating monthly recurrences boundaries"
         self.data_form['description'] = "end_recur_date is not a full 4 months by time"
-        self.data_form['end_recur_date'] = datetime.datetime(2020, 6, 16, 4, 0, 0, tzinfo=pytz.utc)
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 5, 16, 4, 0, 0, tzinfo=pytz.utc)
 
         monthly_occurrence = create_from_data_dict(self.data_form)  # create first instance
 
@@ -531,14 +531,13 @@ class CreateMonthlyRecurrencesTests(TestCase):
         self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': monthly_occurrence.id}),
                          self.data_form)
         current_query_set = ToDoItem.objects.all()
-        print( current_query_set)
         self.assertEqual(3, len(current_query_set))
 
         # check crucial fields
         filtered = ToDoItem.objects.filter(title="Test creating monthly recurrences boundaries",
                                             description= "end_recur_date is not a full 4 months by time",
                                             recur_freq='MONTHLY',
-                                            end_recur_date= datetime.datetime(2020, 5, 16, 4, 59, 0, tzinfo=pytz.utc)
+                                            end_recur_date= datetime.datetime(2020, 5, 16, 4, 0, 0, tzinfo=pytz.utc)
                                          )
         self.assertEqual(3, len(filtered))
 
@@ -548,7 +547,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
             if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(months=1):
                 count_true += 1
 
-        # count_true has to be 2 because 2 comparisons if test works
+        # count_true has to be 3 because 3 comparisons if test works
         self.assertEqual(2, count_true)
 
     def test_create_more_than_a_full_month_dates(self):
@@ -606,7 +605,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
         filtered = ToDoItem.objects.filter(title= "Test creating monthly recurrences boundaries",
                                             description="end_recur_date is more than 4 months but less than 5 months by time",
                                             recur_freq='MONTHLY',
-                                            end_recur_date=datetime.datetime(2020, 6, 30, 5, 0, 0, tzinfo=pytz.utc)
+                                            end_recur_date=datetime.datetime(2020, 6, 16, 5, 1, 0, tzinfo=pytz.utc)
                                          )
         self.assertEqual(4, len(filtered))
 
@@ -629,11 +628,11 @@ class CreateMonthlyRecurrencesTests(TestCase):
         self.data_form['end_recur_date'] = datetime.datetime(2020, 2, 10, 4, 0, 0, tzinfo=pytz.utc)
 
         yearly_occurrence = create_from_data_dict(self.data_form)  # create first instance
-        # print( daily_occurrence.id )
+
         # should create 1 instance
         self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': yearly_occurrence.id}),
                          self.data_form)
-        current_instance = ToDoItem.objects.get(description="Some end_recur_date earlier than duedate")
+        current_instance = ToDoItem.objects.get(description="Some end_recur_date earlier than duedate by month and time")
         all_instances = [current_instance]
 
         self.assertEqual(1, len(all_instances))
@@ -646,8 +645,6 @@ class CreateMonthlyRecurrencesTests(TestCase):
 
         # check duedates of  1 object
         self.assertEqual(one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
-
-#############################################################
 
 class CreateYearlyRecurrencesTests(TestCase):
     def setUp(self):
@@ -701,7 +698,7 @@ class CreateYearlyRecurrencesTests(TestCase):
         """
         self.data_form['title'] = "Test creating yearly recurrences boundaries"
         self.data_form['description'] = "end_recur_date is not a full 4 years by dates"
-        self.data_form['end_recur_date'] = datetime.datetime(2023, 3, 16, 5, 0, 0, tzinfo=pytz.utc)
+        self.data_form['end_recur_date'] = datetime.datetime(2023, 2, 16, 5, 0, 0, tzinfo=pytz.utc)
 
         yearly_occurrence = create_from_data_dict(self.data_form)  # create first instance
 
@@ -716,7 +713,7 @@ class CreateYearlyRecurrencesTests(TestCase):
         filtered = ToDoItem.objects.filter(title="Test creating yearly recurrences boundaries",
                                             description= "end_recur_date is not a full 4 years by dates",
                                             recur_freq='YEARLY',
-                                            end_recur_date= datetime.datetime(2023, 3, 15, 5, 0, 0, tzinfo=pytz.utc)
+                                            end_recur_date= datetime.datetime(2023, 2, 16, 5, 0, 0, tzinfo=pytz.utc)
                                          )
         self.assertEqual(3, len(filtered))
 
@@ -732,7 +729,7 @@ class CreateYearlyRecurrencesTests(TestCase):
 
     def test_create_less_than_a_full_year_time(self):
         """
-        end_recur_date is not a full 4 years --> should create only 3 instances
+        end_recur_date is not a full 4 years but only by time --> should create only 4 instances
         """
         self.data_form['title'] = "Test creating yearly recurrences boundaries"
         self.data_form['description'] = "end_recur_date is not a full 4 years by time"
@@ -744,7 +741,7 @@ class CreateYearlyRecurrencesTests(TestCase):
         self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': yearly_occurrence.id}),
                          self.data_form)
         current_query_set = ToDoItem.objects.all()
-        print( current_query_set)
+
         self.assertEqual(3, len(current_query_set))
 
         # check crucial fields
@@ -780,6 +777,7 @@ class CreateYearlyRecurrencesTests(TestCase):
         self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': yearly_occurrence.id}),
                          self.data_form)
         current_query_set = ToDoItem.objects.all()
+
         self.assertEqual(4, len(current_query_set))
 
         # check crucial fields
@@ -854,15 +852,14 @@ class CreateYearlyRecurrencesTests(TestCase):
         self.assertEqual(1, len(all_instances))
 
         # check crucial fields
-        one_instance = ToDoItem.objects.get(title="Test creating monthly recurrences",
+        one_instance = ToDoItem.objects.get(title="Test creating yearly recurrences",
                                             description="Some end_recur_date earlier than duedate by year",
                                             recur_freq = 'YEARLY',
-                                            end_recur_date=datetime.datetime(2020, 2, 10, 4, 0, 0, tzinfo=pytz.utc))
+                                            end_recur_date=datetime.datetime(2019, 2, 10, 4, 0, 0, tzinfo=pytz.utc))
 
         # check duedates of  1 object
-        self.assertEqual(one_instance.duedate, datetime.datetime(2019, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
+        self.assertEqual(one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
 
-################################################################################
 class UpdateViewTest(TestCase):
     def setUp(self):
         self.my_course = create_course(

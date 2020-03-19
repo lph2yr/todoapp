@@ -114,7 +114,7 @@ def create_recurrences(request, todo_item_id):
                 )
 
         elif (todo_item.recur_freq == 'YEARLY'):
-            delta_year = end_date.year - due_date.year  # find the time differences
+            delta_year = relativedelta( end_date, due_date ).years # find the time differences
             # loop thro day_dif to create and save that many obj
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
@@ -129,6 +129,7 @@ def create_recurrences(request, todo_item_id):
                     category=todo_item.category,
                     # completed = default False
                 )
+
     return redirect('todo_list:todo_list')
 
 
