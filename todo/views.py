@@ -133,7 +133,6 @@ def create_recurrences(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-# TODO: put in no changes made???????????????????????????????????
 # view allows update/edit of object in database
 class EditToDo(UpdateView):
     model = ToDoItem
@@ -163,7 +162,6 @@ class EditToDo(UpdateView):
                 form.save_m2m()
                 return redirect('todo_list:todo_list')
             else:
-                # TODO: how to track course changes?????????/
                 todo.has_title_changed = self.object.tracker.has_changed('title')
                 todo.has_description_changed = self.object.tracker.has_changed('description')
                 todo.has_location_changed = self.object.tracker.has_changed('location')
@@ -271,7 +269,6 @@ def change_all(request, todo_item_id):
             todo_item.save()
     if (todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed):
         return redirect('todo_list:edit_recurrences', todo_item_id=todo_item_id)
-
     return redirect('todo_list:todo_list')
 
 
@@ -280,10 +277,14 @@ def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # for date changes, delete all future instances and remake others
     # https://docs.djangoproject.com/en/2.0/ref/models/querysets/
+
     ToDoItem.objects.filter(title__startswith=todo_item.title,  # filter by title
-                            duedate__gt=todo_item.duedate,  # filter by duedate >= todo_item.title
-                            end_recur_date__lte=todo_item.end_recur_date
-                            ).delete()
+                            duedate__gte=todo_item.duedate,  # filter by duedate >= todo_item.title
+                            category= todo_item.category,
+                            ).exclude(pk=todo_item_id).delete()
+    todo_item.has_end_recur_date_changed = False
+    todo_item.has_recur_freq_changed = False
+    todo_item.has_duedate_changed = False
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
