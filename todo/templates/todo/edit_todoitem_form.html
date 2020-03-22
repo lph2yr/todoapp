@@ -10,10 +10,7 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {{ form.media }}
 
-<!--TO look at
-https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html -->
-
-<script>
+  <script>
   $(document).ready(function() {
       $('#endRecurDates').hide();
       $('#recurFreq').change(function () {
@@ -38,8 +35,9 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
       }
       else {
         $('#courses').hide();
-        $('ecs').hide();
+        $('#ecs').hide();
       }
+
       $('#categories').change(function () {
         var selected = $(this).find("option:selected").text();
         if (selected === "Academics") {
@@ -149,6 +147,14 @@ https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-renderin
         <td>
           {{ form.ec.errors }}
           {{ form.ec }}
+        </td>
+      </tr>
+
+      <tr id="myProgress">
+        <th>{{ form.progress.label_tag }}</th>
+        <td>
+          {{ form.progress.errors }}
+          {{ form.progress }}
         </td>
       </tr>
 

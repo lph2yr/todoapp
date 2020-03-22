@@ -29,12 +29,10 @@ class AddToDoItemView(CreateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(AddToDoItemView, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
-        form.fields['recur_freq'].required = False
-        form.fields['category'].required = True
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
+
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -70,7 +68,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category
+                    category=todo_item.category,
+                    #progress = default 0
                     # completed = default False
                 )
 
@@ -90,6 +89,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category
+                    # progress = default 0
                     # completed = default False
                 )
 
@@ -116,6 +116,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress = default 0
                     # completed = default False
                 )
 
@@ -134,6 +135,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress = default 0
                     # completed = default False
                 )
 
@@ -149,10 +151,7 @@ class EditToDo(UpdateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(EditToDo, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
-        form.fields['recur_freq'].required = False
-        form.fields['category'].required = False
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
         return form

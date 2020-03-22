@@ -2,6 +2,7 @@ from django.db import models
 import django.utils
 from model_utils import FieldTracker
 import datetime
+from django.core.validators import MaxValueValidator, MinValueValidator #https://stackoverflow.com/questions/849142/how-to-limit-the-maximum-value-of-a-numeric-field-in-a-django-model
 
 # Create your models here.
 
@@ -33,6 +34,7 @@ class ToDoItem(models.Model):
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
+    progress = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="Progress")
 
 
     #recurrence freq choices

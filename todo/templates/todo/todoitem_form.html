@@ -11,6 +11,7 @@
 <!-- https://social.technet.microsoft.com/Forums/ie/en-US/1eef2f5b-d664-4980-955b-6b24f1a66f74/unable-to-trigger-drodown-choice-fields-onchange-event-in-jquery-in-content-editor?forum=onlineservicessharepoint -->
 
 <script>
+  //conditionally hide end_recur_date field when NEVER is selected for Repeat
   $(document).ready(function() {
       $('#endRecurDates').hide();
       $('#recurFreq').change(function () {
@@ -23,6 +24,7 @@
   </script>
 
   <script>
+  //conditionally show different fields when different categories is selected
   $(document).ready(function() {
       $('#courses').hide();
       $('#ecs').hide();
@@ -45,12 +47,21 @@
   });
   </script>
 
+  <script>
+  //hide progress bar when adding a todo item
+  $(document).ready(function() {
+      $('#myProgress').hide();
+  });
+  </script>
+
 
 <div class="d-flex justify-content-center">
   <h3>Add a to-do item</h3>
 </div>
 
-<!-- separate form fields: https://simpleisbetterthancomplex.com/article/2017/08/19/how-to-render-django-form-manually.html -->
+<!-- separate form fields: https://simpleisbetterthancomplex.com/article/2017/08/19/how-to-render-django-form-manually.html
+separating form field allows greater control for the front-end views
+-->
 <form action="" method="post">
   {% csrf_token %}
   <div class="d-flex justify-content-center">
@@ -62,6 +73,7 @@
       <tr>
         <th>{{ form.title.label_tag }}</th>
         <td>
+
           {{ form.title.errors }}
           {{ form.title }}
         </td>
@@ -138,6 +150,14 @@
         <td>
           {{ form.ec.errors }}
           {{ form.ec }}
+        </td>
+      </tr>
+
+      <tr id="myProgress">
+        <th>{{ form.progress.label_tag }}</th>
+        <td>
+          {{ form.progress.errors }}
+          {{ form.progress }}
         </td>
       </tr>
 

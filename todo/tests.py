@@ -23,6 +23,7 @@ def create_todo(new_title, #only need to provide title if none of the other fiel
                 new_category='NN',
                 new_course=None,
                 new_ec = None,
+                new_progress=0
                 ):
     form_data = {'title':new_title,
         'description': new_description,
@@ -34,7 +35,9 @@ def create_todo(new_title, #only need to provide title if none of the other fiel
         'end_recur_date':new_end_recur_date,
         'category': new_category,
         'course':new_course,
-        'ec': new_ec}
+        'ec': new_ec,
+        'progress': new_progress,
+        }
 
     form = ToDoForm(data=form_data)
     return form.save()
@@ -87,8 +90,6 @@ class PriorityTest(TestCase):
             new_ec=self.my_ec
         )
 
-
-
     def test_check_priority(self):
         response = self.client.get(reverse('todo_list:todo_list'))
         l = response.context['todo_list']
@@ -140,7 +141,9 @@ class ToDoItemFormTest(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id}
+            'ec': self.my_ec.id,
+            'progress':0
+            }
 
     def test_todoitemform_success_submission(self):
         self.data_form['title'] = 'Test submission success'
@@ -175,7 +178,9 @@ class CreateDailyRecurrencesTest(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id}
+            'ec': self.my_ec.id,
+            'progress':0
+        }
 
     def test_create_daily_recurrences_equiv(self):# equivalence test
         """
@@ -301,7 +306,9 @@ class CreateWeeklyRecurrencesTests(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id}
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
 
     def test_create_weekly_recurrences_equiv(self):  # equivalence test
         """
@@ -485,7 +492,9 @@ class CreateMonthlyRecurrencesTests(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id}
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
 
     def test_create_monthly_recurrences_equiv(self):  # equivalence test
         """
@@ -697,7 +706,9 @@ class CreateYearlyRecurrencesTests(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id}
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
 
     def test_create_yearly_recurrences_equiv(self):  # equivalence test
         """
@@ -912,7 +923,8 @@ class UpdateViewTest(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id
+            'ec': self.my_ec.id,
+            'progress': 0
         }
 
     def test_correct_template_for_updateview(self):
@@ -1016,7 +1028,8 @@ class TestEditRecurrences(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
-            'ec': self.my_ec.id
+            'ec': self.my_ec.id,
+            'progress': 0
         }
 
     def test_changing_duedate_only_to_later(self):
