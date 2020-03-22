@@ -72,10 +72,20 @@
                         <strong>Category:</strong> {{ todo_item.get_category_display }}
                       </li>
                       {% endif %}
-                      {% if todo_item.course %}
-                      <li>
-                        <strong>Course:</strong> {{ todo_item.course }}
-                      </li>
+                      {% if todo_item.category %}
+                        {% if todo_item.category == 'AC' %}
+                          {% if todo_item.course %}
+                            <li>
+                              <strong>Course:</strong> {{ todo_item.course }}
+                            </li>
+                          {% endif %}
+                        {% elif todo_item.category == 'EC' %}
+                          {% if todo_item.ec %}
+                            <li>
+                              <strong>Extracurricular:</strong> {{ todo_item.ec }}
+                            </li>
+                          {% endif %}
+                        {% endif %}
                       {% endif %}
                       {% if todo_item.recur_freq != 'NEVER' %}
                       <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>

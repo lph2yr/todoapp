@@ -1,6 +1,7 @@
 from django.db import models
 import django.utils
 from model_utils import FieldTracker
+import datetime
 
 # Create your models here.
 
@@ -13,10 +14,20 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
+class Extracurricular(models.Model):
+    name = models.CharField(max_length=20, verbose_name="Name")
+    detail = models.CharField(max_length=100, verbose_name='Details')
+    start_date = models.DateField(default= datetime.date.today, blank=True, verbose_name='Start date')
+    end_date = models.DateField( default= datetime.date.today, blank=True, verbose_name='End date')
+    active = models.BooleanField( default = True )
+
+    def __str__(self):
+        return self.name
 
 
 class ToDoItem(models.Model):
     course = models.ForeignKey( Course, on_delete=models.SET_NULL, null=True)
+    ec = models.ForeignKey( Extracurricular, on_delete=models.SET_NULL, null=True, verbose_name='Extracurriculars')
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)

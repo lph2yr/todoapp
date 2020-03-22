@@ -1,19 +1,16 @@
-from django.test import TestCase, Client
-from .models import ToDoItem, Course
+from django.test import TestCase
+from .models import ToDoItem, Course, Extracurricular
 from .forms import ToDoForm
 from django.utils import timezone
 from django.urls import reverse
 import pytz
 import datetime
 from dateutil.relativedelta import relativedelta
-from model_utils import FieldTracker
 
 #https://developer.mozilla.org/en-US/docs/Learn/Server-side/Django/Testing
 #https://docs.djangoproject.com/en/3.0/topics/testing/tools/
 #https://stackoverflow.com/questions/18622007/runtimewarning-datetimefield-received-a-naive-datetime
 
-#Note from Ann: make sure you create a course called "Tester" or something in every setUp()
-    # look at my examples for details
 
 def create_todo(new_title, #only need to provide title if none of the other fields change
                 new_description='',
@@ -25,6 +22,7 @@ def create_todo(new_title, #only need to provide title if none of the other fiel
                 new_end_recur_date=timezone.now(),
                 new_category='NN',
                 new_course=None,
+                new_ec = None,
                 ):
     form_data = {'title':new_title,
         'description': new_description,
@@ -35,7 +33,8 @@ def create_todo(new_title, #only need to provide title if none of the other fiel
         'recur_freq':new_recur_freq,
         'end_recur_date':new_end_recur_date,
         'category': new_category,
-        'course':new_course}
+        'course':new_course,
+        'ec': new_ec}
 
     form = ToDoForm(data=form_data)
     return form.save()
@@ -57,18 +56,38 @@ def create_course(
         course_prof = new_course_prof
     )
 
+def create_ec(
+        new_name,
+        new_detail = '',
+        new_start_date = datetime.datetime(2020, 2, 27),
+        new_end_date = datetime.datetime(2020, 2, 27),
+        new_active = False,
+):
+    return Extracurricular.objects.create(
+        name = new_name,
+        detail = new_detail,
+        start_date = new_start_date,
+        end_date = new_end_date,
+        active = new_active
+    )
+
 class PriorityTest(TestCase):
     def setUp(self):
         self.my_course = create_course(
             new_course_name="Tester"
         )
 
+        self.my_ec = create_ec(new_name='fun')
+
         create_todo(
             new_title="priority test",
             new_priority="HI",
             new_duedate=datetime.datetime(2020, 2, 27, 8, 0, 0, tzinfo=pytz.utc),
-            new_course=self.my_course
+            new_course=self.my_course,
+            new_ec=self.my_ec
         )
+
+
 
     def test_check_priority(self):
         response = self.client.get(reverse('todo_list:todo_list'))
@@ -108,6 +127,8 @@ class ToDoItemFormTest(TestCase):
             new_course_name="Tester"
         )
 
+        self.my_ec = create_ec(new_name='fun')
+
         #this data will be passed into the Forms and create/update object
         self.data_form = {
             'title': "TBD",
@@ -118,7 +139,8 @@ class ToDoItemFormTest(TestCase):
             'end_recur_date': timezone.now(),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id}
+            'course': self.my_course.id,
+            'ec': self.my_ec.id}
 
     def test_todoitemform_success_submission(self):
         self.data_form['title'] = 'Test submission success'
@@ -142,6 +164,7 @@ class CreateDailyRecurrencesTest(TestCase):
         self.my_course = create_course(
             new_course_name="Tester"
         )
+        self.my_ec = create_ec(new_name='fun')
         self.data_form = {
             'title': "TBD",
             'description': '',
@@ -151,7 +174,8 @@ class CreateDailyRecurrencesTest(TestCase):
             'end_recur_date': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id}
+            'course': self.my_course.id,
+            'ec': self.my_ec.id}
 
     def test_create_daily_recurrences_equiv(self):# equivalence test
         """
@@ -216,7 +240,7 @@ class CreateDailyRecurrencesTest(TestCase):
         filtered = ToDoItem.objects.filter(title='Test creating daily recurrences',
                                          description="Some end_recur_date but with an earlier time than duedate",
                                          recur_freq='DAILY',
-                                         end_recur_date=datetime.datetime(2020, 3, 19, 4, 0, 0, tzinfo=pytz.utc))
+                                         end_recur_date=datetime.datetime(2020, 3, 19, 4, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
         self.assertEqual( 3, len(filtered))
 
         #check duedates of all 3 objects
@@ -254,14 +278,17 @@ class CreateDailyRecurrencesTest(TestCase):
         self.assertEqual( one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
 
     def tearDown(self):
-        del self.my_course
         del self.data_form
+        del self.my_course
+        del self.my_ec
 
 class CreateWeeklyRecurrencesTests(TestCase):
     def setUp(self):
         self.my_course = create_course(
             new_course_name="Tester"
         )
+
+        self.my_ec = create_ec(new_name='fun')
 
         # this data will be passed into the Forms and create/update object
         self.data_form = {
@@ -273,7 +300,8 @@ class CreateWeeklyRecurrencesTests(TestCase):
             'end_recur_date': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id}
+            'course': self.my_course.id,
+            'ec': self.my_ec.id}
 
     def test_create_weekly_recurrences_equiv(self):  # equivalence test
         """
@@ -293,7 +321,7 @@ class CreateWeeklyRecurrencesTests(TestCase):
         # check crucial fields
         filtered = ToDoItem.objects.filter(title="Test creating weekly recurrences equivalence",
                                          recur_freq='WEEKLY',
-                                         end_recur_date=datetime.datetime(2020, 4, 6, 5, 0, 0, tzinfo=pytz.utc))
+                                         end_recur_date=datetime.datetime(2020, 4, 6, 5, 0, 0, tzinfo=pytz.utc)).order_by( 'duedate' )
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -327,7 +355,7 @@ class CreateWeeklyRecurrencesTests(TestCase):
                                             description="end_recur_date is not a full 4 weeks",
                                             recur_freq='WEEKLY',
                                             end_recur_date=datetime.datetime(2020, 4, 5, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -361,7 +389,7 @@ class CreateWeeklyRecurrencesTests(TestCase):
                                             description="end_recur_date is more than 4 weeks but less than 5 weeks",
                                             recur_freq='WEEKLY',
                                             end_recur_date=datetime.datetime(2020, 4, 8, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -395,7 +423,7 @@ class CreateWeeklyRecurrencesTests(TestCase):
                                             description="end_recur_date is 4 weeks by day but not 4 weeks by time",
                                             recur_freq='WEEKLY',
                                             end_recur_date=datetime.datetime(2020, 4, 5, 3, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -434,15 +462,17 @@ class CreateWeeklyRecurrencesTests(TestCase):
         self.assertEqual(one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
 
     def tearDown(self):
-        del self.my_course
         del self.data_form
-
+        del self.my_course
+        del self.my_ec
 
 class CreateMonthlyRecurrencesTests(TestCase):
     def setUp(self):
         self.my_course = create_course(
             new_course_name="Tester"
         )
+
+        self.my_ec = create_ec(new_name='fun')
 
         # this data will be passed into the Forms and create/update object
         self.data_form = {
@@ -454,7 +484,8 @@ class CreateMonthlyRecurrencesTests(TestCase):
             'end_recur_date': datetime.datetime(2020, 6, 16, 5, 0, 0, tzinfo=pytz.utc),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id}
+            'course': self.my_course.id,
+            'ec': self.my_ec.id}
 
     def test_create_monthly_recurrences_equiv(self):  # equivalence test
         """
@@ -471,7 +502,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
         # check crucial fields
         filtered = ToDoItem.objects.filter(title="Test creating monthly recurrences",
                                          recur_freq='MONTHLY',
-                                         end_recur_date=datetime.datetime(2020, 6, 16, 5, 0, 0, tzinfo=pytz.utc))
+                                         end_recur_date=datetime.datetime(2020, 6, 16, 5, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -506,7 +537,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
                                             description= "end_recur_date is not a full 4 months by dates",
                                             recur_freq='MONTHLY',
                                             end_recur_date= datetime.datetime(2020, 5, 16, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -539,7 +570,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
                                             description= "end_recur_date is not a full 4 months by time",
                                             recur_freq='MONTHLY',
                                             end_recur_date= datetime.datetime(2020, 5, 16, 4, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -573,7 +604,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
                                             description="end_recur_date is more than 4 months but less than 5 months by dates",
                                             recur_freq='MONTHLY',
                                             end_recur_date=datetime.datetime(2020, 6, 30, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -607,7 +638,7 @@ class CreateMonthlyRecurrencesTests(TestCase):
                                             description="end_recur_date is more than 4 months but less than 5 months by time",
                                             recur_freq='MONTHLY',
                                             end_recur_date=datetime.datetime(2020, 6, 16, 5, 1, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -653,6 +684,8 @@ class CreateYearlyRecurrencesTests(TestCase):
             new_course_name="Tester"
         )
 
+        self.my_ec = create_ec(new_name='fun')
+
         # this data will be passed into the Forms and create/update object
         self.data_form = {
             'title': "Test creating yearly recurrences",
@@ -663,7 +696,8 @@ class CreateYearlyRecurrencesTests(TestCase):
             'end_recur_date': datetime.datetime(2023, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id}
+            'course': self.my_course.id,
+            'ec': self.my_ec.id}
 
     def test_create_yearly_recurrences_equiv(self):  # equivalence test
         """
@@ -680,7 +714,7 @@ class CreateYearlyRecurrencesTests(TestCase):
         # check crucial fields
         filtered = ToDoItem.objects.filter(title="Test creating yearly recurrences",
                                          recur_freq='YEARLY',
-                                         end_recur_date=datetime.datetime(2023, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
+                                         end_recur_date=datetime.datetime(2023, 3, 16, 5, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -715,7 +749,7 @@ class CreateYearlyRecurrencesTests(TestCase):
                                             description= "end_recur_date is not a full 4 years by dates",
                                             recur_freq='YEARLY',
                                             end_recur_date= datetime.datetime(2023, 2, 16, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -751,7 +785,7 @@ class CreateYearlyRecurrencesTests(TestCase):
                                             description= "end_recur_date is not a full 4 years by time",
                                             recur_freq='YEARLY',
                                             end_recur_date= datetime.datetime(2023, 3, 16, 4, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate').order_by('duedate')
         self.assertEqual(3, len(filtered))
 
         # check duedates of all 3 objects
@@ -787,7 +821,7 @@ class CreateYearlyRecurrencesTests(TestCase):
                                             description= "end_recur_date is more than 4 years but less than 5 years by dates",
                                             recur_freq='YEARLY',
                                             end_recur_date=datetime.datetime(2023, 4, 30, 5, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -822,7 +856,7 @@ class CreateYearlyRecurrencesTests(TestCase):
                                             description="end_recur_date is more than 4 years but less than 5 years by time",
                                             recur_freq='YEARLY',
                                             end_recur_date=datetime.datetime(2023, 3, 16, 6, 0, 0, tzinfo=pytz.utc)
-                                         )
+                                         ).order_by('duedate')
         self.assertEqual(4, len(filtered))
 
         # check duedates of all 4 objects
@@ -866,6 +900,8 @@ class UpdateViewTest(TestCase):
         self.my_course = create_course(
             new_course_name="Tester"
         )
+        self.my_ec = create_ec(new_name='fun')
+
         self.data_form = {
             'title': "TBD",
             'description': '',
@@ -876,6 +912,7 @@ class UpdateViewTest(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
+            'ec': self.my_ec.id
         }
 
     def test_correct_template_for_updateview(self):
@@ -966,6 +1003,9 @@ class TestEditRecurrences(TestCase):
         self.my_course = create_course(
             new_course_name="Tester"
         )
+
+        self.my_ec = create_ec(new_name='fun')
+
         self.data_form = {
             'title': "Test edit recurrences",
             'description': '',
@@ -976,6 +1016,7 @@ class TestEditRecurrences(TestCase):
             'priority': 'LO',
             'category': 'NN',
             'course': self.my_course.id,
+            'ec': self.my_ec.id
         }
 
     def test_changing_duedate_only_to_later(self):
@@ -992,7 +1033,7 @@ class TestEditRecurrences(TestCase):
         filtered = ToDoItem.objects.filter(title = "Test redirect to edit_recurrences",
                                            duedate__gte = datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
                                            recur_freq= 'DAILY',
-                                           end_recur_date=datetime.datetime(2020, 3, 30, 5, 0, 0, tzinfo=pytz.utc))
+                                           end_recur_date=datetime.datetime(2020, 3, 30, 5, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
         self.assertEqual(15, len(filtered))
 
         count_true = 0
@@ -1022,5 +1063,6 @@ class TestEditRecurrences(TestCase):
 
 
     def tearDown(self):
-        del self.my_course
         del self.data_form
+        del self.my_course
+        del self.my_ec
