@@ -1,10 +1,6 @@
 {% extends 'todo/base.html' %} {% block content %}
 
-<div class="row">
-  <div class="col">
-    <h4>Your Courses!</h4>
-  </div>
-</div>
+
 
 <div class="row">
   <div class="col">
@@ -28,9 +24,8 @@
                   <p class="d-flex justify-content-start">
                     {% if course.course_abbrev %}
                       <h5><strong>{{ course.course_abbrev }}: {{course.course_name}}</strong></h5>
-                    {% else %}
-                      <h5><strong>{{course.course_name}}</strong></h5>
                     {% endif %}
+                     <h5><strong>{{course.course_name}}</strong></h5>
                   </p>
 
                 </button>
@@ -64,7 +59,7 @@
         <p>You have no courses!</p>
       {% endif %}
     </div>
-  <body id="burnbooks"></body>
+
   </div>
 </div>
 

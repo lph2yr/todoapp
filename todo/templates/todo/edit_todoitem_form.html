@@ -10,60 +10,8 @@
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 {{ form.media }}
 
-  <script>
-  $(document).ready(function() {
-      var recur = $('#recurFreq').find("option:selected").text();
-      if (recur !== "Never"){
-        $('#endRecurDates').show();
-      }
-      else {
-        $('#endRecurDates').hide();
-      }
-      $('#recurFreq').change(function () {
-        var selected = $(this).find("option:selected").text();
-        if (selected !== "Never") {
-          $('#endRecurDates').show();
-        }
-        else {
-          $('#endRecurDates').hide();
-        }
-      });
-  });
-  </script>
-
-  <script>
-  $(document).ready(function() {
-      var cat = $('#categories').find("option:selected").text();
-      if (cat == 'Academics'){
-        $('#courses').show();
-        $('#ecs').hide();
-      }
-      else if (cat == 'Extracurriculars'){
-        $('#courses').hide();
-        $('#ecs').show();
-      }
-      else {
-        $('#courses').hide();
-        $('#ecs').hide();
-      }
-
-      $('#categories').change(function () {
-        var selected = $(this).find("option:selected").text();
-        if (selected === "Academics") {
-          $('#courses').show();
-          $('#ecs').hide();
-        }
-        else if (selected === "Extracurriculars") {
-          $('#courses').hide();
-          $('#ecs').show();
-        }
-        else {
-          $('#courses').hide();
-          $('ecs').hide();
-        }
-      });
-  });
-  </script>
+<!--TO look at
+https://simpleisbetterthancomplex.com/tutorial/2018/11/28/advanced-form-rendering-with-django-crispy-forms.html -->
 
 <div class="d-flex justify-content-center">
   <h4>Edit a to-do item</h4>
@@ -72,101 +20,8 @@
 <form action="" method="post">
   {% csrf_token %}
   <div class="d-flex justify-content-center">
-    {{ form.non_field_errors }}
-
-    {{ form.source.errors }}
-    {{ form.source }}
     <table>
-      <tr>
-        <th>{{ form.title.label_tag }}</th>
-        <td>
-          {{ form.title.errors }}
-          {{ form.title }}
-        </td>
-      </tr>
-
-      <tr>
-        <th>{{ form.description.label_tag }}</th>
-        <td>
-          {{ form.description.errors }}
-          {{ form.description }}
-        </td>
-      </tr>
-
-      <tr>
-        <th>{{ form.duedate.label_tag }}</th>
-        <td>
-          {{ form.duedate.errors }}
-          {{ form.duedate }}
-        </td>
-      </tr>
-
-      <tr>
-        <th>{{ form.location.label_tag }}</th>
-        <td>
-          {{ form.location.errors }}
-          {{ form.location }}
-        </td>
-      </tr>
-
-      <tr class="form-group" id="recurFreq">
-        <th>{{ form.recur_freq.label_tag }}</th>
-          <td>
-            {{ form.recur_freq.errors }}
-            {{ form.recur_freq }}
-          </td>
-      </tr>
-
-
-      <tr id="endRecurDates">
-        <th>{{ form.end_recur_date.label_tag }}</th>
-        <td>
-          {{ form.end_recur_freq.errors }}
-          {{ form.end_recur_date }}
-        </td>
-      </tr>
-
-
-      <tr>
-        <th>{{ form.priority.label_tag }}</th>
-        <td>
-          {{ form.priority.errors }}
-          {{ form.priority }}
-        </td>
-      </tr>
-
-      <tr id="categories">
-        <th>{{ form.category.label_tag }}</th>
-        <td>
-          {{ form.category.errors }}
-          {{ form.category }}
-        </td>
-      </tr>
-
-      <tr id="courses">
-        <th>{{ form.course.label_tag }}</th>
-        <td>
-          {{ form.course.errors }}
-          {{ form.course }}
-        </td>
-      </tr>
-
-      <tr id="ecs">
-        <th>{{ form.ec.label_tag }}</th>
-        <td>
-          {{ form.ec.errors }}
-          {{ form.ec }}
-        </td>
-      </tr>
-
-      <tr id="myProgress">
-        <th>{{ form.progress.label_tag }}</th>
-        <td>
-          {{ form.progress.errors }}
-          {{ form.progress }}
-        </td>
-      </tr>
-
+      {{ form.as_table }}
     </table>
   </div>
 

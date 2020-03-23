@@ -16,14 +16,13 @@
       crossorigin="anonymous"
     />
 
-
     <!-- custom page CSS -->
     {% load static %}
     <link
       rel="stylesheet"
       type="text/css"
       href="{% static 'todo/main.css' %}"
-    >
+    />
 
     <title>Personal Dashboard</title>
   </head>
@@ -61,7 +60,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}">Academics</a>
-              <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}">Extracurriculars</a>
+              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Extracurriculars</a>
               <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
               <a class="dropdown-item" href="{% url 'todo_list:social_list' %}">Social</a>
               <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}">Personal</a>
@@ -75,7 +74,6 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'todo_list:course_list' %}">Your Courses</a>
-              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Your Extracurriculars</a>
             </div>
           </li>
         </ul>
@@ -112,7 +110,6 @@
       crossorigin="anonymous"
     ></script>
 
-
     <script>
       // collapse navbar when clicking outside of it
       $(document).ready(function() {
@@ -125,9 +122,6 @@
         });
       });
     </script>
-
-
-
   </body>
 </html>
 

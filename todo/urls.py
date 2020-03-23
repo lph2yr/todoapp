@@ -15,7 +15,7 @@ urlpatterns = [
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
 
     path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
-    path('extracurriculars/', views.ECToDoListView.as_view(), name='ec_todo_list'),
+    path('extracurriculars/', views.ECListView.as_view(), name='ec_list'),
     path('job/', views.JobListView.as_view(), name='job_list'),
     path('social/', views.SocialListView.as_view(), name='social_list'),
     path('personal/', views.PersonalListView.as_view(), name='personal_list'),
@@ -25,12 +25,6 @@ urlpatterns = [
     path('your_courses/', views.CourseListView.as_view(), name= 'course_list'),
     path('<int:course_id>/delete_course/', views.delete_course, name='delete_course'),
     path('<int:pk>/edit_course/', views.EditCourseView.as_view(), name='edit_course'),
-
-    path('add_ec/', views.AddEC.as_view(), name='add_ec'),
-    path('your_ec/', views.ECListView.as_view(), name= 'ec_list'),
-    path('<int:ec_id>/delete_ec/', views.delete_ec, name='delete_ec'),
-    path('<int:pk>/edit_ec/', views.EditEC.as_view(), name='edit_ec'),
-
 
 
 ]
