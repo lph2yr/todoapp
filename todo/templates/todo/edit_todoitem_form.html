@@ -12,11 +12,20 @@
 
   <script>
   $(document).ready(function() {
-      $('#endRecurDates').hide();
+      var recur = $('#recurFreq').find("option:selected").text();
+      if (recur !== "Never"){
+        $('#endRecurDates').show();
+      }
+      else {
+        $('#endRecurDates').hide();
+      }
       $('#recurFreq').change(function () {
         var selected = $(this).find("option:selected").text();
-        if (selected !== "NEVER") {
+        if (selected !== "Never") {
           $('#endRecurDates').show();
+        }
+        else {
+          $('#endRecurDates').hide();
         }
       });
   });

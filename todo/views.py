@@ -276,6 +276,14 @@ def change_all(request, todo_item_id):
             future_event.save()
             todo_item.has_priority_changed = False
             todo_item.save()
+    #check fields that can't be checked
+    #course, ec
+    for i in range(1, todo_item.count_future_events + 1):
+        future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        future_event.course= todo_item.course
+        future_event.ec = todo_item.ec
+        future_event.save()
+
     if (todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed):
         return redirect('todo_list:edit_recurrences', todo_item_id=todo_item_id)
     return redirect('todo_list:todo_list')

@@ -16,8 +16,11 @@
       $('#endRecurDates').hide();
       $('#recurFreq').change(function () {
         var selected = $(this).find("option:selected").text();
-        if (selected !== "NEVER") {
+        if (selected !== "Never") {
           $('#endRecurDates').show();
+        }
+        else {
+          $('#endRecurDates').hide();
         }
       });
   });
@@ -38,7 +41,6 @@
           $('#courses').hide();
           $('#ecs').show();
         }
-
         else {
           $('#courses').hide();
           $('ecs').hide();
