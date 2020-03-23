@@ -1074,7 +1074,6 @@ class TestEditRecurrences(TestCase):
         current_query = ToDoItem.objects.all()
         self.assertEqual(14, len(current_query))
 
-
     def tearDown(self):
         del self.data_form
         del self.my_course

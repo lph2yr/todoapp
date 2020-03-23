@@ -479,7 +479,7 @@ def delete_ec(request, ec_id):
     ec.delete()
     return redirect('todo_list:ec_list')
 
-########################################################################3
+########################################################################
 class JobListView(generic.ListView):
     template_name = 'todo/job_list.html'
     context_object_name = 'todo_list'
