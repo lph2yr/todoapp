@@ -1,8 +1,6 @@
 from django.db import models
 import django.utils
 from model_utils import FieldTracker
-import datetime
-from django.core.validators import MaxValueValidator, MinValueValidator #https://stackoverflow.com/questions/849142/how-to-limit-the-maximum-value-of-a-numeric-field-in-a-django-model
 
 # Create your models here.
 
@@ -15,26 +13,15 @@ class Course(models.Model):
     def __str__(self):
         return self.course_name
 
-class Extracurricular(models.Model):
-    name = models.CharField(max_length=20, verbose_name="Name")
-    detail = models.CharField(max_length=100, verbose_name='Details')
-    start_date = models.DateField(default= datetime.date.today, blank=True, verbose_name='Start date')
-    end_date = models.DateField( default= datetime.date.today, blank=True, verbose_name='End date')
-    active = models.BooleanField( default = True )
-
-    def __str__(self):
-        return self.name
 
 
 class ToDoItem(models.Model):
     course = models.ForeignKey( Course, on_delete=models.SET_NULL, null=True)
-    ec = models.ForeignKey( Extracurricular, on_delete=models.SET_NULL, null=True, verbose_name='Extracurriculars')
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=600, blank=True, default="")
     duedate = models.DateTimeField(default=django.utils.timezone.now, blank=True)
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
-    progress = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="Progress")
 
 
     #recurrence freq choices
@@ -98,10 +85,12 @@ class ToDoItem(models.Model):
         verbose_name='Category',
     )
 
+    #tags???????????????????????????????
     has_title_changed = models.BooleanField(default=False)
     has_description_changed = models.BooleanField(default=False)
     has_duedate_changed = models.BooleanField(default=False)
     has_location_changed = models.BooleanField(default=False)
+    #has_completed_changed =
     has_recur_freq_changed = models.BooleanField(default=False)
     has_end_recur_date_changed = models.BooleanField(default=False)
     has_category_changed = models.BooleanField(default=False)
@@ -112,16 +101,18 @@ class ToDoItem(models.Model):
     tracker = FieldTracker() #track changes to fields
 
     def __str__(self):
-       return self.title + " " + self.duedate.strftime('%Y-%m-%d') + " id: " + str(self.id)
+       return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
         now = django.utils.timezone.now
         return now > self.duedate.date()
 
     def is_today_duedate(self):
-        now = django.utils.timezone.now()
-        due = self.duedate
-        is_same = now.day == due.day
+        now = django.utils.timezone.now().replace(tzinfo=None)
+        due = self.duedate.replace(tzinfo=None)
+        delta = abs( now - due )
+        day_dif = delta.days
+        is_same = day_dif == 0
         return is_same
 
 

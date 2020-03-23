@@ -27,19 +27,4 @@ body {
   background-color: aliceblue;
 }
 
-#rabbit_cheerleaders {
-    background: white url("images/rabbit_cheerleaders.gif") no-repeat;
-    background-position: center;
-}
-#finished_all_work {
-    background: white url("images/finished_all_work.gif") no-repeat;
-    background-position: right;
-    background-size: 20% 30%;
 
-}
-
-#burnbooks {
-    background: white url("images/burn_books.gif") no-repeat;
-    background-position: center;
-    background-size: 25% 50%;
-}
