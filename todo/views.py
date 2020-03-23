@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm
-from .models import ToDoItem, Course
+from .forms import ToDoForm, CourseForm, ECForm
+from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
 from django.utils import timezone
 import datetime
@@ -29,9 +29,10 @@ class AddToDoItemView(CreateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(AddToDoItemView, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
+        form.fields['ec'].required = False
+
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -59,6 +60,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, delta_day + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec=todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -66,7 +68,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category
+                    category=todo_item.category,
+                    #progress = default 0
                     # completed = default False
                 )
 
@@ -77,6 +80,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec=todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -85,6 +89,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category
+                    # progress = default 0
                     # completed = default False
                 )
 
@@ -102,6 +107,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, delta_month + months_leftover + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec=todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -110,15 +116,17 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress = default 0
                     # completed = default False
                 )
 
         elif (todo_item.recur_freq == 'YEARLY'):
-            delta_year = end_date.year - due_date.year  # find the time differences
+            delta_year = relativedelta( end_date, due_date ).years # find the time differences
             # loop thro day_dif to create and save that many obj
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec=todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -127,12 +135,13 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress = default 0
                     # completed = default False
                 )
+
     return redirect('todo_list:todo_list')
 
 
-# TODO: put in no changes made???????????????????????????????????
 # view allows update/edit of object in database
 class EditToDo(UpdateView):
     model = ToDoItem
@@ -142,9 +151,9 @@ class EditToDo(UpdateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(EditToDo, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
+        form.fields['ec'].required = False
         return form
 
     # override form_valid to check to see if recur_freq has changed
@@ -162,7 +171,6 @@ class EditToDo(UpdateView):
                 form.save_m2m()
                 return redirect('todo_list:todo_list')
             else:
-                # TODO: how to track course changes?????????/
                 todo.has_title_changed = self.object.tracker.has_changed('title')
                 todo.has_description_changed = self.object.tracker.has_changed('description')
                 todo.has_location_changed = self.object.tracker.has_changed('location')
@@ -176,8 +184,7 @@ class EditToDo(UpdateView):
                 todo.has_end_recur_date_changed = self.object.tracker.has_changed(
                     'end_recur_date')  # returns true if end_recur_date has changed
 
-                if (
-                        not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
+                if (not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
                     # find number of future objects ahead of current object being modified
                     future_events = ToDoItem.objects.filter(title__startswith=todo.title,
                                                             duedate__gt=todo.duedate,
@@ -269,9 +276,16 @@ def change_all(request, todo_item_id):
             future_event.save()
             todo_item.has_priority_changed = False
             todo_item.save()
+    #check fields that can't be checked
+    #course, ec
+    for i in range(1, todo_item.count_future_events + 1):
+        future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        future_event.course= todo_item.course
+        future_event.ec = todo_item.ec
+        future_event.save()
+
     if (todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed):
         return redirect('todo_list:edit_recurrences', todo_item_id=todo_item_id)
-
     return redirect('todo_list:todo_list')
 
 
@@ -280,10 +294,14 @@ def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # for date changes, delete all future instances and remake others
     # https://docs.djangoproject.com/en/2.0/ref/models/querysets/
+
     ToDoItem.objects.filter(title__startswith=todo_item.title,  # filter by title
-                            duedate__gt=todo_item.duedate,  # filter by duedate >= todo_item.title
-                            end_recur_date__lte=todo_item.end_recur_date
-                            ).delete()
+                            duedate__gte=todo_item.duedate,  # filter by duedate >= todo_item.title
+                            category= todo_item.category,
+                            ).exclude(pk=todo_item_id).delete()
+    todo_item.has_end_recur_date_changed = False
+    todo_item.has_recur_freq_changed = False
+    todo_item.has_duedate_changed = False
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
@@ -402,27 +420,74 @@ class AcademicsListView(generic.ListView):
 
 
 ###############################################################################
-# Extracurricular list view
-class ECListView(generic.ListView):
-    template_name = 'todo/ec_list.html'
-    context_object_name = 'todo_list'
+# Extracurricular To do list view
+class ECToDoListView(generic.ListView):
+    template_name = 'todo/ec_todo_list.html'
+    context_object_name = 'ec_todo_list'
 
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now()) / \
-                       datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
-        return ToDoItem.objects.filter(completed=False, category='EC').order_by('duedate')
+        return Extracurricular.objects.all().order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None)
+        return context
+
+class AddEC(CreateView):
+    model = Extracurricular
+    template_name = "todo/add_ec_form.html"
+    form_class = ECForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddEC, self).get_form(form_class)
+        form.fields['name'].required = True
+        form.fields['detail'].required = False
+        form.fields['start_date'].required = False
+        form.fields['end_date'].required = False
+        form.fields['active'].required = False
+        return form
+
+    # overriding form_valid function to redirect to create_recurrences when add a todo item
+    def form_valid(self, form):
+        self.object = form.save()
+        return redirect('todo_list:ec_list')
+
+class EditEC(UpdateView):
+    model = Extracurricular
+    template_name = "todo/edit_ec_form.html"
+    form_class = ECForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditEC, self).get_form(form_class)
+        form.fields['name'].required = True
+        form.fields['detail'].required = False
+        form.fields['start_date'].required = False
+        form.fields['end_date'].required = False
+        form.fields['active'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:ec_list')
+
+#purely EC list view
+class ECListView(generic.ListView):
+    template_name = 'todo/ec_list.html'
+    context_object_name = 'ec_list'
+    queryset = Extracurricular.objects.all().order_by('name')
 
 
+def delete_ec(request, ec_id):
+    ec = Extracurricular.objects.get(pk=ec_id)
+    ec.delete()
+    return redirect('todo_list:ec_list')
+
+########################################################################
 class JobListView(generic.ListView):
     template_name = 'todo/job_list.html'
     context_object_name = 'todo_list'
