@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AddField(
+        migrations.AlterField(
             model_name='todoitem',
             name='priority',
             field=models.CharField(choices=[('HI', 'High'), ('MD', 'Medium'), ('LO', 'Low')], default='LO', max_length=2),

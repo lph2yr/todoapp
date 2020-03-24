@@ -3,8 +3,8 @@ from .models import ToDoItem
 from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
-from django.urls import reverse, resolve
-from .forms import EditToDoForm
+from django.urls import reverse
+from .forms import ToDoForm
 from .views import DayView, SpecificDayView
 
 def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(),
