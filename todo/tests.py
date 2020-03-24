@@ -1,15 +1,21 @@
 from django.test import TestCase, Client
-from .models import ToDoItem
+from .models import ToDoItem, Course, Extracurricular
 from django.utils import timezone
-from django.utils.timezone import make_aware
-from django.utils.dateparse import parse_datetime
 from django.urls import reverse
-from .forms import ToDoForm
-from .views import DayView, SpecificDayView
+import datetime
 
-def create_todo(new_title, new_description, new_location, new_date_created=timezone.now(),
-                new_duedate=timezone.now(), new_priority='LO', new_completed=False,
-                new_recur_freq='NEVER', new_end_recur_date=timezone.now()):
+def create_todo(new_title, #only need to provide title if everything else is unchanged
+                new_description='',
+                new_location='',
+                new_duedate=timezone.now(),
+                new_priority='LO',
+                new_completed=False,
+                new_recur_freq='NEVER',
+                new_end_recur_date=timezone.now(),
+                new_course=None,
+                new_ec = None,
+                new_progress = 0,
+                ):
     return ToDoItem.objects.create(
         title=new_title,
         description=new_description,
@@ -19,25 +25,52 @@ def create_todo(new_title, new_description, new_location, new_date_created=timez
         completed=new_completed,
         recur_freq=new_recur_freq,
         end_recur_date=new_end_recur_date,
-        # date_created=new_date_created
+        course = new_course,
+        ec = new_ec,
+        progress = new_progress
     )
 
+def create_course(
+        new_name,
+        new_abbrev = "",
+        new_prof = "",
+):
+    return Course.objects.create(
+        course_name = new_name,
+        course_abbrev = new_abbrev,
+        course_prof = new_prof
+    )
+
+def create_ec(
+        new_name,
+        new_details = '',
+        new_start_date = datetime.date.today(),
+        new_end_date = datetime.date.today(),
+        new_active = True,
+):
+    return Extracurricular.objects.create(
+        name = new_name,
+        detail = new_details,
+        start_date = new_start_date,
+        end_date = new_end_date,
+        active = new_active
+    )
 
 class ToDoItemModelTests(TestCase):
+    def setUp(self):
+        self.course = create_course(new_name="Tester")
+        self.ec = create_ec(new_name='')
+
     def test_same_is_today_duedate(self):
         """
        returns True if the duedate is the same as currentdate time
         """
-        now = timezone.now()
-        # create a new obj
-        now = now.replace(tzinfo=None)  # remove timezone info
         # create a new obj
         todo = ToDoItem(
             title="Test case 1",
-            description="Testing is_today_duedate",
-            location="",
-            recur_freq="NEVER",
-            duedate=parse_datetime("2020-02-23 09:00")
+            duedate=datetime.datetime(2020, 2, 23, 9, 0),
+            course = self.course,
+            ec = self.ec
         )
 
         day_dif = todo.is_today_duedate()
@@ -46,23 +79,15 @@ class ToDoItemModelTests(TestCase):
 
 class CreateRecurrences(TestCase):
     def setUp(self):
+        course = create_course(new_name="Tester")
+        ec = create_ec(new_name='')
         create_todo(
             new_title="Daily test",
+            new_duedate=datetime.datetime(2020, 2, 27, 9, 0),
             new_recur_freq='DAILY',
-            new_end_recur_date=make_aware(parse_datetime("2020-03-05 09:00")),
-            new_duedate=make_aware(parse_datetime("2020-02-27 08:00")),
-            new_description="",  # req
-            new_location=""  # req
-        )
-
-        # blank
-        create_todo(
-            new_title="",
-            new_recur_freq='NEVER',
-            new_end_recur_date=make_aware(parse_datetime("2020-03-05 09:00")),
-            new_duedate=make_aware(parse_datetime("2020-02-27 08:00")),
-            new_description="Blank title",  # req
-            new_location=""  # req
+            new_end_recur_date=datetime.datetime(2020, 3, 5, 9, 0),
+            new_course = course,
+            new_ec = ec,
         )
 
     def test_is_correct_template_used(self):
@@ -79,12 +104,14 @@ class CreateRecurrences(TestCase):
 
 class PriorityTest(TestCase):
     def setUp(self):
+        self.course = create_course(new_name="Tester")
+        self.ec = create_ec(new_name='')
         create_todo(
             new_title="priority test",
             new_priority="HI",
-            new_duedate=make_aware(parse_datetime("2020-02-27 08:00")),
-            new_description="",
-            new_location=""
+            new_duedate=datetime.datetime(2020, 2, 27, 8, 0),
+            new_course = self.course,
+            new_ec = self.ec,
         )
 
     def test_check_priority(self):
@@ -93,40 +120,30 @@ class PriorityTest(TestCase):
 
 
 class DayViewTest(TestCase):
-
     def setUp(self):
+        course = create_course(new_name="Tester")
+        ec = create_ec(new_name='')
         create_todo(
-            new_title="March 5th todo", 
-            new_description="", 
-            new_location="", 
-            new_date_created=timezone.now(),
-            new_duedate=make_aware(parse_datetime("2020-03-05 14:00")), 
-            new_priority='LO', 
-            new_completed=False,
-            new_recur_freq='NEVER', 
-            new_end_recur_date=timezone.now())
+            new_title="March 5th todo",
+            new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
+            new_course = course,
+            new_ec = ec,
+        )
         
         create_todo(
-            new_title="March 5th todo completed", 
-            new_description="", 
-            new_location="", 
-            new_date_created=timezone.now(),
-            new_duedate=make_aware(parse_datetime("2020-03-05 14:00")), 
-            new_priority='LO', 
+            new_title="March 5th todo completed",
+            new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
             new_completed=True,
-            new_recur_freq='NEVER', 
-            new_end_recur_date=timezone.now())
+            new_course = course,
+            new_ec = ec,
+        )
 
         mar17_todo = create_todo(
-            new_title="March 17th todo", 
-            new_description="", 
-            new_location="", 
-            new_date_created=timezone.now(),
-            new_duedate=make_aware(parse_datetime("2020-03-17 14:00")), 
-            new_priority='LO', 
-            new_completed=False,
-            new_recur_freq='NEVER', 
-            new_end_recur_date=timezone.now())
+            new_title="March 17th todo",
+            new_duedate=datetime.datetime(2020, 3, 17, 14, 0),
+            new_course = course,
+            new_ec = ec,
+        )
 
     def test_check_no_todos(self):
         response = self.client.get('/day/2020/mar/12/')

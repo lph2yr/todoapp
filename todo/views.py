@@ -34,6 +34,7 @@ class AddToDoItemView(CreateView):
         form.fields['title'].required = True
         form.fields['duedate'].required = True
         form.fields['course'].required = False
+        form.fields['ec'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -144,9 +145,8 @@ class EditToDo(UpdateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(EditToDo, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
         form.fields['course'].required = False
+        form.fields['ec'].required = False
         return form
 
     # override form_valid to check to see if recur_freq has changed
