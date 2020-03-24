@@ -44,9 +44,6 @@ class ToDoItemModelTests(TestCase):
         self.assertIs(day_dif, False)
 
 
-# write tests for day view: make sure that only tasks that are due on a certain day are shown
-
-
 class CreateRecurrences(TestCase):
     def setUp(self):
         create_todo(
@@ -120,7 +117,7 @@ class DayViewTest(TestCase):
             new_recur_freq='NEVER', 
             new_end_recur_date=timezone.now())
 
-        create_todo(
+        mar17_todo = create_todo(
             new_title="March 17th todo", 
             new_description="", 
             new_location="", 
@@ -132,8 +129,23 @@ class DayViewTest(TestCase):
             new_end_recur_date=timezone.now())
 
     def test_check_no_todos(self):
-        #page = resolve('/day/2020/may/4')
-        self.assertEqual(True, True)
+        response = self.client.get('/day/2020/mar/12/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You have no to-do items for this day!")
+        self.assertQuerysetEqual(response.context['object_list'], [])
+
+    def test_check_one_todo(self):
+        response = self.client.get('/day/2020/mar/17/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "March 17th todo")
+        self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 17th todo 2020-03-17>'])
+
+    def test_check_only_incomplete_todo(self):
+        response = self.client.get('/day/2020/mar/5/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "March 5th todo")
+        self.assertNotContains(response, "March 5th todo completed")
+        self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 5th todo 2020-03-05>'])
 
         
 class TodoListViewsTest(TestCase):
