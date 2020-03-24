@@ -12,6 +12,8 @@ urlpatterns = [
     path('delete_todo_item/<int:todo_item_id>/', views.delete_todo, name='delete_todo_item'),
     path('<int:todo_item_id>/change_all/', views.change_all, name='change_all'),
     path('add_todo_item/<int:todo_item_id>/create_recurrences/', views.create_recurrences, name='create_recurrences'),
+    path('day/', views.DayView.as_view(), name='day'),
+    path('day/<int:year>/<str:month>/<int:day>/', views.SpecificDayView.as_view(), name='specific_day'),
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
 
     path('academics/', views.AcademicsListView.as_view(), name='academics_list'),

@@ -51,7 +51,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'todo_list:completed' %}"
-              >Completed tasks</a
+              >Completed items</a
             >
           </li>
           <li class="nav-item dropdown">
@@ -75,6 +75,11 @@
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'todo_list:course_list' %}">Your Courses</a>
             </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list:day' %}"
+              >Day view</a
+            >
           </li>
         </ul>
       </div>
