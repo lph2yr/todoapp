@@ -36,7 +36,5 @@ urlpatterns = [
     path('delete_all_completed/', views.delete_all_completed, name='delete_all_completed'),
     path('delete_all_incompleted/', views.delete_all_incompleted, name='delete_all_incompleted'),
 
-
-
 ]
 
