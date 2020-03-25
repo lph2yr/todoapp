@@ -33,6 +33,12 @@ def create_todo(new_title, #only need to provide title if everything else is unc
         progress = new_progress
     )
 
+#if there is a dictionary of fields already available, use this function with the dictionary as parameter
+def create_from_data_dict( form_data ):
+    form = ToDoForm(data = form_data)
+    return form.save()
+
+
 def create_course(
         new_course_name,
         new_course_abbrev = "",
