@@ -428,12 +428,12 @@ class ECToDoList(generic.ListView):
     context_object_name = 'ec_list'
 
     def get_queryset(self):
-        # update the priority twice a day if the due date is getting close
-        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        #get list of ec ordered by name
         return Extracurricular.objects.all().order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        #add list objects without a specific ec object but is categorized as ec
         context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None)
         return context
 
