@@ -31,14 +31,14 @@ def create_todo(new_title, #only need to provide title if everything else is unc
     )
 
 def create_course(
-        new_name,
-        new_abbrev = "",
-        new_prof = "",
+        new_course_name,
+        new_course_abbrev = "",
+        new_course_prof = "",
 ):
     return Course.objects.create(
-        course_name = new_name,
-        course_abbrev = new_abbrev,
-        course_prof = new_prof
+        course_name = new_course_name,
+        course_abbrev = new_course_abbrev,
+        course_prof = new_course_prof
     )
 
 def create_ec(
@@ -56,9 +56,10 @@ def create_ec(
         active = new_active
     )
 
+
 class ToDoItemModelTests(TestCase):
     def setUp(self):
-        self.course = create_course(new_name="Tester")
+        self.course = create_course(new_course_name="Tester")
         self.ec = create_ec(new_name='')
 
     def test_same_is_today_duedate(self):
@@ -69,80 +70,63 @@ class ToDoItemModelTests(TestCase):
         todo = ToDoItem(
             title="Test case 1",
             duedate=datetime.datetime(2020, 2, 23, 9, 0),
-            course = self.course,
-            ec = self.ec
+            course=self.course,
+            ec=self.ec
         )
 
         day_dif = todo.is_today_duedate()
         self.assertIs(day_dif, False)
 
 
-class CreateRecurrences(TestCase):
-    def setUp(self):
-        course = create_course(new_name="Tester")
-        ec = create_ec(new_name='')
-        create_todo(
-            new_title="Daily test",
-            new_duedate=datetime.datetime(2020, 2, 27, 9, 0),
-            new_recur_freq='DAILY',
-            new_end_recur_date=datetime.datetime(2020, 3, 5, 9, 0),
-            new_course = course,
-            new_ec = ec,
-        )
-
-    def test_is_correct_template_used(self):
-        todo = ToDoItem.objects.get(title="Daily test")
-        pk = todo.id
-        response = self.client.get(reverse('todo_list:detail', args=[pk]))
-        self.assertEqual(response.status_code, 200)
-
-        # check correct template used
-        self.assertTemplateUsed(response, 'todo/edit_todoitem_form.html')
-
-    # test display req message
-
-
 class PriorityTest(TestCase):
     def setUp(self):
-        self.course = create_course(new_name="Tester")
-        self.ec = create_ec(new_name='')
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+        self.my_ec = create_ec(new_name='fun')
         create_todo(
             new_title="priority test",
             new_priority="HI",
-            new_duedate=datetime.datetime(2020, 2, 27, 8, 0),
-            new_course = self.course,
-            new_ec = self.ec,
+            new_duedate=datetime.datetime(2020, 2, 27, 8, 0, 0, tzinfo=pytz.utc),
+            new_course=self.my_course,
+            new_ec=self.my_ec
         )
 
     def test_check_priority(self):
-        todo = ToDoItem.objects.get(title="priority test")
+        response = self.client.get(reverse('todo_list:todo_list'))
+        l = response.context['todo_list']
+        todo = l[0]  # only item in list
+        self.assertEqual(todo.title, "priority test")
         self.assertEqual(todo.priority, "HI")
 
 
 class DayViewTest(TestCase):
     def setUp(self):
-        course = create_course(new_name="Tester")
-        ec = create_ec(new_name='')
+        self.course = create_course(new_course_name="Tester")
+        self.ec = create_ec(new_name='')
+
         create_todo(
             new_title="March 5th todo",
             new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
-            new_course = course,
-            new_ec = ec,
+            new_completed=False,
+            new_course=self.course,
+            new_ec=self.ec,
         )
-        
-        create_todo(
+
+        self.complete_3_5 = create_todo(
             new_title="March 5th todo completed",
             new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
-            new_completed=True,
-            new_course = course,
-            new_ec = ec,
+            new_course=self.course,
+            new_ec=self.ec,
         )
+        self.complete_3_5.completed = True
+        self.complete_3_5.save()
 
         mar17_todo = create_todo(
             new_title="March 17th todo",
             new_duedate=datetime.datetime(2020, 3, 17, 14, 0),
-            new_course = course,
-            new_ec = ec,
+            new_course=self.course,
+            new_ec=self.ec,
         )
 
     def test_check_no_todos(self):
@@ -164,7 +148,7 @@ class DayViewTest(TestCase):
         self.assertNotContains(response, "March 5th todo completed")
         self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 5th todo 2020-03-05>'])
 
-        
+
 class TodoListViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
