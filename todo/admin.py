@@ -3,7 +3,7 @@ from django.contrib import admin
 # Register your models here.
 
 
-from .models import ToDoItem, Course
+from .models import ToDoItem, Course, Extracurricular
 
 class ToDoAdmin(admin.ModelAdmin):
     fieldsets = [
@@ -28,6 +28,16 @@ class CourseAdmin( admin.ModelAdmin ):
     list_filter = ['course_name']
     search_fields = ['course_name']
 
+class ECAdmin(admin.ModelAdmin):
+    fieldsets = [
+        (None, {'fields': ['name']}),
+        ('Details',
+         {'fields': ['detail', 'start_date', 'end_date', 'active']}),
+    ]
+    list_display = ('name', 'active')
+    list_filter = ['name']
+    search_fields = ['name']
+
 admin.site.register(ToDoItem, ToDoAdmin )
 admin.site.register( Course, CourseAdmin )
-
+admin.site.register( Extracurricular, ECAdmin )
