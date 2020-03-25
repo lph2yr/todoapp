@@ -16,17 +16,21 @@ urlpatterns = [
     path('day/<int:year>/<str:month>/<int:day>/', views.SpecificDayView.as_view(), name='specific_day'),
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
 
-    path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
-    path('extracurriculars/', views.ECListView.as_view(), name='ec_list'),
     path('job/', views.JobListView.as_view(), name='job_list'),
     path('social/', views.SocialListView.as_view(), name='social_list'),
     path('personal/', views.PersonalListView.as_view(), name='personal_list'),
     path('other/', views.OtherListView.as_view(), name='other_list'),
 
+    path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
     path('add_course/', views.AddCourseView.as_view(), name='add_course'),
     path('your_courses/', views.CourseListView.as_view(), name= 'course_list'),
     path('<int:course_id>/delete_course/', views.delete_course, name='delete_course'),
     path('<int:pk>/edit_course/', views.EditCourseView.as_view(), name='edit_course'),
+
+    path('extracurriculars/', views.ECToDoList.as_view(), name='ec_todo_list'),
+    path('your_ec/', views.ECListView.as_view(), name = 'ec_list' ),
+    path('add_ec', views.AddEC.as_view(), name='add_ec'),
+    path('<int:pk>/edit_ec/', views.EditEC.as_view(), name='edit_ec'),
 
 
 ]

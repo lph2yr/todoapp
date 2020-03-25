@@ -1,8 +1,8 @@
-from .models import ToDoItem, Course
+from .models import ToDoItem, Course, Extracurricular
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
 from django import forms
-from tempus_dominus.widgets import DateTimePicker #https://pypi.org/project/django-tempus-dominus/
+from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
 
 
 
@@ -26,14 +26,30 @@ class ToDoForm(forms.ModelForm):
                                                  ),
                   }
 
-
-
-
 class CourseForm( forms.ModelForm ):
     class Meta:
         model = Course
         fields = ['course_name', 'course_abbrev', 'course_prof']
 
+class ECForm( forms.ModelForm ):
+    class Meta:
+        model = Extracurricular
+        fields = ['name', 'detail', 'start_date', 'end_date', 'active']
+        widgets = {
+            'detail': forms.Textarea(attrs={'cols': 35, 'rows': 2}),
+            'start_date': DatePicker(attrs={'placeholder': 'yyyy-mm-dd',
+                                                        'append': 'fa fa-calendar',
+                                                        'icon_toggle': True,},
+                                                 options={ 'useCurrent': True,
+                                                           'collapse': True,}
+                                                 ),
+            'end_date': DatePicker(attrs={'placeholder': 'yyyy-mm-dd',
+                                            'append': 'fa fa-calendar',
+                                            'icon_toggle': True, },
+                                     options={'useCurrent': True,
+                                              'collapse': True, }
+                                     ),
+        }
 
 
 

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm, DayForm
+from .forms import ToDoForm, CourseForm, DayForm, ECForm
 from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
@@ -422,24 +422,71 @@ class AcademicsListView(generic.ListView):
 
 ###############################################################################
 # Extracurricular list view
-class ECListView(generic.ListView):
-    template_name = 'todo/ec_list.html'
-    context_object_name = 'todo_list'
+# Extracurricular list view
+class ECToDoList(generic.ListView):
+    template_name = 'todo/ec_todo_list.html'
+    context_object_name = 'ec_list'
 
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
-            timediff = (item.duedate - timezone.now()) / \
-                       datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
-        return ToDoItem.objects.filter(completed=False, category='EC').order_by('duedate')
+        return Extracurricular.objects.all().order_by('name')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None)
+        return context
+
+
+class AddEC(CreateView):
+    model = Extracurricular
+    template_name = "todo/add_ec_form.html"
+    form_class = ECForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(AddEC, self).get_form(form_class)
+        form.fields['detail'].required = False
+        form.fields['start_date'].required = False
+        form.fields['end_date'].required = False
+        form.fields['active'].required = False
+        return form
+
+    # overriding form_valid function to redirect to create_recurrences when add a todo item
+    def form_valid(self, form):
+        self.object = form.save()
+        return redirect('todo_list:ec_list')
+
+class EditEC(UpdateView):
+    model = Extracurricular
+    template_name = "todo/edit_ec_form.html"
+    form_class = ECForm
+
+    # set title and duedate fields to be required
+    def get_form(self, form_class=None):
+        form = super(EditEC, self).get_form(form_class)
+        form.fields['detail'].required = False
+        form.fields['start_date'].required = False
+        form.fields['end_date'].required = False
+        form.fields['active'].required = False
+        return form
+
+    def form_valid(self, form):
+        self.object = form.save()
+        self.object.save()
+        return redirect('todo_list:ec_list')
+
+#purely EC list view
+class ECListView(generic.ListView):
+    template_name = 'todo/ec_list.html'
+    context_object_name = 'ec_list'
+    queryset = Extracurricular.objects.all().order_by('name')
+
+def delete_ec(request, ec_id):
+    ec = Extracurricular.objects.get(pk=ec_id)
+    ec.delete()
+    return redirect('todo_list:ec_list')
+
 
 #############################################################################
 class JobListView(generic.ListView):
