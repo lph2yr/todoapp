@@ -24,13 +24,14 @@ urlpatterns = [
     path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
     path('add_course/', views.AddCourseView.as_view(), name='add_course'),
     path('your_courses/', views.CourseListView.as_view(), name= 'course_list'),
-    path('<int:course_id>/delete_course/', views.delete_course, name='delete_course'),
-    path('<int:pk>/edit_course/', views.EditCourseView.as_view(), name='edit_course'),
+    path('course/<int:course_id>/delete_course/', views.delete_course, name='delete_course'),
+    path('course/<int:pk>/edit_course/', views.EditCourseView.as_view(), name='edit_course'),
 
     path('extracurriculars/', views.ECToDoList.as_view(), name='ec_todo_list'),
     path('your_ec/', views.ECListView.as_view(), name = 'ec_list' ),
     path('add_ec', views.AddEC.as_view(), name='add_ec'),
-    path('<int:pk>/edit_ec/', views.EditEC.as_view(), name='edit_ec'),
+    path('ec/<int:pk>/edit_ec/', views.EditEC.as_view(), name='edit_ec'),
+    path('ec/<int:ec_id>/delete_ec', views.delete_ec, name='delete_ec'),
 
     path('delete_all_completed/', views.delete_all_completed, name='delete_all_completed'),
     path('delete_all_incompleted/', views.delete_all_incompleted, name='delete_all_incompleted'),
