@@ -71,7 +71,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
-                    ec = todo_item.course,
+                    ec = todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
