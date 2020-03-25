@@ -338,3 +338,188 @@ class CreateDailyRecurrencesTest(TestCase):
         del self.my_course
         del self.my_ec
 
+class CreateWeeklyRecurrencesTests(TestCase):
+    def setUp(self):
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+
+        self.my_ec = create_ec(new_name='fun')
+
+        # this data will be passed into the Forms and create/update object
+        self.data_form = {
+            'title': "Test creating weekly recurrences equivalence",
+            'description': '',
+            'duedate': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'location': '',
+            'recur_freq': 'WEEKLY',
+            'end_recur_date': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'priority': 'LO',
+            'category': 'NN',
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
+
+    def test_create_weekly_recurrences_equiv(self):  # equivalence test
+        """
+        Equivalence Tests for creating weekly recurrences
+        """
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 4, 6, 5, 0, 0,
+                                                             tzinfo=pytz.utc)
+
+        weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+
+        # should create 4 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
+                         self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual(4, len(current_query_set))
+
+        # check crucial fields
+        filtered = ToDoItem.objects.filter(title="Test creating weekly recurrences equivalence",
+                                         recur_freq='WEEKLY',
+                                         end_recur_date=datetime.datetime(2020, 4, 6, 5, 0, 0, tzinfo=pytz.utc)).order_by( 'duedate' )
+        self.assertEqual(4, len(filtered))
+
+        # check duedates of all 4 objects
+        count_true = 0
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(weeks=1):
+                count_true += 1
+
+        # count_true has to be 3 because 3 comparisons if test works
+        self.assertEqual(3, count_true)
+
+    ################## boundary tests ######################
+    def test_create_less_than_a_full_week(self):
+        """
+        end_recur_date is not a full 4 weeks --> should create only 3 instances
+        """
+        self.data_form['title'] = "Test creating weekly recurrences boundaries"
+        self.data_form['description'] = "end_recur_date is not a full 4 weeks"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 4, 5, 5, 0, 0, tzinfo=pytz.utc)
+
+        weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+
+        # should create 3 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
+                         self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual(3, len(current_query_set))
+
+        # check crucial fields
+        filtered = ToDoItem.objects.filter(title="Test creating weekly recurrences boundaries",
+                                            description="end_recur_date is not a full 4 weeks",
+                                            recur_freq='WEEKLY',
+                                            end_recur_date=datetime.datetime(2020, 4, 5, 5, 0, 0, tzinfo=pytz.utc)
+                                         ).order_by('duedate')
+        self.assertEqual(3, len(filtered))
+
+        # check duedates of all 3 objects
+        count_true = 0
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(weeks=1):
+                count_true += 1
+
+        # count_true has to be 2 because 2 comparisons if test works
+        self.assertEqual(2, count_true)
+
+    def test_create_more_than_a_full_week(self):
+        """
+        end_recur_date is more than a full 4 weeks --> should create 4 instances
+        """
+        self.data_form['title'] = "Test creating weekly recurrences boundaries"
+        self.data_form['description'] = "end_recur_date is more than 4 weeks but less than 5 weeks"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 4, 8, 5, 0, 0, tzinfo=pytz.utc)
+
+        weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+
+        # should create 3 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
+                         self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual(4, len(current_query_set))
+
+        # check crucial fields
+        # check titles
+        filtered = ToDoItem.objects.filter(title="Test creating weekly recurrences boundaries",
+                                            description="end_recur_date is more than 4 weeks but less than 5 weeks",
+                                            recur_freq='WEEKLY',
+                                            end_recur_date=datetime.datetime(2020, 4, 8, 5, 0, 0, tzinfo=pytz.utc)
+                                         ).order_by('duedate')
+        self.assertEqual(4, len(filtered))
+
+        # check duedates of all 4 objects
+        count_true = 0
+        # check due date
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(weeks=1):
+                count_true += 1
+
+        # count_true has to be 3 because 3 comparisons if test works
+        self.assertEqual(3, count_true)
+
+    def test_create_full_week_but_less_time(self):
+        """
+        end_recur_date is not a full 4 weeks --> should create only 3 instances
+        """
+        self.data_form['title'] = "Test creating weekly recurrences boundaries"
+        self.data_form['description'] = "end_recur_date is 4 weeks by day but not 4 weeks by time"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 4, 5, 3, 0, 0, tzinfo=pytz.utc)
+
+        weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+
+        # should create 3 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
+                         self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual(3, len(current_query_set))
+
+        # check crucial fields
+        filtered = ToDoItem.objects.filter(title="Test creating weekly recurrences boundaries",
+                                            description="end_recur_date is 4 weeks by day but not 4 weeks by time",
+                                            recur_freq='WEEKLY',
+                                            end_recur_date=datetime.datetime(2020, 4, 5, 3, 0, 0, tzinfo=pytz.utc)
+                                         ).order_by('duedate')
+        self.assertEqual(3, len(filtered))
+
+        # check duedates of all 3 objects
+        count_true = 0
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(weeks=1):
+                count_true += 1
+        # count_true has to be 2 because 2 comparisons if test works
+        self.assertEqual(2, count_true)
+
+    def test_end_date_earlier_than_duedate_weekly(self):
+        """
+        Create end_recur_date earlier than duedate --> should create only one instance
+        """
+        self.data_form['title'] = "Test creating weekly recurrences"
+        self.data_form['description'] = "Some end_recur_date earlier than duedate"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 3, 10, 4, 0, 0, tzinfo=pytz.utc)
+
+        weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+        # print( daily_occurrence.id )
+        # should create 1 instance
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
+                         self.data_form)
+        current_instance = ToDoItem.objects.get(description="Some end_recur_date earlier than duedate")
+        all_instances = [current_instance]
+
+        self.assertEqual(1, len(all_instances))
+
+        # check crucial fields
+        one_instance = ToDoItem.objects.get(title="Test creating weekly recurrences",
+                                            description="Some end_recur_date earlier than duedate",
+                                            end_recur_date=datetime.datetime(2020, 3, 10, 4, 0, 0, tzinfo=pytz.utc))
+
+        # check duedates of  1 object
+        self.assertEqual(one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
+
+    def tearDown(self):
+        del self.data_form
+        del self.my_course
+        del self.my_ec
+
