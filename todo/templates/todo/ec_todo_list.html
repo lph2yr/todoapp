@@ -4,29 +4,26 @@
 
 <div class="row">
   <div class="col">
-    <h4>Academics Todo!</h4>
+    <h4>Extracurricular Todo!</h4>
   </div>
 </div>
 
 <div class="row d-flex justify-content-center flex-wrap">
-  {% if course_list %}
+  {% if ec_list %}
       <ul style="list-style-type:none" class="w-50 list-group">
-        {% for course in course_list %}
+        {% for ec in ec_list %}
           <li class="container p-3 my-3 border col">
               <h5><strong>
-              {% if course.course_abbrev %}
-                {{ course.course_abbrev }}:
-              {% endif %}
-              {{ course.course_name }}
+              {{ ec.name }}
               </strong></h5>
 
               <div class="row">
                 <div class="col">
                   <div class="row d-flex justify-content-center">
-                    {% if course.todoitem_set.all %}
+                    {% if ec.todoitem_set.all %}
                     <ul class="w-100 list-group">
                       <div id="accordion">
-                        {% for todo_item in course.todoitem_set.all %}
+                        {% for todo_item in ec.todoitem_set.all %}
                           {% if not todo_item.completed and todo_item.category != 'NN' %}
                           <div class="card">
                             <button
@@ -72,12 +69,29 @@
                                     {% endif %} {% if todo_item.location %}
                                     <li><strong>Location:</strong> {{ todo_item.location }}</li>
                                     {% endif %}
-                                    {% if todo_item.recur_freq %}
-                                    <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                    {% if todo_item.category != 'NN'%}
+                                      <li>
+                                        <strong>Category:</strong> {{ todo_item.get_category_display }}
+                                      </li>
                                     {% endif %}
-                                    {% if todo_item.end_recur_date %}
-                                    <li>
-                                      <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                                    {% if todo_item.category %}
+                                      {% if todo_item.category == 'AC' %}
+                                        {% if todo_item.course %}
+                                          <li>
+                                            <strong>Course:</strong> {{ todo_item.course }}
+                                          </li>
+                                        {% endif %}
+                                      {% elif todo_item.category == 'EC' %}
+                                        {% if todo_item.ec %}
+                                          <li>
+                                            <strong>Extracurricular:</strong> {{ todo_item.ec }}
+                                          </li>
+                                        {% endif %}
+                                      {% endif %}
+                                    {% endif %}
+                                    {% if todo_item.recur_freq != 'NEVER' %}
+                                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                      <li><strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                     {% endif %}
                                   </ul>
                                   <div class="row m-sm-3">
@@ -131,15 +145,15 @@
           <h5><strong>
           Other
           </strong></h5>
-      {% if no_course_todo_list %}
+      {% if no_ec_todo_list %}
       <div class="row">
         <div class="col">
           <div class="row d-flex justify-content-center">
 
               <ul class="w-100 list-group">
                 <div id="accordion2">
-                {% for todo_item in no_course_todo_list %}
-                  {% if not todo_item.completed and todo_item.category != 'NN' %}
+                {% for todo_item in no_ec_todo_list %}
+                  {% if todo_item.category != 'NN' %}
                   <div class="card">
                     <button
                       class="btn collapsed"
@@ -183,12 +197,29 @@
                             {% endif %} {% if todo_item.location %}
                             <li><strong>Location:</strong> {{ todo_item.location }}</li>
                             {% endif %}
-                            {% if todo_item.recur_freq %}
-                            <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                            {% if todo_item.category != 'NN'%}
+                              <li>
+                                <strong>Category:</strong> {{ todo_item.get_category_display }}
+                              </li>
                             {% endif %}
-                            {% if todo_item.end_recur_date %}
-                            <li>
-                              <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                            {% if todo_item.category != 'NN' %}
+                              {% if todo_item.category == 'AC' %}
+                                {% if todo_item.course %}
+                                  <li>
+                                    <strong>Course:</strong> {{ todo_item.course }}
+                                  </li>
+                                {% endif %}
+                              {% elif todo_item.category == 'EC' %}
+                                {% if todo_item.ec %}
+                                  <li>
+                                    <strong>Extracurricular:</strong> {{ todo_item.ec }}
+                                  </li>
+                                {% endif %}
+                              {% endif %}
+                            {% endif %}
+                            {% if todo_item.recur_freq != 'NEVER' %}
+                              <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                              <li><strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                             {% endif %}
                           </ul>
                           <div class="row m-sm-3">

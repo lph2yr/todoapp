@@ -108,7 +108,7 @@ class ToDoItem(models.Model):
     has_category_changed = models.BooleanField(default=False)
     has_priority_changed = models.BooleanField(default=False)
 
-    count_future_events = models.IntegerField(default=1)
+
     #array storing id of future events associated with current object
     future_events = ArrayField( models.IntegerField(default = 0), default=list, null=True )
     #https://stackoverflow.com/questions/36617145/django-arrayfield-null-true-migration-with-postgresql
