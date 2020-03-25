@@ -32,6 +32,10 @@ urlpatterns = [
     path('add_ec', views.AddEC.as_view(), name='add_ec'),
     path('<int:pk>/edit_ec/', views.EditEC.as_view(), name='edit_ec'),
 
+    path('delete_all_completed/', views.delete_all_completed, name='delete_all_completed'),
+    path('delete_all_incompleted/', views.delete_all_incompleted, name='delete_all_incompleted'),
+
+
 
 ]
 
