@@ -27,7 +27,7 @@
                     <ul class="w-100 list-group">
                       <div id="accordion">
                         {% for todo_item in course.todoitem_set.all %}
-                          {% if not todo_item.completed %}
+                          {% if not todo_item.completed and todo_item.category != 'NN' %}
                           <div class="card">
                             <button
                               class="btn collapsed"
@@ -139,6 +139,7 @@
               <ul class="w-100 list-group">
                 <div id="accordion2">
                 {% for todo_item in no_course_todo_list %}
+                  {% if not todo_item.completed and todo_item.category != 'NN' %}
                   <div class="card">
                     <button
                       class="btn collapsed"
@@ -219,6 +220,7 @@
                       </div>
                     </li>
                   </div>
+                  {% endif %}
                 {% endfor %}
                 </div>
               </ul>
