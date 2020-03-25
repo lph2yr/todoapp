@@ -118,7 +118,7 @@ class ToDoItem(models.Model):
     tracker = FieldTracker() #track changes to fields
 
     def __str__(self):
-       return self.title + " " + self.duedate.strftime('%Y-%m-%d') + " id: " + str(self.id)
+       return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
         now = django.utils.timezone.now
