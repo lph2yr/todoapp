@@ -319,6 +319,15 @@ def completeToDo(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
+def delete_all_completed(request):
+    ToDoItem.objects.filter(completed = True ).delete()
+    return redirect('todo_list:completed')
+
+def delete_all_incompleted(request):
+    ToDoItem.objects.filter(completed = False ).delete()
+    return redirect('todo_list:todo_list')
+
+##################################################################
 
 class DayView(generic.FormView):
     template_name = 'todo/day_form.html'
