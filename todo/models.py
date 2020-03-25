@@ -3,6 +3,7 @@ import django.utils
 from model_utils import FieldTracker
 import datetime
 from django.core.validators import MaxValueValidator, MinValueValidator #https://stackoverflow.com/questions/849142/how-to-limit-the-maximum-value-of-a-numeric-field-in-a-django-model
+from django.contrib.postgres.fields import ArrayField #https://docs.djangoproject.com/en/3.0/ref/contrib/postgres/fields/#arrayfield
 
 # Create your models here.
 
@@ -108,6 +109,11 @@ class ToDoItem(models.Model):
     has_priority_changed = models.BooleanField(default=False)
 
     count_future_events = models.IntegerField(default=1)
+    #array storing id of future events associated with current object
+    future_events = ArrayField( models.IntegerField(default = 0), default=list, null=True )
+    #https://stackoverflow.com/questions/36617145/django-arrayfield-null-true-migration-with-postgresql
+
+
 
     tracker = FieldTracker() #track changes to fields
 
