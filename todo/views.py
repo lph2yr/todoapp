@@ -362,7 +362,6 @@ class AddCourseView(CreateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(AddCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
         form.fields['course_abbrev'].required = False
         form.fields['course_prof'].required = False
         return form
@@ -381,7 +380,6 @@ class EditCourseView(UpdateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(EditCourseView, self).get_form(form_class)
-        form.fields['course_name'].required = True
         form.fields['course_abbrev'].required = False
         form.fields['course_prof'].required = False
         return form
@@ -443,7 +441,7 @@ class ECListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='EC').order_by('duedate')
 
-
+#############################################################################
 class JobListView(generic.ListView):
     template_name = 'todo/job_list.html'
     context_object_name = 'todo_list'
@@ -463,7 +461,7 @@ class JobListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='JB').order_by('duedate')
 
-
+##############################################################################
 class SocialListView(generic.ListView):
     template_name = 'todo/social_list.html'
     context_object_name = 'todo_list'
@@ -483,7 +481,7 @@ class SocialListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='SC').order_by('duedate')
 
-
+###############################################################################
 class PersonalListView(generic.ListView):
     template_name = 'todo/personal_list.html'
     context_object_name = 'todo_list'
@@ -503,7 +501,7 @@ class PersonalListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='PS').order_by('duedate')
 
-
+###########################################################################
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'
     context_object_name = 'todo_list'
