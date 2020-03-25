@@ -1,23 +1,13 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from .forms import ToDoForm, CourseForm, DayForm
-from .models import ToDoItem, Course
+from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
 from django.utils import timezone
 import datetime
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-
-
-# filter by categories
-# academic:
-# classes #new Foreign Key model? because must be inputted by user
-# events: group meetings, ...
-# non-academic
-# social
-# clubs
-# job #foreign key too?
 
 
 ######################## TO DO view ################################
@@ -31,8 +21,7 @@ class AddToDoItemView(CreateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(AddToDoItemView, self).get_form(form_class)
-        form.fields['title'].required = True
-        form.fields['duedate'].required = True
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
         return form
@@ -62,6 +51,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, delta_day + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec = todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -70,6 +60,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category
+                    # progress default 0
                     # completed = default False
                 )
 
@@ -80,6 +71,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, weeks + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec = todo_item.course,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -88,6 +80,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category
+                    # progress default 0
                     # completed = default False
                 )
 
@@ -105,6 +98,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, delta_month + months_leftover + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec = todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -113,6 +107,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress default 0
                     # completed = default False
                 )
 
@@ -122,6 +117,7 @@ def create_recurrences(request, todo_item_id):
             for i in range(1, delta_year + 1):
                 ToDoItem.objects.create(
                     course=todo_item.course,
+                    ec = todo_item.ec,
                     title=todo_item.title,
                     description=todo_item.description,
                     location=todo_item.location,
@@ -130,6 +126,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    # progress default 0
                     # completed = default False
                 )
     return redirect('todo_list:todo_list')
@@ -144,6 +141,7 @@ class EditToDo(UpdateView):
     # set title and duedate fields to be required
     def get_form(self, form_class=None):
         form = super(EditToDo, self).get_form(form_class)
+        form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
         return form
@@ -163,7 +161,6 @@ class EditToDo(UpdateView):
                 form.save_m2m()
                 return redirect('todo_list:todo_list')
             else:
-                # TODO: how to track course changes?????????/
                 todo.has_title_changed = self.object.tracker.has_changed('title')
                 todo.has_description_changed = self.object.tracker.has_changed('description')
                 todo.has_location_changed = self.object.tracker.has_changed('location')
@@ -177,116 +174,106 @@ class EditToDo(UpdateView):
                 todo.has_end_recur_date_changed = self.object.tracker.has_changed(
                     'end_recur_date')  # returns true if end_recur_date has changed
 
-                if (
-                        not todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.title,
-                                                            duedate__gt=todo.duedate,
-                                                            end_recur_date__lte=todo.end_recur_date)
-                    todo.count_future_events = len(future_events)
-                elif (todo.has_title_changed and not todo.has_duedate_changed and not todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
-                                                            duedate__gt=todo.duedate,
-                                                            end_recur_date__lte=todo.end_recur_date)
-                    todo.count_future_events = len(future_events)
-                elif (not todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.title,
-                                                            duedate__gt=todo.tracker.previous('duedate'),
-                                                            end_recur_date__lte=todo.end_recur_date)
-                    todo.count_future_events = len(future_events)
-                elif (not todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.title,
-                                                            duedate__gt=todo.duedate,
-                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date'))
-                    todo.count_future_events = len(future_events)
-                elif (todo.has_title_changed and todo.has_duedate_changed and not todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
-                                                            duedate__gt=todo.tracker.previous('duedate'),
-                                                            end_recur_date__lte=todo.end_recur_date)
-                    todo.count_future_events = len(future_events)
-                elif (todo.has_title_changed and not todo.has_duedate_changed and todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
-                                                            duedate__gt=todo.duedate,
-                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date'))
-                    todo.count_future_events = len(future_events)
-                elif (not todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.title,
-                                                            duedate__gt=todo.tracker.previous('duedate'),
-                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date'))
-                    todo.count_future_events = len(future_events)
-                elif (todo.has_title_changed and todo.has_duedate_changed and todo.has_end_recur_date_changed):
-                    # find number of future objects ahead of current object being modified
-                    future_events = ToDoItem.objects.filter(title__startswith=todo.tracker.previous('title'),
-                                                            duedate__gt=todo.tracker.previous('duedate'),
-                                                            end_recur_date__lte=todo.tracker.previous('end_recur_date'))
-                    todo.count_future_events = len(future_events)
+                # filter by fields that are likely to be changed together or least likely to change:
+                # title, duedate, recur_freq, end_recur_date, category
+                if (todo.has_title_changed):
+                    titles = todo.tracker.previous('title')
+                elif (not todo.has_title_changed):
+                    titles = todo.title
+                if (todo.has_duedate_changed):
+                    duedates = todo.tracker.previous('duedate')
+                else:
+                    duedates = todo.duedate
+                if (todo.has_recur_freq_changed):
+                    recur_freqs = todo.tracker.previous('recur_freq')
+                else:
+                    recur_freqs = todo.recur_freq
+                if (todo.has_end_recur_date_changed):
+                    end_recur_dates = todo.tracker.previous('end_recur_date')
+                else:
+                    end_recur_dates = todo.end_recur_date
+                if (todo.has_category_changed):
+                    categories = todo.tracker.previous('category')
+                else:
+                    categories = todo.category
+
+                future_events = ToDoItem.objects.filter(title=titles,
+                                                        duedate__gt=duedates,
+                                                        recur_freq=recur_freqs,
+                                                        end_recur_date=end_recur_dates,
+                                                        category=categories)
+
+                # filter how many of the same event that is in the future
+                if (len(future_events) == 0):
+                    todo.save()
+                    form.save_m2m()
+                    if (todo.has_end_recur_date_changed or todo.has_recur_freq_changed or todo.has_duedate_changed):
+                        todo.has_end_recur_date_changed = False
+                        todo.has_recur_freq_changed = False
+                        todo.has_duedate_changed = False
+                        return redirect('todo_list:create_recurrences', todo_item_id=todo.id)
+                    else:
+                        return redirect('todo_list:todo_list')
+
+                for future_event in future_events:
+                    todo.future_events.append(future_event.id)
+                # print( future_events )
 
                 todo.save()
                 form.save_m2m()
 
-                return redirect('todo_list:change_all', todo_item_id=self.object.id)
-
+                return redirect('todo_list:change_all', todo_item_id=todo.id)
 
 def change_all(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
-    if (todo_item.has_title_changed):
-        for i in range(1, todo_item.count_future_events + 1):
-            future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+
+    for i in todo_item.future_events:
+        future_event = ToDoItem.objects.get( pk=i )
+        if (todo_item.has_title_changed):
             future_event.title = todo_item.title
-            future_event.save()
-            todo_item.has_title_changed = False
-            todo_item.save()
-    if (todo_item.has_description_changed):
-        for i in range(1, todo_item.count_future_events + 1):
-            future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        if (todo_item.has_description_changed):
             future_event.description = todo_item.description
-            future_event.save()
-            todo_item.has_description_changed = False
-            todo_item.save()
-    if (todo_item.has_location_changed):
-        for i in range(1, todo_item.count_future_events + 1):
-            future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        if (todo_item.has_location_changed):
             future_event.location = todo_item.location
-            future_event.save()
-            todo_item.has_location_changed = False
-            todo_item.save()
-    if (todo_item.has_category_changed):
-        for i in range(1, todo_item.count_future_events + 1):
-            future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        if (todo_item.has_category_changed):
             future_event.category = todo_item.category
-            future_event.save()
-            todo_item.has_category_changed = False
-            todo_item.save()
-    if (todo_item.has_priority_changed):
-        for i in range(1, todo_item.count_future_events + 1):
-            future_event = ToDoItem.objects.get(pk=todo_item_id + i)
+        if (todo_item.has_priority_changed):
             future_event.priority = todo_item.priority
-            future_event.save()
-            todo_item.has_priority_changed = False
-            todo_item.save()
+        future_event.course = todo_item.course
+        future_event.ec = todo_item.ec
+        future_event.save()
+
+    todo_item.has_title_changed = False
+    todo_item.has_description_changed = False
+    todo_item.has_location_changed = False
+    todo_item.has_category_changed = False
+    todo_item.has_priority_changed = False
+    todo_item.save()
+
     if (todo_item.has_end_recur_date_changed or todo_item.has_recur_freq_changed or todo_item.has_duedate_changed):
         return redirect('todo_list:edit_recurrences', todo_item_id=todo_item_id)
 
-    return redirect('todo_list:todo_list')
-
+    else:
+        todo_item.future_events = []
+        todo_item.save()
+        return redirect('todo_list:todo_list')
 
 # function checks if user has edited recur_freq field and make according changes to all future tasks
 def edit_recurrences(request, todo_item_id):
     todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
     # for date changes, delete all future instances and remake others
     # https://docs.djangoproject.com/en/2.0/ref/models/querysets/
-    ToDoItem.objects.filter(title__startswith=todo_item.title,  # filter by title
-                            duedate__gt=todo_item.duedate,  # filter by duedate >= todo_item.title
-                            end_recur_date__lte=todo_item.end_recur_date
-                            ).delete()
+    for i in todo_item.future_events:
+        ToDoItem.objects.get(pk=i).delete()
+
+    todo_item.has_end_recur_date_changed = False
+    todo_item.has_recur_freq_changed = False
+    todo_item.has_duedate_changed = False
+    todo_item.future_events = []
+    todo_item.save()
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
+
 
 
 class ToDoListView(generic.ListView):
