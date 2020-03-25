@@ -165,3 +165,171 @@ class TodoListViewsTest(TestCase):
         response = self.client.get(reverse('todo_list:todo_list'))
         self.assertEqual(response.status_code, 200)
         # this view doesn't have a context object...it only has context_data
+
+class ToDoItemFormTest(TestCase):
+    """
+    Test whether CreateView is successful
+    """
+    def setUp(self):
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+
+        self.my_ec = create_ec(new_name='fun')
+
+        #this data will be passed into the Forms and create/update object
+        self.data_form = {
+            'title': "TBD",
+            'description': '',
+            'duedate': timezone.now(),
+            'location': '',
+            'recur_freq': 'NEVER',
+            'end_recur_date': timezone.now(),
+            'priority': 'LO',
+            'category': 'NN',
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress':0
+            }
+
+    def test_todoitemform_success_submission(self):
+        self.data_form['title'] = 'Test submission success'
+        form = ToDoForm(data=self.data_form)
+        self.assertTrue(form.is_valid())
+
+    def test_correct_template_for_add_todo(self):
+        self.data_form['title'] = "Test correct template used"
+        response = self.client.post( reverse('todo_list:add_todo_item'),self.data_form )
+        self.assertEqual(response.status_code, 200)
+
+        #make sure that add todo form is used
+        self.assertTemplateUsed(response, 'todo/todoitem_form.html')
+
+    def tearDown(self):
+        del self.my_course
+        del self.data_form
+
+class CreateDailyRecurrencesTest(TestCase):
+    def setUp(self):
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+        self.my_ec = create_ec(new_name='fun')
+        self.data_form = {
+            'title': "TBD",
+            'description': '',
+            'duedate': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'location': '',
+            'recur_freq': 'DAILY',
+            'end_recur_date': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'priority': 'LO',
+            'category': 'NN',
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress':0
+        }
+
+    def test_create_daily_recurrences_equiv(self):# equivalence test
+        """
+        Tests whether create_recurrenes work
+        """
+        self.data_form['title'] = "Test creating daily recurrences"
+        self.data_form['description'] = "Some end_recur_date at the same time"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 3, 19, 5, 0, 0, tzinfo=pytz.utc)
+
+        daily_occurrence = create_from_data_dict(self.data_form) #create first instance
+
+        #should create 4 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}), self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual( 4, len(current_query_set))
+
+        #check crucial fields
+        filtered = ToDoItem.objects.filter(title='Test creating daily recurrences',
+                                           description = "Some end_recur_date at the same time",
+                                            recur_freq='DAILY',
+                                              end_recur_date=datetime.datetime(2020, 3, 19, 5, 0, 0, tzinfo=pytz.utc))
+        self.assertEqual(4, len(filtered))
+
+        count_true = 0
+        #check due date
+        for i in range( len(filtered) - 1):
+            if filtered[i].duedate == filtered[i+1].duedate - datetime.timedelta(days=1):
+                count_true += 1
+
+        #count_true has to be 3 because 3 comparisons if test works
+        self.assertEqual(3, count_true )
+
+    def test_redirect_from_create_recurrences_to_todo_list(self):
+        """
+        Test that after a successful create_recurrences, it redirects to todo_list
+        """
+        self.data_form['title'] = "Test redirect to list after creating_recurrences"
+        self.data_form['recur_freq'] = 'DAILY'
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 3, 31, 5, 0, 0, tzinfo=pytz.utc)
+        daily_occurrence = create_from_data_dict(self.data_form)
+
+        response = self.client.post(
+            reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}), self.data_form)
+        self.assertRedirects(response, reverse('todo_list:todo_list'))
+
+    def test_create_daily_recurrences_shorter_time(self):# boundary test
+        """
+        Some end_recur_date not a full day from duedate
+        """
+        self.data_form['title'] = "Test creating daily recurrences"
+        self.data_form['description'] = "Some end_recur_date but with an earlier time than duedate"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 3, 19, 4, 0, 0, tzinfo=pytz.utc)
+
+        daily_occurrence = create_from_data_dict(self.data_form) #create first instance
+
+        #should create 3 instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}), self.data_form)
+        current_query_set = ToDoItem.objects.all()
+        self.assertEqual( 3, len(current_query_set))
+
+        #check crucial fields
+        filtered = ToDoItem.objects.filter(title='Test creating daily recurrences',
+                                         description="Some end_recur_date but with an earlier time than duedate",
+                                         recur_freq='DAILY',
+                                         end_recur_date=datetime.datetime(2020, 3, 19, 4, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
+        self.assertEqual( 3, len(filtered))
+
+        #check duedates of all 3 objects
+        count_true = 0
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - datetime.timedelta(days=1):
+                count_true += 1
+
+        # count_true has to be 2 because 2 comparisons if test works
+        self.assertEqual(2, count_true)
+
+
+    def test_end_date_earlier_than_duedate(self):
+        """
+        Create end_recur_date earlier than duedate --> should create only one instance
+        """
+        self.data_form['title'] = "Test creating daily recurrences"
+        self.data_form['description'] = "Some end_recur_date earlier than duedate"
+        self.data_form['end_recur_date'] = datetime.datetime(2020, 3, 14, 4, 0, 0, tzinfo=pytz.utc)
+
+        daily_occurrence = create_from_data_dict(self.data_form) #create first instance
+        #should create 1 instance
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}), self.data_form)
+        current_instance = ToDoItem.objects.get(description="Some end_recur_date earlier than duedate")
+        all_instances = [current_instance]
+
+        self.assertEqual( 1, len(all_instances))
+
+        #check crucial fields
+        one_instance = ToDoItem.objects.get(title ="Test creating daily recurrences",
+                                         description="Some end_recur_date earlier than duedate",
+                                         end_recur_date=datetime.datetime(2020, 3, 14, 4, 0, 0, tzinfo=pytz.utc))
+
+        #check duedates of all 1 object
+        self.assertEqual( one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
+
+    def tearDown(self):
+        del self.data_form
+        del self.my_course
+        del self.my_ec
