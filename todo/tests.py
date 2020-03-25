@@ -15,23 +15,26 @@ def create_todo(new_title, #only need to provide title if everything else is unc
                 new_completed=False,
                 new_recur_freq='NEVER',
                 new_end_recur_date=timezone.now(),
+                new_category = 'NN',
                 new_course=None,
                 new_ec = None,
                 new_progress = 0,
                 ):
-    return ToDoItem.objects.create(
-        title=new_title,
-        description=new_description,
-        location=new_location,
-        duedate=new_duedate,
-        priority=new_priority,
-        completed=new_completed,
-        recur_freq=new_recur_freq,
-        end_recur_date=new_end_recur_date,
-        course = new_course,
-        ec = new_ec,
-        progress = new_progress
-    )
+    form_data = {'title': new_title,
+                 'description': new_description,
+                 'location': new_location,
+                 'duedate': new_duedate,
+                 'priority': new_priority,
+                 'completed': new_completed,
+                 'recur_freq': new_recur_freq,
+                 'end_recur_date': new_end_recur_date,
+                 'category': new_category,
+                 'course': new_course,
+                 'ec': new_ec,
+                 'progress': new_progress,
+                 }
+    form = ToDoForm(data=form_data)
+    return form.save()
 
 #if there is a dictionary of fields already available, use this function with the dictionary as parameter
 def create_from_data_dict( form_data ):
@@ -80,7 +83,7 @@ class ToDoItemModelTests(TestCase):
             title="Test case 1",
             duedate=datetime.datetime(2020, 2, 23, 9, 0),
             course=self.course,
-            ec=self.ec
+            ec=self.ec,
         )
 
         day_dif = todo.is_today_duedate()
@@ -97,8 +100,8 @@ class PriorityTest(TestCase):
             new_title="priority test",
             new_priority="HI",
             new_duedate=datetime.datetime(2020, 2, 27, 8, 0, 0, tzinfo=pytz.utc),
-            new_course=self.my_course,
-            new_ec=self.my_ec
+            new_course=self.my_course.id,
+            new_ec=self.my_ec.id,
         )
 
     def test_check_priority(self):
@@ -112,21 +115,21 @@ class PriorityTest(TestCase):
 class DayViewTest(TestCase):
     def setUp(self):
         self.course = create_course(new_course_name="Tester")
-        self.ec = create_ec(new_name='')
+        self.ec = create_ec(new_name='ec')
 
         create_todo(
             new_title="March 5th todo",
             new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
             new_completed=False,
-            new_course=self.course,
-            new_ec=self.ec,
+            new_course=self.course.id,
+            new_ec=self.ec.id,
         )
 
         self.complete_3_5 = create_todo(
             new_title="March 5th todo completed",
             new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
-            new_course=self.course,
-            new_ec=self.ec,
+            new_course=self.course.id,
+            new_ec=self.ec.id,
         )
         self.complete_3_5.completed = True
         self.complete_3_5.save()
@@ -134,8 +137,8 @@ class DayViewTest(TestCase):
         mar17_todo = create_todo(
             new_title="March 17th todo",
             new_duedate=datetime.datetime(2020, 3, 17, 14, 0),
-            new_course=self.course,
-            new_ec=self.ec,
+            new_course=self.course.id,
+            new_ec=self.ec.id,
         )
 
     def test_check_no_todos(self):
@@ -187,9 +190,9 @@ class ToDoItemFormTest(TestCase):
             'end_recur_date': timezone.now(),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course,
-            'ec': self.my_ec,
-            'progress':0
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress':0,
             }
 
     def test_todoitemform_success_submission(self):
@@ -227,7 +230,7 @@ class CreateDailyRecurrencesTest(TestCase):
             'category': 'NN',
             'course': self.my_course.id,
             'ec': self.my_ec.id,
-            'progress':0
+            'progress': 0,
         }
 
     def test_create_daily_recurrences_equiv(self):# equivalence test
@@ -335,7 +338,7 @@ class CreateDailyRecurrencesTest(TestCase):
         del self.my_course
         del self.my_ec
 
-
+'''
 class CreateWeeklyRecurrencesTests(TestCase):
     def setUp(self):
         self.my_course = create_course(
@@ -354,8 +357,8 @@ class CreateWeeklyRecurrencesTests(TestCase):
             'end_recur_date': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course,
-            'ec': self.my_ec,
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
             'progress': 0
         }
 
@@ -367,11 +370,13 @@ class CreateWeeklyRecurrencesTests(TestCase):
                                                              tzinfo=pytz.utc)
 
         weekly_occurrence = create_from_data_dict(self.data_form)  # create first instance
+        print(weekly_occurrence.course.id, weekly_occurrence.ec.id)
 
         # should create 4 instances
         self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': weekly_occurrence.id}),
                          self.data_form)
         current_query_set = ToDoItem.objects.all()
+        print( current_query_set )
         self.assertEqual(4, len(current_query_set))
 
         # check crucial fields
@@ -389,7 +394,8 @@ class CreateWeeklyRecurrencesTests(TestCase):
 
         # count_true has to be 3 because 3 comparisons if test works
         self.assertEqual(3, count_true)
-'''
+
+
     ################## boundary tests ######################
     def test_create_less_than_a_full_week(self):
         """
