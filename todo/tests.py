@@ -955,3 +955,169 @@ class CreateYearlyRecurrencesTests(TestCase):
                                             end_recur_date=datetime.datetime(2019, 2, 10, 4, 0, 0, tzinfo=pytz.utc))
         # check duedates of  1 object
         self.assertEqual(one_instance.duedate, datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc))
+
+class UpdateViewTest(TestCase):
+    def setUp(self):
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+        self.my_ec = create_ec(new_name='fun')
+
+        self.data_form = {
+            'title': "TBD",
+            'description': '',
+            'duedate': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'location': '',
+            'recur_freq': 'DAILY',
+            'end_recur_date': datetime.datetime(2020, 3, 19, 5, 0, 0, tzinfo=pytz.utc),
+            'priority': 'LO',
+            'category': 'NN',
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
+
+    def test_correct_template_for_updateview(self):
+        daily_occurrence = create_from_data_dict(self.data_form)
+        response = self.client.post(reverse('todo_list:detail', kwargs={'pk': daily_occurrence.id}),
+                self.data_form)
+        self.assertTemplateUsed(response, 'todo/edit_todoitem_form.html')
+
+    def test_edit_todoitemform_success_submission(self):
+        self.data_form['title'] = 'Change submit'
+        form = ToDoForm(data=self.data_form)
+        self.assertTrue(form.is_valid())
+
+    def test_change_all_todo_titles_only(self):
+        daily_occurrence = create_from_data_dict(self.data_form)
+
+        #create instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}),
+                         self.data_form)
+
+        #Change fields: hard coded because not going through UpdateView first
+        first = ToDoItem.objects.get(pk=daily_occurrence.id)
+        first.title = "Changed titles successful"
+        first.has_title_changed = True
+
+        for todo in ToDoItem.objects.filter(duedate__gt = first.duedate):
+            first.future_events.append( todo.id )
+
+        first.save()
+
+        #change all
+        self.client.post(reverse('todo_list:change_all', kwargs={'todo_item_id': first.id}),
+                         self.data_form)
+        current_query = ToDoItem.objects.filter(title= "Changed titles successful")
+        #there should be 4 instances
+
+        self.assertEqual(4, len(current_query))
+
+
+    def test_change_all_todo_descriptions_only(self):
+        daily_occurrence = create_from_data_dict(self.data_form)
+        #create instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}),
+                         self.data_form)
+
+        #Change fields: hard coded because not going through UpdateView first
+        second = ToDoItem.objects.get(pk=daily_occurrence.id+1)
+        second.description = "Changed description for 3/4 successfully"
+        second.has_description_changed = True
+
+        for todo in ToDoItem.objects.filter(duedate__gt = second.duedate):
+            second.future_events.append( todo.id )
+
+        second.save()
+        #change all
+        self.client.post(reverse('todo_list:change_all', kwargs={'todo_item_id': second.id}),
+                         self.data_form)
+        current_query = ToDoItem.objects.filter(description= "Changed description for 3/4 successfully")
+        #there should be 3 instances
+        self.assertEqual(3, len(current_query))
+
+    def test_change_all_todo_titles_and_descr(self):
+        daily_occurrence = create_from_data_dict(self.data_form)
+        #create instances
+        self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}),
+                         self.data_form)
+
+        #Change fields: hard coded because not going through UpdateView first
+        third = ToDoItem.objects.get(pk=daily_occurrence.id+2)
+        third.title = "Title changed"
+        third.description = "Changed description for 2 of the last ones in the list successfully"
+        third.has_title_changed = True
+        third.has_description_changed = True
+
+        for todo in ToDoItem.objects.filter( duedate__gt = third.duedate ):
+            third.future_events.append( todo.id )
+        third.save()
+
+        #change all
+        self.client.post(reverse('todo_list:change_all', kwargs={'todo_item_id': third.id}),
+                         self.data_form)
+
+        current_query = ToDoItem.objects.filter(title= "Title changed",
+                                                description= "Changed description for 2 of the last ones in the list successfully")
+
+        #there should be 2 instances
+        self.assertEqual(2, len(current_query))
+
+class TestEditRecurrences(TestCase):
+    def setUp(self):
+        self.my_course = create_course(
+            new_course_name="Tester"
+        )
+        self.my_ec = create_ec(new_name='fun')
+        self.data_form = {
+            'title': "Test edit recurrences",
+            'description': '',
+            'duedate': datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+            'location': '',
+            'recur_freq': 'NEVER',
+            'end_recur_date': datetime.datetime(2020, 3, 30, 5, 0, 0, tzinfo=pytz.utc),
+            'priority': 'LO',
+            'category': 'NN',
+            'course': self.my_course.id,
+            'ec': self.my_ec.id,
+            'progress': 0
+        }
+
+    def test_changing_duedate_only_to_later(self):
+        self.data_form['title'] = "Test redirect to edit_recurrences"
+        self.data_form['recur_freq'] = 'DAILY' #create 15 instances
+        daily_occurrence = create_from_data_dict(self.data_form)
+        response = self.client.post(reverse('todo_list:create_recurrences', kwargs={'todo_item_id': daily_occurrence.id}), self.data_form)
+        current_query_before_change = ToDoItem.objects.all()
+        self.assertEqual(15, len( current_query_before_change))
+
+        #check fields
+        filtered = ToDoItem.objects.filter(title = "Test redirect to edit_recurrences",
+                                           duedate__gte = datetime.datetime(2020, 3, 16, 5, 0, 0, tzinfo=pytz.utc),
+                                           recur_freq= 'DAILY',
+                                           end_recur_date=datetime.datetime(2020, 3, 30, 5, 0, 0, tzinfo=pytz.utc)).order_by('duedate')
+        self.assertEqual(15, len(filtered))
+
+        count_true = 0
+        for i in range(len(filtered) - 1):
+            if filtered[i].duedate == filtered[i + 1].duedate - relativedelta(days=1):
+                count_true += 1
+
+        # count_true has to be 15 because 15 comparisons if test works
+        self.assertEqual(14, count_true)
+
+        first = ToDoItem.objects.get(pk=daily_occurrence.id)
+        first.duedate = datetime.datetime(2020, 3, 19, 5, 0, 0, tzinfo=pytz.utc) #should create 15 instances because one of the instances is deleted
+        first.has_duedate_changed = True
+        first.save()
+
+        self.client.post(reverse('todo_list:edit_recurrences', kwargs={'todo_item_id': first.id}), self.data_form)
+        current_query = ToDoItem.objects.all()
+
+        self.assertEqual(15, len( current_query ) )
+
+
+    def tearDown(self):
+        del self.data_form
+        del self.my_course
+        del self.my_ec
