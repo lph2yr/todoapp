@@ -49,7 +49,9 @@
 
                 <div class="d-flex justify-content-around mt-3">
                   {% if todo_item.completed %}
-                  <small><i>Task Completed!</i></small>
+                    <small><i>Task Completed!</i></small>
+                  {% elif todo_item.is_past_due %}
+                    <small><i style="color:red">Past due!</i></small>
                   {% endif %}
                   <small>due {{todo_item.duedate}}</small>
                 </div>
