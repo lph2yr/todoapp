@@ -28,8 +28,9 @@
                   <p class="d-flex justify-content-start">
                     {% if course.course_abbrev %}
                       <h5><strong>{{ course.course_abbrev }}: {{course.course_name}}</strong></h5>
-                    {% endif %}
+                    {% else %}
                      <h5><strong>{{course.course_name}}</strong></h5>
+                    {% endif %}
                   </p>
 
                 </button>

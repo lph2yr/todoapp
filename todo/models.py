@@ -121,8 +121,8 @@ class ToDoItem(models.Model):
        return self.title + " " + self.duedate.strftime('%Y-%m-%d')
 
     def is_past_due(self):
-        now = django.utils.timezone.now
-        return now > self.duedate.date()
+        now = django.utils.timezone.now()
+        return now > self.duedate
 
     def is_today_duedate(self):
         now = django.utils.timezone.now()

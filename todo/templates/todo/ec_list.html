@@ -45,7 +45,9 @@
                           <li><strong>End date:</strong> {{ ec.end_date }}</li>
                         {% endif %}
                         {% if ec.active %}
-                          <li><strong>Still active:</strong> {{ ec.active }}</li>
+                          <li><strong>Still active:</strong> Yes </li>
+                        {% else %}
+                          <li><strong>Still active:</strong> No </li>
                         {% endif %}
                         <div class="ml-auto">
                           <small class="m-2"
@@ -66,7 +68,7 @@
           </div>
         </ul>
       {% else %}
-        <p>You have no courses!</p>
+        <p>You have no extracurriculars!</p>
       {% endif %}
     </div>
 
