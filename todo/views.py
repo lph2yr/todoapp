@@ -41,6 +41,7 @@ class AddToDoItemView(CreateView):
 
 # function create recurrence of newly added objects based on recur_freq and end_recur_date fields
 def create_recurrences(request, todo_item_id):
+    todo_item= get_object_or_404(ToDoItem, pk=todo_item_id)
     # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
