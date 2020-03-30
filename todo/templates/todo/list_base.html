@@ -1,15 +1,10 @@
-{% extends 'todo/list_base.html' %}
+{% extends 'todo/base.html' %}
 
+<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template-->
 
-<!-- all things on "master" page -->
-{% block filter %}
+{% block content %}
 
-<div class="row">
-  <div class="col">
-    <h4>Welcome {{user}}!</h4>
-    <h4>Here's your to-do list!</h4>
-  </div>
-</div>
+{% block filter %}{% endblock %} <!-- where titles will be-->
 
 <div class="row">
   <!-- sidebar? -->
@@ -43,25 +38,20 @@
                 {% else %}
                 <div class="card-header border bg-light" id="header{{forloop.counter}}">
                 {% endif %}
-                
-                <div class="d-flex justify-content-between">
-                  <p>
-                    {% if not todo_item.completed %}
-                      {{todo_item.title}}
-                    {% else %}
-                      <del>{{todo_item.title}}</del>
-                    {% endif %}
-                  </p>
-                  {% if not todo_item.notify %}
-                    <div></div>
+
+                <p class="d-flex justify-content-start">
+                  {% if not todo_item.completed %}
+                    {{todo_item.title}}
                   {% else %}
-                    <div>🔔</div>
+                    <del>{{todo_item.title}}</del>
                   {% endif %}
-                </div>
+                </p>
 
                 <div class="d-flex justify-content-around mt-3">
                   {% if todo_item.completed %}
-                  <small><i>Task Completed!</i></small>
+                    <small><i>Task Completed!</i></small>
+                  {% elif todo_item.is_past_due %}
+                    <small><i style="color:red">Past due!</i></small>
                   {% endif %}
                   <small>due {{todo_item.duedate}}</small>
                 </div>
@@ -87,7 +77,7 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                     </ul>
-                    <div class="row m-sm-3 d-flex justify-content-between">
+                    <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
@@ -100,29 +90,17 @@
                         >Undo completion</a></small>
                         {% endif %}
                       </div>
-                      <div class="d-flex justify-content-between">
+                      <div class="ml-auto">
                         <small class="m-2"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
                             >🖊 Edit</a
                           ></small
                         >
-                        <small><a 
+                        <small><a
                           class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
                           >🗑 Delete</a
                         ></small>
-                        {% if not todo_item.notify %}
-                          <small class="mx-2">
-                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
-                              Turn on Notifications
-                            </a>
-                          </small>
-                        {% else %}
-                          <small class="mx-2">
-                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
-                              Turn off Notifications
-                            </a>
-                          </small>
-                        {% endif %}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -130,17 +108,12 @@
             </div>
           {% endfor %}
         </div>
-    <div class="d-flex justify-content-end">
-      <ul style="list-style-type:none">
-        <li><a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_todo_item' %}">+ Add Todo</a></li>
-        <li><a style="margin-top:5px;" class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:delete_all_incompleted' %}">- Delete all</a></li>
       </ul>
+      {% else %}
+        {% block gifs %}{% endblock %}
+      {% endif %}
     </div>
   </div>
 </div>
 
-{% endblock %}
-
-{% block gifs %}
-  <body id="rabbit_cheerleaders"></body>
 {% endblock %}

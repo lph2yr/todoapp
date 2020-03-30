@@ -1,0 +1,22 @@
+{% extends 'todo/list_base.html' %}
+
+{% block filter %}
+
+<div class="row">
+  <div class="col">
+    <h4>Completed!</h4>
+  </div>
+  <div class="d-flex justify-content-end">
+    <ul style="list-style-type:none">
+      <li><a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:delete_all_completed' %}">- Delete all</a></li>
+    </ul>
+  </div>
+</div>
+<div>
+  <body id="finished_all_work"></body>
+  <body id="finished_all_work2"></body>
+</div>
+
+{% endblock %}
+
+

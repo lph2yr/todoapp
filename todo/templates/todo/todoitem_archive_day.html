@@ -1,13 +1,13 @@
-{% extends 'todo/list_base.html' %}
+{% extends 'todo/base.html' %}
 
+<!-- https://stackoverflow.com/questions/11481499/django-iterate-number-in-for-loop-of-a-template-->
 
-<!-- all things on "master" page -->
-{% block filter %}
+{% block content %}
 
 <div class="row">
   <div class="col">
     <h4>Welcome {{user}}!</h4>
-    <h4>Here's your to-do list!</h4>
+    <h4>To-do items due on {{ day }}</h4>
   </div>
 </div>
 
@@ -23,11 +23,11 @@
     </div> -->
   <div class="col">
     <div class="d-flex justify-content-center">
-      {% if todo_list %}
+      {% if object_list %}
       <ul class="w-50 list-group">
         <div id="accordion">
           <!-- accordion is the template for collapsing bars -->
-          {% for todo_item in todo_list %}
+          {% for todo_item in object_list %}
             <div class="card">
               <button
                 class="btn collapsed"
@@ -44,20 +44,13 @@
                 <div class="card-header border bg-light" id="header{{forloop.counter}}">
                 {% endif %}
                 
-                <div class="d-flex justify-content-between">
-                  <p>
-                    {% if not todo_item.completed %}
-                      {{todo_item.title}}
-                    {% else %}
-                      <del>{{todo_item.title}}</del>
-                    {% endif %}
-                  </p>
-                  {% if not todo_item.notify %}
-                    <div></div>
+                <p class="d-flex justify-content-start">
+                  {% if not todo_item.completed %}
+                    {{todo_item.title}}
                   {% else %}
-                    <div>🔔</div>
+                    <del>{{todo_item.title}}</del>
                   {% endif %}
-                </div>
+                </p>
 
                 <div class="d-flex justify-content-around mt-3">
                   {% if todo_item.completed %}
@@ -87,11 +80,11 @@
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                     </ul>
-                    <div class="row m-sm-3 d-flex justify-content-between">
+                    <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
-                          class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                          href="{% url 'todo_list:complete_todo' todo_item.id %}"
                           >✅ Complete Task</a
                         ></small>
                         {% else %}
@@ -100,29 +93,18 @@
                         >Undo completion</a></small>
                         {% endif %}
                       </div>
-                      <div class="d-flex justify-content-between">
-                        <small class="m-2"
+                      <div class="ml-auto">
+                        <small class="m-1"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                            >🖊 Edit</a
+                          >🖊 Edit</a
                           ></small
                         >
-                        <small><a 
-                          class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
-                          >🗑 Delete</a
-                        ></small>
-                        {% if not todo_item.notify %}
-                          <small class="mx-2">
-                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
-                              Turn on Notifications
-                            </a>
-                          </small>
-                        {% else %}
-                          <small class="mx-2">
-                            <a href="{% url 'todo_list:notify_todo' todo_item.id %}">
-                              Turn off Notifications
-                            </a>
-                          </small>
-                        {% endif %}
+                        <small>
+                          <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
+                            🗑 Delete
+                          </a>
+                        </small>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -130,17 +112,12 @@
             </div>
           {% endfor %}
         </div>
-    <div class="d-flex justify-content-end">
-      <ul style="list-style-type:none">
-        <li><a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_todo_item' %}">+ Add Todo</a></li>
-        <li><a style="margin-top:5px;" class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:delete_all_incompleted' %}">- Delete all</a></li>
       </ul>
+      {% else %}
+      <p>You have no to-do items for this day!</p>
+      {% endif %}
     </div>
   </div>
 </div>
 
-{% endblock %}
-
-{% block gifs %}
-  <body id="rabbit_cheerleaders"></body>
 {% endblock %}
