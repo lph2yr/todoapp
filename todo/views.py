@@ -317,19 +317,6 @@ def complete_todo(request, todo_item_id):
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
-
-@background
-def notify_email(todo_item_id):
-    todo_notify = ToDoItem.objects.get(id=todo_item_id)
-    send_mail(
-        todo_notify.title + ' due soon!',
-        'Your todo item is due soon!' + 
-        '\n Title: ' + todo_notify.title + 
-        '\n Description: \t' + todo_notify.description +
-        '\n Due: \t' + todo_notify.duedate.strftime("%m/%d/%Y, %H:%M:%S"),
-        'personaldashboard.bogosorters@gmail.com',
-        ['10myemail30@gmail.com'],
-    )
     
 def delete_all_completed(request):
     ToDoItem.objects.filter(completed = True ).delete()
