@@ -101,7 +101,7 @@
                         {% endif %}
                       </div>
                       <div class="d-flex justify-content-between">
-                        <small class="m-2"
+                        <small class="mx-2"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
                             >🖊 Edit</a
                           ></small
@@ -122,6 +122,11 @@
                               Turn off Notifications
                             </a>
                           </small>
+                          <!-- Test for Emails -->
+                          <small class='mx-2'><a
+                            href="{% url 'todo_list:email_todo' todo_item.id %}"
+                            >📧 Email</a
+                          ></small>
                         {% endif %}
                     </div>
                   </div>
