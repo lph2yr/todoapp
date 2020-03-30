@@ -9,7 +9,6 @@ import datetime
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-from background_task import background
 from django.core.mail import send_mail
 
 ######################## TO DO view ################################
