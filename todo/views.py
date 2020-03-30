@@ -6,9 +6,11 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
 from django.utils import timezone
 import datetime
+import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-
+from django.core.mail import send_mail
+from .tasks import notify_email
 
 ######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
@@ -33,13 +35,13 @@ class AddToDoItemView(CreateView):
             return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         else:
             self.object.save()
+            notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
 
 
 # function create recurrence of newly added objects based on recur_freq and end_recur_date fields
 def create_recurrences(request, todo_item_id):
-    # if recur_freq is not NEVER
-    todo_item = get_object_or_404(ToDoItem, pk=todo_item_id)  # get obj
+    todo_item= get_object_or_404(ToDoItem, pk=todo_item_id)
     # if recur_freq is not NEVER
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
@@ -310,15 +312,15 @@ def delete_todo(request, todo_item_id):
     return redirect('todo_list:todo_list')
 
 
-# function changes a todo from incomplete to complete (completed = False -> True)
-def completeToDo(request, todo_item_id):
+# function flips the completion status of a todo (T -> F ; F -> T)
+def complete_todo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id)
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
-
+    
 def delete_all_completed(request):
     ToDoItem.objects.filter(completed = True ).delete()
     return redirect('todo_list:completed')
