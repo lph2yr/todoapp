@@ -319,14 +319,6 @@ def complete_todo(request, todo_item_id):
 
     return redirect('todo_list:todo_list')
 
-# function flips the notify status of a todo (T -> F ; F -> T)
-def notify_todo(request, todo_item_id):
-    todo_item = ToDoItem.objects.get(id=todo_item_id)
-    todo_item.notify = not todo_item.notify
-    todo_item.save()
-
-    return redirect('todo_list:todo_list')
-
 @background
 def notify_email(todo_item_id):
     todo_notify = ToDoItem.objects.get(id=todo_item_id)
