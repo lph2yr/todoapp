@@ -421,6 +421,9 @@ class AcademicsListView(generic.ListView):
         context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None)
         return context
 
+class AcademicsToDoList(generic.DetailView):
+    model=ToDoItem
+    template = 'todo/academics_todo_list.html'
 
 ###############################################################################
 # Extracurricular list view

@@ -22,6 +22,7 @@ urlpatterns = [
     path('other/', views.OtherListView.as_view(), name='other_list'),
 
     path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
+    path('academics/<int:course_id>/', views.AcademicsToDoList.as_view(), name='academics_todo_list'),
     path('add_course/', views.AddCourseView.as_view(), name='add_course'),
     path('your_courses/', views.CourseListView.as_view(), name= 'course_list'),
     path('course/<int:course_id>/delete_course/', views.delete_course, name='delete_course'),
