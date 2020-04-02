@@ -318,7 +318,6 @@ class ToDoListView(generic.ListView):
             return redirect("/login/")
 =======
             return redirect("/login/") #redirect to login if user isn't logged in
->>>>>>> 6fa20a2af7843016e91eeacc891a496ffc68fe60
         return super(ToDoListView, self).get(*args, **kwargs)
 
 class CompletedView(generic.ListView):
