@@ -314,9 +314,6 @@ class ToDoListView(generic.ListView):
     
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
-<<<<<<< HEAD
-            return redirect("/login/")
-=======
             return redirect("/login/") #redirect to login if user isn't logged in
         return super(ToDoListView, self).get(*args, **kwargs)
 
