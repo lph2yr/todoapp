@@ -434,7 +434,7 @@ class AcademicsListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        return Course.objects.all().order_by('course_name')
+        return Course.objects.filter(user=self.request.user).order_by('course_name')
 
         # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
 
