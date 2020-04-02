@@ -34,6 +34,7 @@ class AddToDoItemView(CreateView):
         if (self.object.recur_freq != 'NEVER'):
             return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         else:
+            self.object.user = self.request.user
             self.object.save()
             notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
@@ -61,7 +62,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category
+                    category=todo_item.category,
+                    user=request.user
                     # progress default 0
                     # completed = default False
                 )
@@ -81,7 +83,8 @@ def create_recurrences(request, todo_item_id):
                     recur_freq=todo_item.recur_freq,
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
-                    category=todo_item.category
+                    category=todo_item.category,
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -109,6 +112,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    user=request.user
                     # progress default 0
                     # completed = default False
                 )
@@ -128,6 +132,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
+                    user=request.user
                     # progress default 0
                     # completed = default False
                 )
@@ -203,7 +208,9 @@ class EditToDo(UpdateView):
                                                         duedate__gt=duedates,
                                                         recur_freq=recur_freqs,
                                                         end_recur_date=end_recur_dates,
-                                                        category=categories)
+                                                        category=categories,
+                                                        user=request.user,
+                                                        )
 
                 # filter how many of the same event that is in the future
                 if (len(future_events) == 0):
@@ -285,7 +292,11 @@ class ToDoListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
+        items = ToDoItem.objects.all()
+        if self.request.user.is_authenticated:
+            items =  ToDoItem.objects.filter(user=self.request.user)
+        
+        for item in items:
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
             if timediff <= 1:
@@ -295,19 +306,27 @@ class ToDoListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False).order_by('duedate')
+        
+        if not self.request.user.is_authenticated:
+            return ToDoItem.objects.filter(completed=False).order_by('duedate')
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
 
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(ToDoListView, self).get(*args, **kwargs)
 
 class CompletedView(generic.ListView):
     template_name = 'todo/completed_list.html'
     context_object_name = 'todo_list'
 
     def get_queryset(self):
-        return ToDoItem.objects.filter(completed=True).order_by('duedate')
+        return ToDoItem.objects.filter(completed=True, user=self.request.user).order_by('duedate')
 
 
 def delete_todo(request, todo_item_id):
-    item = ToDoItem.objects.get(pk=todo_item_id)
+    item = ToDoItem.objects.get(pk=todo_item_id, user=request.user)
     item.delete()
     return redirect('todo_list:todo_list')
 
@@ -315,18 +334,18 @@ def delete_todo(request, todo_item_id):
 # function flips the completion status of a todo (T -> F ; F -> T)
 def complete_todo(request, todo_item_id):
     # Todo item to be completed
-    completedToDo = ToDoItem.objects.get(id=todo_item_id)
+    completedToDo = ToDoItem.objects.get(id=todo_item_id, user=request.user)
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
     return redirect('todo_list:todo_list')
     
 def delete_all_completed(request):
-    ToDoItem.objects.filter(completed = True ).delete()
+    ToDoItem.objects.filter(completed = True, user=request.user).delete()
     return redirect('todo_list:completed')
 
 def delete_all_incompleted(request):
-    ToDoItem.objects.filter(completed = False ).delete()
+    ToDoItem.objects.filter(completed = False, user=request.user).delete()
     return redirect('todo_list:todo_list')
 
 ##################################################################
@@ -338,7 +357,7 @@ class DayView(generic.FormView):
 
     def get_queryset(self):
         #https://stackoverflow.com/questions/4668619/how-do-i-filter-query-objects-by-date-range-in-django used for filter
-        return ToDoItem.objects.all().order_by('duedate')
+        return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
     
     def form_valid(self, form):
         #return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
@@ -349,7 +368,7 @@ class DayView(generic.FormView):
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.all().filter(completed=False).order_by('duedate')
+    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
@@ -370,6 +389,7 @@ class AddCourseView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
+        self.object.user = self.request.user
         self.object.save()
         return redirect('todo_list:course_list')
 
@@ -395,7 +415,9 @@ class EditCourseView(UpdateView):
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
     context_object_name = 'course_list'
-    queryset = Course.objects.all().order_by('course_name')
+    
+    def get_queryset(self):
+        return Course.objects.filter(user=self.request.user).order_by('course_name')
 
 
 def delete_course(request, course_id):
@@ -418,7 +440,7 @@ class AcademicsListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None)
+        context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None , user=self.request.user)
         return context
 
 
@@ -431,12 +453,12 @@ class ECToDoList(generic.ListView):
 
     def get_queryset(self):
         #get list of ec ordered by name
-        return Extracurricular.objects.all().order_by('name')
+        return Extracurricular.objects.filter(user=self.request.user).order_by('name')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         #add list objects without a specific ec object but is categorized as ec
-        context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None)
+        context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None, user=self.request.user)
         return context
 
 
@@ -457,6 +479,8 @@ class AddEC(CreateView):
     # overriding form_valid function to redirect to create_recurrences when add a todo item
     def form_valid(self, form):
         self.object = form.save()
+        self.object.user = self.request.user
+        self.object.save()
         return redirect('todo_list:ec_list')
 
 class EditEC(UpdateView):
@@ -482,7 +506,9 @@ class EditEC(UpdateView):
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'ec_list'
-    queryset = Extracurricular.objects.all().order_by('name')
+    
+    def get_queryset(self):
+        return Extracurricular.objects.filter(user=self.request.user).order_by('name')
 
 def delete_ec(request, ec_id):
     ec = Extracurricular.objects.get(pk=ec_id)
@@ -498,7 +524,7 @@ class JobListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
+        for item in ToDoItem.objects.filter(user=self.request.user):
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
             if timediff <= 1:
@@ -508,7 +534,7 @@ class JobListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False, category='JB').order_by('duedate')
+        return ToDoItem.objects.filter(completed=False, category='JB', user=self.request.user).order_by('duedate')
 
 ##############################################################################
 class SocialListView(generic.ListView):
@@ -518,7 +544,7 @@ class SocialListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
+        for item in ToDoItem.objects.filter(user=self.request.user):
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
             if timediff <= 1:
@@ -528,7 +554,7 @@ class SocialListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False, category='SC').order_by('duedate')
+        return ToDoItem.objects.filter(completed=False, category='SC', user=self.request.user).order_by('duedate')
 
 ###############################################################################
 class PersonalListView(generic.ListView):
@@ -538,7 +564,7 @@ class PersonalListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
+        for item in ToDoItem.objects.filter(user=self.request.user):
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
             if timediff <= 1:
@@ -548,7 +574,7 @@ class PersonalListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False, category='PS').order_by('duedate')
+        return ToDoItem.objects.filter(completed=False, category='PS', user=self.request.user).order_by('duedate')
 
 ###########################################################################
 class OtherListView(generic.ListView):
@@ -558,7 +584,7 @@ class OtherListView(generic.ListView):
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.all():
+        for item in ToDoItem.objects.filter(user=self.request.user):
             timediff = (item.duedate - timezone.now()) / \
                        datetime.timedelta(days=1)
             if timediff <= 1:
@@ -568,6 +594,6 @@ class OtherListView(generic.ListView):
             else:
                 item.priority = 'LO'
             item.save()
-        return ToDoItem.objects.filter(completed=False, category='OT').order_by('duedate')
+        return ToDoItem.objects.filter(completed=False, category='OT', user=self.request.user).order_by('duedate')
 
 # https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
