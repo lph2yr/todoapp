@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 import django.utils
 from model_utils import FieldTracker
@@ -12,6 +13,7 @@ class Course(models.Model):
     course_name = models.CharField(max_length=50, verbose_name='Course Name')
     course_abbrev = models.CharField(max_length=10, verbose_name='Course Abbreviation')
     course_prof = models.CharField(max_length=20, verbose_name='Course Professor')
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.course_name
@@ -22,6 +24,7 @@ class Extracurricular(models.Model):
     start_date = models.DateField(default= datetime.date.today, blank=True, verbose_name='Start date')
     end_date = models.DateField( default= datetime.date.today, blank=True, verbose_name='End date')
     active = models.BooleanField( default = True )
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
         return self.name
@@ -106,7 +109,7 @@ class ToDoItem(models.Model):
     has_end_recur_date_changed = models.BooleanField(default=False)
     has_category_changed = models.BooleanField(default=False)
     has_priority_changed = models.BooleanField(default=False)
-
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
     #array storing id of future events associated with current object
     future_events = ArrayField( models.IntegerField(default = 0), default=list, null=True )
