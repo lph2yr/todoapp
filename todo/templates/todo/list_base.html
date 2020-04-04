@@ -69,12 +69,22 @@
                       {% endif %} {% if todo_item.location %}
                       <li><strong>Location:</strong> {{ todo_item.location }}</li>
                       {% endif %}
-                      {% if todo_item.recur_freq %}
-                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                      {% if todo_item.recur_freq != 'NEVER' %}
+                        <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                        <li>
+                          <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
-                      {% if todo_item.end_recur_date %}
-                      <li>
-                        <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                      {% if todo_item.category != 'NN' %}
+                        <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                        {% if todo_item.category == 'AC' %}
+                          {% if todo_item.course %}
+                            <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                          {% endif %}
+                        {% elif todo_item.category == 'EC' %}
+                          {% if todo_item.ec %}
+                            <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                          {% endif %}
+                        {% endif %}
                       {% endif %}
                     </ul>
                     <div class="row m-sm-3">
