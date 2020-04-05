@@ -446,7 +446,6 @@ class AcademicsListView(generic.ListView):
 
 ###############################################################################
 # Extracurricular list view
-# Extracurricular list view
 class ECToDoList(generic.ListView):
     template_name = 'todo/ec_todo_list.html'
     context_object_name = 'ec_list'
