@@ -56,6 +56,12 @@
                   <small>due {{todo_item.duedate}}</small>
                 </div>
                 </div>
+                  {% if todo_item.progress %}
+                    <div class="progress" style="margin-top:3px;">
+                      <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                           aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+                    </div>
+                  {% endif %}
               </button>
                 <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
                 <div id="collapse{{forloop.counter}}" class="collapse">
