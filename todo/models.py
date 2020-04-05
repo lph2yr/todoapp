@@ -39,7 +39,8 @@ class ToDoItem(models.Model):
     location = models.CharField(max_length=50, blank=True)
     completed = models.BooleanField(default=False)
     progress = models.IntegerField(default=0, validators=[MinValueValidator(0), MaxValueValidator(100)], verbose_name="Progress")
-    
+    notify = models.BooleanField(default=False)
+
     #recurrence freq choices
     NEVER = 'NEVER'
     DAILY = 'DAILY'

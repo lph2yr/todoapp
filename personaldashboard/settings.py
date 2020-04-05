@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
+    'djcelery',
 ]
 
 MIDDLEWARE = [
@@ -186,6 +187,7 @@ CELERY_BROKER_URL = 'redis://h:p8f3b28b80eba6beaf346be63c9c58fdb0f7f526865785444
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
+CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 # Email information for sending out notifications/reminders
 
 EMAIL_HOST = 'smtp.gmail.com'

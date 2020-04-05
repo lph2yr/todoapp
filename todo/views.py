@@ -9,8 +9,6 @@ import datetime
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
-from .tasks import notify_email
 
 ######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
@@ -36,7 +34,6 @@ class AddToDoItemView(CreateView):
         else:
             self.object.user = self.request.user
             self.object.save()
-            notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
 
 
