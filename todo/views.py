@@ -36,7 +36,7 @@ class AddToDoItemView(CreateView):
         else:
             self.object.user = self.request.user
             self.object.save()
-            notify_email.delay(self.object.id)
+            # notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
 
 
@@ -63,7 +63,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -112,7 +112,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -132,7 +132,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -321,8 +321,16 @@ class CompletedView(generic.ListView):
     template_name = 'todo/completed_list.html'
     context_object_name = 'todo_list'
 
+
+
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(CompletedView, self).get(*args, **kwargs)
+
 
 
 def delete_todo(request, todo_item_id):
@@ -363,6 +371,11 @@ class DayView(generic.FormView):
         #return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         url = str(form)
         return HttpResponseRedirect(url)
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(DayView, self).get(*args, **kwargs)
 
 
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
