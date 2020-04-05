@@ -3,7 +3,7 @@ from django.views import generic
 from .forms import ToDoForm, CourseForm, DayForm, ECForm
 from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.dates import DayArchiveView
+from django.views.generic.dates import DayArchiveView, TodayArchiveView
 from django.utils import timezone
 import datetime
 import pytz
@@ -360,10 +360,16 @@ class DayView(generic.FormView):
         return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
     
     def form_valid(self, form):
-        #return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         url = str(form)
         return HttpResponseRedirect(url)
 
+class TodoTodayArchiveView(generic.TodayArchiveView):
+    template_name = 'todoitem_archive_day.html'
+    queryset = ToDoItem.objects.filter(completed=False)
+    date_field = "duedate"
+    ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
 
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):

@@ -9,18 +9,15 @@
     <h4>Welcome {{user}}!</h4>
     <h4>To-do items due on {{ day }}</h4>
   </div>
+  <div class="col">
+    <div class="d-flex justify-content-center">
+      <a href="/day/{{previous_day.year}}/{{previous_day|date:"b"}}/{{previous_day.day}}/" class="btn btn-secondary" style="margin-top:5px;">Previous day</a>
+      <a href="/day/{{next_day.year}}/{{next_day|date:"b"}}/{{next_day.day}}/" class="btn btn-secondary" style="margin-top:5px;">Next day</a>
+    </div>
+  </div>
 </div>
 
 <div class="row">
-  <!-- sidebar? -->
-  <!-- <div class="col">
-      <div id="list-example" class="list-group">
-        <a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
-      </div>
-    </div> -->
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if object_list %}
@@ -119,5 +116,6 @@
     </div>
   </div>
 </div>
+
 
 {% endblock %}
