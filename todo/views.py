@@ -12,6 +12,7 @@ from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from .tasks import notify_email
 
+
 ######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
 # allows adding new obj to database
@@ -431,6 +432,11 @@ class CourseListView(generic.ListView):
     
     def get_queryset(self):
         return Course.objects.filter(user=self.request.user).order_by('course_name')
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(CourseListView, self).get(*args, **kwargs)
 
 
 def delete_course(request, course_id):
@@ -456,6 +462,13 @@ class AcademicsListView(generic.ListView):
         context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None , user=self.request.user)
         return context
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(AcademicsListView, self).get(*args, **kwargs)
+
+    
+
 
 ###############################################################################
 # Extracurricular list view
@@ -472,6 +485,11 @@ class ECToDoList(generic.ListView):
         #add list objects without a specific ec object but is categorized as ec
         context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None, user=self.request.user)
         return context
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(ECToDoListView, self).get(*args, **kwargs)
 
 
 class AddEC(CreateView):
@@ -522,6 +540,11 @@ class ECListView(generic.ListView):
     def get_queryset(self):
         return Extracurricular.objects.filter(user=self.request.user).order_by('name')
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(ECListView, self).get(*args, **kwargs)
+
 def delete_ec(request, ec_id):
     ec = Extracurricular.objects.get(pk=ec_id)
     ec.delete()
@@ -547,6 +570,11 @@ class JobListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='JB', user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(JobListView, self).get(*args, **kwargs)
 
 ##############################################################################
 class SocialListView(generic.ListView):
@@ -588,6 +616,11 @@ class PersonalListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='PS', user=self.request.user).order_by('duedate')
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(PersonalListView, self).get(*args, **kwargs)
+
 ###########################################################################
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'
@@ -607,5 +640,10 @@ class OtherListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='OT', user=self.request.user).order_by('duedate')
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(OtherListView, self).get(*args, **kwargs)
 
 # https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
