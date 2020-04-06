@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm, DayForm, ECForm
+from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm
 from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
@@ -385,6 +385,31 @@ class SpecificDayView(generic.DayArchiveView):
     queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
+
+class MonthView(generic.FormView):
+    template_name = 'todo/month_form.html'
+    context_object_name = 'todo_list'
+    form_class = MonthForm
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
+
+    def form_valid(self, form):
+        url = str(form)
+        return HttpResponseRedirect(url)
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/")
+        return super(MonthView, self).get(*args, **kwargs)
+
+class SpecificMonthView(generic.MonthArchiveView):
+    template_name = 'todoitem_archive_month.html'
+    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    date_field = "duedate"
+    ordering = "duedate"
     allow_future = True
     allow_empty = True
 
