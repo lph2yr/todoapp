@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm, DayForm, ECForm
+from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm
 from .models import ToDoItem, Course, Extracurricular
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView, TodayArchiveView
@@ -11,6 +11,7 @@ from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
 from .tasks import notify_email
+
 
 ######################## TO DO view ################################
 # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-editing/
@@ -36,7 +37,7 @@ class AddToDoItemView(CreateView):
         else:
             self.object.user = self.request.user
             self.object.save()
-            notify_email.delay(self.object.id)
+            # notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
 
 
@@ -63,7 +64,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -112,7 +113,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -132,7 +133,7 @@ def create_recurrences(request, todo_item_id):
                     end_recur_date=todo_item.end_recur_date,
                     priority=todo_item.priority,
                     category=todo_item.category,
-                    user=request.user
+                    user=request.user,
                     # progress default 0
                     # completed = default False
                 )
@@ -321,8 +322,16 @@ class CompletedView(generic.ListView):
     template_name = 'todo/completed_list.html'
     context_object_name = 'todo_list'
 
+
+
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=True, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(CompletedView, self).get(*args, **kwargs)
+
 
 
 def delete_todo(request, todo_item_id):
@@ -363,6 +372,11 @@ class DayView(generic.FormView):
         url = str(form)
         return HttpResponseRedirect(url)
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(DayView, self).get(*args, **kwargs)
+
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
     queryset = ToDoItem.objects.filter(completed=False)
@@ -370,6 +384,9 @@ class TodoTodayArchiveView(generic.TodayArchiveView):
     ordering = 'duedate'
     allow_future = True
     allow_empty = True
+    
+    
+
 
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
@@ -377,6 +394,31 @@ class SpecificDayView(generic.DayArchiveView):
     queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
+
+class MonthView(generic.FormView):
+    template_name = 'todo/month_form.html'
+    context_object_name = 'todo_list'
+    form_class = MonthForm
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
+
+    def form_valid(self, form):
+        url = str(form)
+        return HttpResponseRedirect(url)
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/")
+        return super(MonthView, self).get(*args, **kwargs)
+
+class SpecificMonthView(generic.MonthArchiveView):
+    template_name = 'todoitem_archive_month.html'
+    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    date_field = "duedate"
+    ordering = "duedate"
     allow_future = True
     allow_empty = True
 
@@ -424,6 +466,11 @@ class CourseListView(generic.ListView):
     
     def get_queryset(self):
         return Course.objects.filter(user=self.request.user).order_by('course_name')
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(CourseListView, self).get(*args, **kwargs)
 
 
 def delete_course(request, course_id):
@@ -449,9 +496,15 @@ class AcademicsListView(generic.ListView):
         context['no_course_todo_list'] = ToDoItem.objects.filter(category='AC', course=None , user=self.request.user)
         return context
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(AcademicsListView, self).get(*args, **kwargs)
+
+    
+
 
 ###############################################################################
-# Extracurricular list view
 # Extracurricular list view
 class ECToDoList(generic.ListView):
     template_name = 'todo/ec_todo_list.html'
@@ -466,6 +519,11 @@ class ECToDoList(generic.ListView):
         #add list objects without a specific ec object but is categorized as ec
         context['no_ec_todo_list'] = ToDoItem.objects.filter(category='EC', ec=None, user=self.request.user)
         return context
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(ECToDoListView, self).get(*args, **kwargs)
 
 
 class AddEC(CreateView):
@@ -516,6 +574,11 @@ class ECListView(generic.ListView):
     def get_queryset(self):
         return Extracurricular.objects.filter(user=self.request.user).order_by('name')
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(ECListView, self).get(*args, **kwargs)
+
 def delete_ec(request, ec_id):
     ec = Extracurricular.objects.get(pk=ec_id)
     ec.delete()
@@ -541,6 +604,11 @@ class JobListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='JB', user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(JobListView, self).get(*args, **kwargs)
 
 ##############################################################################
 class SocialListView(generic.ListView):
@@ -582,6 +650,11 @@ class PersonalListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='PS', user=self.request.user).order_by('duedate')
 
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(PersonalListView, self).get(*args, **kwargs)
+
 ###########################################################################
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'
@@ -601,5 +674,10 @@ class OtherListView(generic.ListView):
                 item.priority = 'LO'
             item.save()
         return ToDoItem.objects.filter(completed=False, category='OT', user=self.request.user).order_by('duedate')
+    
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(OtherListView, self).get(*args, **kwargs)
 
 # https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value

@@ -182,7 +182,7 @@ ACCOUNT_LOGOUT_REDIRECT_URL = "/login"
 
 # Celery info for brokers/workers
 
-CELERY_BROKER_URL = 'redis://h:p8f3b28b80eba6beaf346be63c9c58fdb0f7f526865785444ca5296605ce15dbb@ec2-50-19-4-52.compute-1.amazonaws.com:16119'
+CELERY_BROKER_URL = 'redis://h:p8f3b28b80eba6beaf346be63c9c58fdb0f7f526865785444ca5296605ce15dbb@ec2-3-221-52-119.compute-1.amazonaws.com:10999'
 
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'

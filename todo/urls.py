@@ -17,6 +17,9 @@ urlpatterns = [
     path('day/<int:year>/<str:month>/<int:day>/', views.SpecificDayView.as_view(), name='specific_day'),
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
 
+    path('month/', views.MonthView.as_view(), name='month'),
+    path('month/<int:year>/<str:month>/', views.SpecificMonthView.as_view(), name='specific_month'),
+
     path('job/', views.JobListView.as_view(), name='job_list'),
     path('social/', views.SocialListView.as_view(), name='social_list'),
     path('personal/', views.PersonalListView.as_view(), name='personal_list'),
