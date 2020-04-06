@@ -168,6 +168,47 @@ class DayViewTest(TestCase):
         self.assertNotContains(response, "March 5th todo completed")
         self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 5th todo 2020-03-05>'])
 
+class MonthViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.client.force_login(User.objects.get_or_create(username='testuser')[0])
+
+        self.course = create_course(new_course_name="Tester")
+        self.ec = create_ec(new_name="ec")
+
+        for i in range(1,11):
+            title = "April {} Todo".format(i)
+            create_todo(
+                new_title=title,
+                new_duedate=datetime.datetime(2020, 4, i),
+                new_course=self.course.id,
+                new_ec=self.ec.id,
+            )
+
+        for i in range(1,6):
+            title = "May {} Todo".format(i)
+            create_todo(
+                new_title=title,
+                new_duedate=datetime.datetime(2020, 5, i),
+                new_course=self.course.id,
+                new_ec=self.ec.id,
+            )
+
+    def test_april_todos(self):
+        response = self.client.get('/month/2020/Apr/')
+        self.assertContains(response, "April")
+        self.assertEqual(len(response.context['object_list']), 10)
+    
+    def test_may_todos(self):
+        response = self.client.get('/month/2020/May/')
+        self.assertContains(response, "May")
+        self.assertEqual(len(response.context['object_list']), 5)
+
+    def test_month_no_todos(self):
+        response = self.client.get('/month/2020/Jan/')
+        self.assertContains(response, "January")
+        self.assertEqual(len(response.context['object_list']), 0)
+
 class TodoListViewsTest(TestCase):
     def setUp(self):
         self.client = Client()
