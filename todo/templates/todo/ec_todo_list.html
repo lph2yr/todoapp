@@ -1,0 +1,525 @@
+{% extends 'todo/base.html' %}
+
+{% block content %}
+
+<div class="row">
+  <div class="col">
+    <h4 style="margin-bottom:20px;">Extracurriculars</h4>
+  </div>
+</div>
+
+<body>
+<div>
+    {% if ec_list %}
+      <ul class="nav nav-tabs">
+        {% for ec in ec_list %}
+          {% if forloop.counter == 1 %}
+            <li class="nav-item">
+              <a href="#tab-ec-home" class="nav-link active" data-toggle="tab">{{ec.name}}</a>
+            </li>
+          {% else %}
+            <li class="nav-item">
+              <a href="#tab-ec{{ec.id}}" class="nav-link" data-toggle="tab">{{ec.name}}</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+        <li class="nav-item">
+          <a href="#tab-ec-other" class="nav-link" data-toggle="tab">Other</a>
+        </li>
+      </ul>
+
+        <div class="tab-content">
+          {% for ec in ec_list %}
+            {% if forloop.counter == 1 %}
+              <div style="margin-top:20px;" class="tab-pane fade show active" id="tab-ec-home">
+                <h4>{{ ec.name }}</h4>
+                <div class="row">
+                  <div class="col">
+                    <div class="d-flex justify-content-center">
+                      {% if ec.todoitem_set.all %}
+                        <ul class="w-50 list-group">
+                          <div id="accordion">
+                            <!-- accordion is the template for collapsing bars -->
+                            {% for todo_item in ec.todoitem_set.all %}
+                              <div class="card">
+                                <button
+                                  class="btn collapsed"
+                                  id="cardButton"
+                                  data-toggle="collapse"
+                                  data-target="#collapse{{forloop.counter}}"
+                                >
+                                <li class="list-group-item">
+                                  {% if todo_item.priority == "HI" and not todo_item.completed %}
+                                  <div class="card-header border border-danger" id="header{{forloop.counter}}">
+                                  {% elif todo_item.priority == "MD" and not todo_item.completed %}
+                                  <div class="card-header border border-warning" id="header{{forloop.counter}}">
+                                  {% else %}
+                                  <div class="card-header border bg-light" id="header{{forloop.counter}}">
+                                  {% endif %}
+
+                                  <p class="d-flex justify-content-start">
+                                    {% if not todo_item.completed %}
+                                      {{todo_item.title}}
+                                    {% else %}
+                                      <del>{{todo_item.title}}</del>
+                                    {% endif %}
+                                  </p>
+
+                                  <div class="d-flex justify-content-around mt-3">
+                                    {% if todo_item.completed %}
+                                      <small><i>Task Completed!</i></small>
+                                    {% elif todo_item.is_past_due %}
+                                      <small><i style="color:red">Past due!</i></small>
+                                    {% endif %}
+                                    <small>due {{todo_item.duedate}}</small>
+                                  </div>
+                                  </div>
+                                    {% if todo_item.progress %}
+                                    <div class="progress" style="margin-top:3px;">
+                                      <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                                           aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+                                    </div>
+                                  {% endif %}
+                                </button>
+                                  <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                                  <div id="collapse{{forloop.counter}}" class="collapse">
+                                    <!--body of the accordion card -->
+                                    <div class="card-body">
+                                      <ul style="list-style-type:none">
+                                        {% if todo_item.description %}
+                                        <li>
+                                          <strong>Description:</strong> {{ todo_item.description }}
+                                        </li>
+                                        {% endif %} {% if todo_item.location %}
+                                        <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                                        {% endif %}
+                                        {% if todo_item.recur_freq != 'NEVER' %}
+                                          <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                          <li>
+                                            <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                                        {% endif %}
+                                        {% if todo_item.category != 'NN' %}
+                                          <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                          {% if todo_item.category == 'AC' %}
+                                            {% if todo_item.course %}
+                                              <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                                            {% endif %}
+                                          {% elif todo_item.category == 'EC' %}
+                                            {% if todo_item.ec %}
+                                              <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                                            {% endif %}
+                                          {% endif %}
+                                        {% endif %}
+                                      </ul>
+                                      <div class="row m-sm-3">
+                                        <div>
+                                          {% if not todo_item.completed %}
+                                          <small><a
+                                            class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                            >✅ Complete Task</a
+                                          ></small>
+                                          {% else %}
+                                          <small><a
+                                            href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                          >Undo completion</a></small>
+                                          {% endif %}
+                                        </div>
+                                        <div class="ml-auto">
+                                          <small class="m-2"
+                                            ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                                              >🖊 Edit</a
+                                            ></small
+                                          >
+                                          <small><a
+                                            class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                                            >🗑 Delete</a
+                                          ></small>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </li>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </ul>
+                      {% else %}
+                        <!-- TODO!!!!!!!!!!!!!!!! -->
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% else %}
+              <div style="margin-top:20px;" class="tab-pane fade" id="tab-ec{{ec.id}}">
+                <h4>{{ ec.name }}</h4>
+                <div class="row">
+                  <div class="col">
+                    <div class="d-flex justify-content-center">
+                      {% if ec.todoitem_set.all %}
+                        <ul class="w-50 list-group">
+                          <div id="accordion">
+                            <!-- accordion is the template for collapsing bars -->
+                            {% for todo_item in ec.todoitem_set.all %}
+                              <div class="card">
+                                <button
+                                  class="btn collapsed"
+                                  id="cardButton"
+                                  data-toggle="collapse"
+                                  data-target="#collapse{{forloop.counter}}"
+                                >
+                                <li class="list-group-item">
+                                  {% if todo_item.priority == "HI" and not todo_item.completed %}
+                                  <div class="card-header border border-danger" id="header{{forloop.counter}}">
+                                  {% elif todo_item.priority == "MD" and not todo_item.completed %}
+                                  <div class="card-header border border-warning" id="header{{forloop.counter}}">
+                                  {% else %}
+                                  <div class="card-header border bg-light" id="header{{forloop.counter}}">
+                                  {% endif %}
+
+                                  <p class="d-flex justify-content-start">
+                                    {% if not todo_item.completed %}
+                                      {{todo_item.title}}
+                                    {% else %}
+                                      <del>{{todo_item.title}}</del>
+                                    {% endif %}
+                                  </p>
+
+                                  <div class="d-flex justify-content-around mt-3">
+                                    {% if todo_item.completed %}
+                                      <small><i>Task Completed!</i></small>
+                                    {% elif todo_item.is_past_due %}
+                                      <small><i style="color:red">Past due!</i></small>
+                                    {% endif %}
+                                    <small>due {{todo_item.duedate}}</small>
+                                  </div>
+                                  </div>
+                                    {% if todo_item.progress %}
+                                    <div class="progress" style="margin-top:3px;">
+                                      <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                                           aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+                                    </div>
+                                  {% endif %}
+                                </button>
+                                  <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                                  <div id="collapse{{forloop.counter}}" class="collapse">
+                                    <!--body of the accordion card -->
+                                    <div class="card-body">
+                                      <ul style="list-style-type:none">
+                                        {% if todo_item.description %}
+                                        <li>
+                                          <strong>Description:</strong> {{ todo_item.description }}
+                                        </li>
+                                        {% endif %} {% if todo_item.location %}
+                                        <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                                        {% endif %}
+                                        {% if todo_item.recur_freq != 'NEVER' %}
+                                          <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                          <li>
+                                            <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                                        {% endif %}
+                                        {% if todo_item.category != 'NN' %}
+                                          <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                          {% if todo_item.category == 'AC' %}
+                                            {% if todo_item.course %}
+                                              <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                                            {% endif %}
+                                          {% elif todo_item.category == 'EC' %}
+                                            {% if todo_item.ec %}
+                                              <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                                            {% endif %}
+                                          {% endif %}
+                                        {% endif %}
+                                      </ul>
+                                      <div class="row m-sm-3">
+                                        <div>
+                                          {% if not todo_item.completed %}
+                                          <small><a
+                                            class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                            >✅ Complete Task</a
+                                          ></small>
+                                          {% else %}
+                                          <small><a
+                                            href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                          >Undo completion</a></small>
+                                          {% endif %}
+                                        </div>
+                                        <div class="ml-auto">
+                                          <small class="m-2"
+                                            ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                                              >🖊 Edit</a
+                                            ></small
+                                          >
+                                          <small><a
+                                            class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                                            >🗑 Delete</a
+                                          ></small>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                                </li>
+                              </div>
+                            {% endfor %}
+                          </div>
+                        </ul>
+                      {% else %}
+                        <!-- TODO!!!!!!!!!!!!!!!! -->
+                      {% endif %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {% endif %}
+          {% endfor %}
+
+          <div style="margin-top:20px;" class="tab-pane fade" id="tab-ec-other">
+            <h4>Other</h4>
+            <div class="row">
+              <div class="col">
+                <div class="d-flex justify-content-center">
+                  {% if no_ec_todo_list %}
+                    <ul class="w-50 list-group">
+                      <div id="accordion">
+                        <!-- accordion is the template for collapsing bars -->
+                        {% for todo_item in no_ec_todo_list %}
+                          <div class="card">
+                            <button
+                              class="btn collapsed"
+                              id="cardButton"
+                              data-toggle="collapse"
+                              data-target="#collapse{{forloop.counter}}"
+                            >
+                            <li class="list-group-item">
+                              {% if todo_item.priority == "HI" and not todo_item.completed %}
+                              <div class="card-header border border-danger" id="header{{forloop.counter}}">
+                              {% elif todo_item.priority == "MD" and not todo_item.completed %}
+                              <div class="card-header border border-warning" id="header{{forloop.counter}}">
+                              {% else %}
+                              <div class="card-header border bg-light" id="header{{forloop.counter}}">
+                              {% endif %}
+
+                              <p class="d-flex justify-content-start">
+                                {% if not todo_item.completed %}
+                                  {{todo_item.title}}
+                                {% else %}
+                                  <del>{{todo_item.title}}</del>
+                                {% endif %}
+                              </p>
+
+                              <div class="d-flex justify-content-around mt-3">
+                                {% if todo_item.completed %}
+                                  <small><i>Task Completed!</i></small>
+                                {% elif todo_item.is_past_due %}
+                                  <small><i style="color:red">Past due!</i></small>
+                                {% endif %}
+                                <small>due {{todo_item.duedate}}</small>
+                              </div>
+                              </div>
+                                {% if todo_item.progress %}
+                                    <div class="progress" style="margin-top:3px;">
+                                      <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                                           aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+                                    </div>
+                                  {% endif %}
+                            </button>
+                              <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                              <div id="collapse{{forloop.counter}}" class="collapse">
+                                <!--body of the accordion card -->
+                                <div class="card-body">
+                                  <ul style="list-style-type:none">
+                                    {% if todo_item.description %}
+                                    <li>
+                                      <strong>Description:</strong> {{ todo_item.description }}
+                                    </li>
+                                    {% endif %} {% if todo_item.location %}
+                                    <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                                    {% endif %}
+                                    {% if todo_item.recur_freq != 'NEVER' %}
+                                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                      <li>
+                                        <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                                    {% endif %}
+                                    {% if todo_item.category != 'NN' %}
+                                      <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                      {% if todo_item.category == 'AC' %}
+                                        {% if todo_item.course %}
+                                          <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                                        {% endif %}
+                                      {% elif todo_item.category == 'EC' %}
+                                        {% if todo_item.ec %}
+                                          <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                                        {% endif %}
+                                      {% endif %}
+                                    {% endif %}
+                                  </ul>
+                                  <div class="row m-sm-3">
+                                    <div>
+                                      {% if not todo_item.completed %}
+                                      <small><a
+                                        class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                        >✅ Complete Task</a
+                                      ></small>
+                                      {% else %}
+                                      <small><a
+                                        href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                      >Undo completion</a></small>
+                                      {% endif %}
+                                    </div>
+                                    <div class="ml-auto">
+                                      <small class="m-2"
+                                        ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                                          >🖊 Edit</a
+                                        ></small
+                                      >
+                                      <small><a
+                                        class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                                        >🗑 Delete</a
+                                      ></small>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </li>
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </ul>
+
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+  {% else %}
+    <ul class="nav nav-tabs">
+      <li class="nav-item">
+        <a href="#tab-other-blank" class="nav-link active" data-toggle="tab">Other</a>
+      </li>
+    </ul>
+
+  <div style="margin-top:20px;" class="tab-pane show active" id="tab-other-blank">
+        <h4>Other</h4>
+        <div class="row">
+          <div class="col">
+            <div class="d-flex justify-content-center">
+              {% if no_ec_todo_list %}
+                <ul class="w-50 list-group">
+                  <div id="accordion">
+                    <!-- accordion is the template for collapsing bars -->
+                    {% for todo_item in no_ec_todo_list %}
+                      <div class="card">
+                        <button
+                          class="btn collapsed"
+                          id="cardButton"
+                          data-toggle="collapse"
+                          data-target="#collapse{{forloop.counter}}"
+                        >
+                        <li class="list-group-item">
+                          {% if todo_item.priority == "HI" and not todo_item.completed %}
+                          <div class="card-header border border-danger" id="header{{forloop.counter}}">
+                          {% elif todo_item.priority == "MD" and not todo_item.completed %}
+                          <div class="card-header border border-warning" id="header{{forloop.counter}}">
+                          {% else %}
+                          <div class="card-header border bg-light" id="header{{forloop.counter}}">
+                          {% endif %}
+
+                          <p class="d-flex justify-content-start">
+                            {% if not todo_item.completed %}
+                              {{todo_item.title}}
+                            {% else %}
+                              <del>{{todo_item.title}}</del>
+                            {% endif %}
+                          </p>
+
+                          <div class="d-flex justify-content-around mt-3">
+                            {% if todo_item.completed %}
+                              <small><i>Task Completed!</i></small>
+                            {% elif todo_item.is_past_due %}
+                              <small><i style="color:red">Past due!</i></small>
+                            {% endif %}
+                            <small>due {{todo_item.duedate}}</small>
+                          </div>
+                          </div>
+                            {% if todo_item.progress %}
+                              <div class="progress" style="margin-top:3px;">
+                                <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                                     aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+                              </div>
+                            {% endif %}
+                        </button>
+                          <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+                          <div id="collapse{{forloop.counter}}" class="collapse">
+                            <!--body of the accordion card -->
+                            <div class="card-body">
+                              <ul style="list-style-type:none">
+                                {% if todo_item.description %}
+                                <li>
+                                  <strong>Description:</strong> {{ todo_item.description }}
+                                </li>
+                                {% endif %} {% if todo_item.location %}
+                                <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                                {% endif %}
+                                {% if todo_item.recur_freq != 'NEVER' %}
+                                  <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                                  <li>
+                                    <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                                {% endif %}
+                                {% if todo_item.category != 'NN' %}
+                                  <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                  {% if todo_item.category == 'AC' %}
+                                    {% if todo_item.course %}
+                                      <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                                    {% endif %}
+                                  {% elif todo_item.category == 'EC' %}
+                                    {% if todo_item.ec %}
+                                      <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                                    {% endif %}
+                                  {% endif %}
+                                {% endif %}
+                              </ul>
+                              <div class="row m-sm-3">
+                                <div>
+                                  {% if not todo_item.completed %}
+                                  <small><a
+                                    class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                    >✅ Complete Task</a
+                                  ></small>
+                                  {% else %}
+                                  <small><a
+                                    href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                                  >Undo completion</a></small>
+                                  {% endif %}
+                                </div>
+                                <div class="ml-auto">
+                                  <small class="m-2"
+                                    ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                                      >🖊 Edit</a
+                                    ></small
+                                  >
+                                  <small><a
+                                    class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                                    >🗑 Delete</a
+                                  ></small>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </li>
+                      </div>
+                    {% endfor %}
+                  </div>
+                </ul>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
+</body>
+
+{% endblock %}

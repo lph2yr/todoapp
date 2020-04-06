@@ -4,7 +4,12 @@
 
 {% block content %}
 
-{% block filter %}{% endblock %} <!-- where titles will be-->
+<div class="row">
+  <div class="col">
+    <h4>Welcome {{user}}!</h4>
+    <h4>To-do items due in the month of {{ month|date:"F, Y" }}</h4>
+  </div>
+</div>
 
 <div class="row">
   <!-- sidebar? -->
@@ -18,11 +23,11 @@
     </div> -->
   <div class="col">
     <div class="d-flex justify-content-center">
-      {% if todo_list %}
+      {% if object_list %}
       <ul class="w-50 list-group">
         <div id="accordion">
           <!-- accordion is the template for collapsing bars -->
-          {% for todo_item in todo_list %}
+          {% for todo_item in object_list %}
             <div class="card">
               <button
                 class="btn collapsed"
@@ -38,7 +43,7 @@
                 {% else %}
                 <div class="card-header border bg-light" id="header{{forloop.counter}}">
                 {% endif %}
-
+                
                 <p class="d-flex justify-content-start">
                   {% if not todo_item.completed %}
                     {{todo_item.title}}
@@ -49,19 +54,11 @@
 
                 <div class="d-flex justify-content-around mt-3">
                   {% if todo_item.completed %}
-                    <small><i>Task Completed!</i></small>
-                  {% elif todo_item.is_past_due %}
-                    <small><i style="color:red">Past due!</i></small>
+                  <small><i>Task Completed!</i></small>
                   {% endif %}
                   <small>due {{todo_item.duedate}}</small>
                 </div>
                 </div>
-                  {% if todo_item.progress %}
-                    <div class="progress" style="margin-top:3px;">
-                      <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
-                           aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
-                    </div>
-                  {% endif %}
               </button>
                 <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
                 <div id="collapse{{forloop.counter}}" class="collapse">
@@ -75,29 +72,19 @@
                       {% endif %} {% if todo_item.location %}
                       <li><strong>Location:</strong> {{ todo_item.location }}</li>
                       {% endif %}
-                      {% if todo_item.recur_freq != 'NEVER' %}
-                        <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
-                        <li>
-                          <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                      {% if todo_item.recur_freq %}
+                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
                       {% endif %}
-                      {% if todo_item.category != 'NN' %}
-                        <li><strong>Category:</strong> {{ todo_item.category }}</li>
-                        {% if todo_item.category == 'AC' %}
-                          {% if todo_item.course %}
-                            <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                          {% endif %}
-                        {% elif todo_item.category == 'EC' %}
-                          {% if todo_item.ec %}
-                            <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                          {% endif %}
-                        {% endif %}
+                      {% if todo_item.end_recur_date %}
+                      <li>
+                        <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                     </ul>
                     <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}
                         <small><a
-                          class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                          href="{% url 'todo_list:complete_todo' todo_item.id %}"
                           >✅ Complete Task</a
                         ></small>
                         {% else %}
@@ -107,15 +94,16 @@
                         {% endif %}
                       </div>
                       <div class="ml-auto">
-                        <small class="m-2"
+                        <small class="m-1"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                            >🖊 Edit</a
+                          >🖊 Edit</a
                           ></small
                         >
-                        <small><a
-                          class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
-                          >🗑 Delete</a
-                        ></small>
+                        <small>
+                          <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
+                            🗑 Delete
+                          </a>
+                        </small>
                       </div>
                     </div>
                   </div>
@@ -126,7 +114,7 @@
         </div>
       </ul>
       {% else %}
-        {% block gifs %}{% endblock %}
+      <p>You have no to-do items for this day!</p>
       {% endif %}
     </div>
   </div>

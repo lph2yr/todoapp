@@ -51,7 +51,7 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'todo_list:completed' %}"
-              >Completed tasks</a
+              >Completed items</a
             >
           </li>
           <li class="nav-item dropdown">
@@ -60,7 +60,7 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}">Academics</a>
-              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Extracurriculars</a>
+              <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}">Extracurriculars</a>
               <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
               <a class="dropdown-item" href="{% url 'todo_list:social_list' %}">Social</a>
               <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}">Personal</a>
@@ -74,7 +74,18 @@
             </a>
             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
               <a class="dropdown-item" href="{% url 'todo_list:course_list' %}">Your Courses</a>
+              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Your Extracurriculars</a>
             </div>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list:day' %}"
+              >Day view</a
+            >
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="{% url 'todo_list:month' %}">
+              Month view
+            </a>
           </li>
         </ul>
       </div>
