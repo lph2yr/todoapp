@@ -204,6 +204,7 @@ class MonthViewTest(TestCase):
         self.assertContains(response, "May")
         self.assertEqual(len(response.context['object_list']), 5)
 
+    #Should be no todos for this month
     def test_month_no_todos(self):
         response = self.client.get('/month/2020/Jan/')
         self.assertContains(response, "January")
