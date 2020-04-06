@@ -514,7 +514,7 @@ class ECToDoList(generic.ListView):
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             return redirect("/login/") #redirect to login if user isn't logged in
-        return super(ECToDoListView, self).get(*args, **kwargs)
+        return super(ECToDoList, self).get(*args, **kwargs)
 
 
 class AddEC(CreateView):
