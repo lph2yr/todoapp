@@ -168,6 +168,12 @@ class DayViewTest(TestCase):
         self.assertNotContains(response, "March 5th todo completed")
         self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 5th todo 2020-03-05>'])
 
+class TodayViewTest(TestCase):
+    
+
+class WeekViewTest(TestCase):
+
+
 class MonthViewTest(TestCase):
     def setUp(self):
         self.client = Client()

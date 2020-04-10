@@ -3,6 +3,8 @@ from django.template.defaultfilters import mark_safe
 from django.utils import timezone
 from django import forms
 from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
+import datetime
+from datetime import date
 
 
 
@@ -88,6 +90,53 @@ class DayForm(forms.Form):
     def __str__(self):
         #https://stackoverflow.com/questions/19901410/django-how-to-get-value-from-charfield-and-modelchoicefield
         return "/day/" + self.cleaned_data['year'] + "/" + self.cleaned_data['month'] + "/" + self.cleaned_data['day']
+
+
+class WeekForm(forms.Form):
+    JAN = 'Jan'
+    FEB = 'Feb'
+    MAR = 'Mar'
+    APR = 'Apr'
+    MAY = 'May'
+    JUN = 'Jun'
+    JUL = 'Jul'
+    AUG = 'Aug'
+    SEP = 'Sep'
+    OCT = 'Oct'
+    NOV = 'Nov'
+    DEC = 'Dec'
+
+    MONTH_CHOICES = [
+        (JAN, 'Jan'),
+        (FEB, 'Feb'),
+        (MAR, 'Mar'),
+        (APR, 'Apr'),
+        (MAY, 'May'),
+        (JUN, 'Jun'),
+        (JUL, 'Jul'),
+        (AUG, 'Aug'),
+        (SEP, 'Sep'),
+        (OCT, 'Oct'),
+        (NOV, 'Nov'),
+        (DEC, 'Dec'),
+    ]
+    month = forms.ChoiceField(choices = MONTH_CHOICES)
+    day = forms.CharField(max_length = 2)
+    year = forms.CharField(max_length = 4)
+
+    today = date.today()
+    
+    
+    #returns the custom url for the redirect
+    def __str__(self):
+        intyear = int(self.cleaned_data['year'])
+        intmonth = 2
+        intday = int(self.cleaned_data['day'])
+        date = datetime.date(intyear, intmonth, intday)
+
+        return date.strftime("%W")
+
+
 
 class MonthForm(forms.Form):
     JAN = 'Jan'
