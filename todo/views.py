@@ -294,21 +294,8 @@ def edit_recurrences(request, todo_item_id):
     # redirect to create_recurrences to make new future instances
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
-# def create_subtask(request, todo_item_id ):
-#     template = 'todo/add_subtask_form.html'
-#     if request.method == 'POST':
-#         form = SubTaskForm(request.POST)
-#         if form.is_valid():
-#             subtask = form.save()
-#             subtask.todo = ToDoItem.objects.get(id=todo_item_id, user=request.user)
-#             subtask.user = request.user
-#             subtask.save()
-#         return redirect( 'todo_list:todo_list' )
-#     form = SubTaskForm(request.POST)
-#     return render( request, template, {
-#         'form': form,
-#     })
 
+#https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
 def create_subtask_model_form( request, todo_item_id ):
     template_name = 'todo/add_subtask_form.html'
     if request.method == 'POST':
@@ -328,6 +315,7 @@ def create_subtask_model_form( request, todo_item_id ):
         'formset': formset,
         'todo_item': ToDoItem.objects.get(id=todo_item_id, user=request.user)
     })
+
 
 def complete_subtask( request, subtask_id):
     completedSubTask = SubTask.objects.get(id=subtask_id, user = request.user)
