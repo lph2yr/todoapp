@@ -131,3 +131,12 @@ class ToDoItem(models.Model):
         due = self.duedate
         is_same = now.day == due.day
         return is_same
+
+class SubTask( models.Model ):
+    todo = models.ForeignKey( ToDoItem, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    detail = models.CharField( max_length=200, blank=True )
+    completed = models.BooleanField( default=False )
+
+    def __str__(self):
+        return self.detail

@@ -1,9 +1,9 @@
-from .models import ToDoItem, Course, Extracurricular
+from .models import ToDoItem, Course, Extracurricular, SubTask
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
 from django import forms
 from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
-
+from django.forms import modelformset_factory
 
 
 class ToDoForm(forms.ModelForm):
@@ -25,6 +25,21 @@ class ToDoForm(forms.ModelForm):
                                                            'collapse': True,}
                                                  ),
                   }
+class SubTaskForm( forms.ModelForm ):
+    class Meta:
+        model = SubTask
+        fields = ['detail']
+
+SubTaskModelFormSet = modelformset_factory(
+    SubTask,
+    fields=('detail',),
+    extra=1,
+    widgets={'detail': forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Create subtasks here'
+    })}
+)
+
 
 class CourseForm( forms.ModelForm ):
     class Meta:
