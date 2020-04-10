@@ -379,23 +379,44 @@ class DayView(generic.FormView):
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.filter(completed=False)
+    queryset = ToDoItem.objects.filter(completed=False, user=self.request.user)
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
     allow_empty = True
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(TodoTodayArchiveView, self).get(*args, **kwargs)
     
-    
+class TodoWeekArchiveView(generic.WeekArchiveView):
+    template_name = 'todoitem_archive_week.html'
+    queryset = ToDoItem.objects.filter(completed=False, user=self.request.user)
+    date_field = "duedate"
+    ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(TodoWeekArchiveView, self).get(*args, **kwargs)
 
 
 #https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    queryset = ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
     allow_empty = True
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(SpecificDayView, self).get(*args, **kwargs)
 
 class MonthView(generic.FormView):
     template_name = 'todo/month_form.html'
