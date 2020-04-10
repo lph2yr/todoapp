@@ -1,24 +1,92 @@
 {% extends 'todo/list_base.html' %}
 
-
 <!-- all things on "master" page -->
 {% block filter %}
 
-<div class="row">
-  <div class="col">
-    <h4>Welcome {{user}}!</h4>
-    <h4>Here's your to-do list!</h4>
-    <div class="d-flex justify-content-end">
-      <ul style="list-style-type:none">
-        <li><a class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:add_todo_item' %}">+ Add Todo</a></li>
-        <li><a style="margin-top:5px;" class="btn btn-info btn-sm" role="button" style="color:white;" href="{% url 'todo_list:delete_all_incompleted' %}">- Delete all</a></li>
-      </ul>
+<div class="d-flex justify-content-center">
+  <h2>Your To-do List</h2>
+</div>
+
+<div class="d-flex justify-content-center">
+  <!-- TODO: put a motivational message here, randomly generated/sent from the backend -->
+  <p><i>Let's get things done today!</i></p>
+</div>
+
+<div class="row mb-4">
+  <div class="d-flex justify-content-start col-6">
+    <div class="dropdown">
+      <button
+        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+        href="#"
+        id="filterDropdown"
+        role="button"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Filter by
+      </button>
+      <div class="dropdown-menu" aria-labelledby="filterDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
+          >Academics</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
+          >Extracurriculars</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
+        <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
+          >Social</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
+          >Personal</a
+        >
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{% url 'todo_list:other_list' %}"
+          >Other</a
+        >
+      </div>
     </div>
+
+    <div class="dropdown">
+      <button
+        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+        href="#"
+        id="viewDropdown"
+        role="button"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        View by
+      </button>
+      <div class="dropdown-menu" aria-labelledby="viewDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:day' %}">
+          Day view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:month' %}">
+          Month view
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex justify-content-end col-6">
+    <a
+      class="btn btn-sm btn-outline-secondary"
+      role="button"
+      href="{% url 'todo_list:add_todo_item' %}"
+      >+ Add Todo</a
+    >
+    <!-- TODO: move delete all button into an edit page -->
+    <a
+      class="btn btn-sm btn-outline-danger"
+      role="button"
+      href="{% url 'todo_list:delete_all_incompleted' %}"
+      >- Delete all</a
+    >
   </div>
 </div>
 
-{% endblock %}
-
-{% block gifs %}
-  <body id="rabbit_cheerleaders"></body>
+{% endblock %} {% block gifs %}
+<body id="rabbit_cheerleaders"></body>
 {% endblock %}

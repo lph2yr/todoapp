@@ -23,29 +23,51 @@ body {
   background: none;
 }
 
-.navbar {
+/* https://github.com/twbs/bootstrap/issues/21943#issuecomment-591427539 */
+/* make the width 50% in medium and large screens */
+@media (min-width: 768px) {
+  .w-md-50 {
+    width: 50% !important;
+  }
+}
+
+.thick-border {
+  border-width: 2px !important;
+}
+
+.card-description {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+nav {
   background-color: aliceblue;
+}
+.ml-auto .dropdown-menu {
+  left: auto !important;
+  right: 0px;
 }
 
 #rabbit_cheerleaders {
-    background: white url("images/rabbit_cheerleaders.gif") no-repeat;
-    background-position: center;
+  background: white url("images/rabbit_cheerleaders.gif") no-repeat;
+  background-position: center;
 }
 
 #finished_all_work {
-    background: white url("images/finished_all_work.gif") no-repeat;
-    background-position: 10% 50%;
-    background-size: 20% 30%;
+  background: white url("images/finished_all_work.gif") no-repeat;
+  background-position: 10% 50%;
+  background-size: 20% 30%;
 }
 
-#finished_all_work2{
-    background: white url("images/finished_all_work.gif") no-repeat;
-    background-position: 90% 50%;
-    background-size: 20% 30%;
+#finished_all_work2 {
+  background: white url("images/finished_all_work.gif") no-repeat;
+  background-position: 90% 50%;
+  background-size: 20% 30%;
 }
 
 #burnbooks {
-    background: white url("images/burn_books.gif") no-repeat;
-    background-position: center;
-    background-size: 25% 50%;
+  background: white url("images/burn_books.gif") no-repeat;
+  background-position: center;
+  background-size: 25% 50%;
 }
