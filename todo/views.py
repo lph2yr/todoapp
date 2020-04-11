@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm
-from .models import ToDoItem, Course, Extracurricular, Note
+from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm, SubTaskModelFormSet
+from .models import ToDoItem, Course, Extracurricular, Note, SubTask
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
 from django.utils import timezone
@@ -295,6 +295,39 @@ def edit_recurrences(request, todo_item_id):
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
 
+# https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+# function creates subtask with formset; creating multiple subtasks on the same page
+def create_subtask_model_form(request, todo_item_id):
+    template_name = 'todo/add_subtask_form.html'
+    if request.method == 'POST':
+        formset = SubTaskModelFormSet(request.POST)
+        if formset.is_valid():
+            for form in formset:
+                if form.cleaned_data.get('detail'):
+                    obj = form.save()
+                    obj.todo = ToDoItem.objects.get(
+                        id=todo_item_id, user=request.user)
+                    obj.user = request.user
+                    obj.save
+                    form.save()
+            return redirect('todo_list:todo_list')
+    else:
+        formset = SubTaskModelFormSet(queryset=SubTask.objects.none())
+    return render(request, template_name, {
+        'formset': formset,
+        'todo_item': ToDoItem.objects.get(id=todo_item_id, user=request.user)
+    })
+
+# subtask is crossed out when completed, but not gone
+
+
+def complete_subtask(request, subtask_id):
+    completedSubTask = SubTask.objects.get(id=subtask_id, user=request.user)
+    completedSubTask.completed = not completedSubTask.completed
+    completedSubTask.save()
+    return redirect('todo_list:todo_list')
+
+
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
@@ -453,6 +486,7 @@ class SpecificMonthView(generic.MonthArchiveView):
     allow_empty = True
 
 ################ Course view ###########################
+# add a course instance
 
 
 class AddCourseView(CreateView):
@@ -491,6 +525,8 @@ class EditCourseView(UpdateView):
         self.object.save()
         return redirect('todo_list:course_list')
 
+# list for filter courses/academics
+
 
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
@@ -510,6 +546,10 @@ def delete_course(request, course_id):
     course = Course.objects.get(pk=course_id)
     course.delete()
     return redirect('todo_list:course_list')
+
+################ Academics View ######################
+
+# list Academics for "My academics" view
 
 
 class AcademicsListView(generic.ListView):
@@ -536,7 +576,9 @@ class AcademicsListView(generic.ListView):
         return super(AcademicsListView, self).get(*args, **kwargs)
 
 
-####### Extracurricular list view ########
+######################### Extracurricular list view ####################################
+
+# for filter EC view
 class ECToDoList(generic.ListView):
     template_name = 'todo/ec_todo_list.html'
     context_object_name = 'ec_list'
@@ -557,6 +599,8 @@ class ECToDoList(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(ECToDoList, self).get(*args, **kwargs)
+
+# create an EC instance
 
 
 class AddEC(CreateView):
@@ -580,6 +624,8 @@ class AddEC(CreateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
+# edit EC instance
+
 
 class EditEC(UpdateView):
     model = Extracurricular
@@ -600,7 +646,7 @@ class EditEC(UpdateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
-# purely EC list view
+# purely EC list view for "My Extracurriculars" view
 
 
 class ECListView(generic.ListView):
@@ -623,7 +669,7 @@ def delete_ec(request, ec_id):
     return redirect('todo_list:ec_list')
 
 
-########## Job View #############
+################################### Job View ##########################################
 class JobListView(generic.ListView):
     template_name = 'todo/job_list.html'
     context_object_name = 'todo_list'

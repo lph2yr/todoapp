@@ -103,7 +103,7 @@
                                           <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                       {% endif %}
                                       {% if todo_item.category != 'NN' %}
-                                        <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                        <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
                                         {% if todo_item.category == 'AC' %}
                                           {% if todo_item.course %}
                                             <li><strong>Course:</strong> {{ todo_item.course }}</li>
@@ -148,7 +148,7 @@
                         </div>
                       </ul>
                     {% else %}
-                      <!-- TODO!!!!!!!!!!!!!!!! -->
+                      <p>You have nothing to do!</p>
                     {% endif %}
                   </div>
                 </div>
@@ -227,7 +227,7 @@
                                           <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                       {% endif %}
                                       {% if todo_item.category != 'NN' %}
-                                        <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                        <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
                                         {% if todo_item.category == 'AC' %}
                                           {% if todo_item.course %}
                                             <li><strong>Course:</strong> {{ todo_item.course }}</li>
@@ -272,7 +272,7 @@
                         </div>
                       </ul>
                     {% else %}
-                      <!-- TODO!!!!!!!!!!!!!!!! -->
+                      <p>You have nothing to do!</p>
                     {% endif %}
                   </div>
                 </div>
@@ -349,7 +349,7 @@
                                     <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                 {% endif %}
                                 {% if todo_item.category != 'NN' %}
-                                  <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                  <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
                                   {% if todo_item.category == 'AC' %}
                                     {% if todo_item.course %}
                                       <li><strong>Course:</strong> {{ todo_item.course }}</li>
@@ -393,6 +393,8 @@
                     {% endfor %}
                   </div>
                 </ul>
+              {% else %}
+                <p>You have nothing to do!</p>
               {% endif %}
             </div>
           </div>
@@ -476,7 +478,7 @@
                                     <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                 {% endif %}
                                 {% if todo_item.category != 'NN' %}
-                                  <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                                  <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
                                   {% if todo_item.category == 'AC' %}
                                     {% if todo_item.course %}
                                       <li><strong>Course:</strong> {{ todo_item.course }}</li>
@@ -520,6 +522,8 @@
                     {% endfor %}
                   </div>
                 </ul>
+              {% else %}
+                <p>You have nothing to do!</p>
               {% endif %}
             </div>
           </div>

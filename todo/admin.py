@@ -1,5 +1,10 @@
 from django.contrib import admin
-from .models import ToDoItem, Course, Extracurricular, Note
+from .models import ToDoItem, Course, Extracurricular, Note, SubTask
+
+
+class SubTaskInLine(admin.TabularInline):
+    model = SubTask
+    extra = 3
 
 
 class ToDoAdmin(admin.ModelAdmin):
@@ -10,6 +15,7 @@ class ToDoAdmin(admin.ModelAdmin):
                                 'priority', 'recur_freq', 'end_recur_date', 'completed']}),
     ]
 
+    inlines = [SubTaskInLine]
     list_display = ('title', 'duedate', 'priority', 'recur_freq', 'completed')
     list_filter = ['duedate']
     search_fields = ['title']
@@ -52,3 +58,4 @@ admin.site.register(ToDoItem, ToDoAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Extracurricular, ECAdmin)
 admin.site.register(Note, NoteAdmin)
+admin.site.register(SubTask)

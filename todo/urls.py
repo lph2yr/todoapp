@@ -21,6 +21,10 @@ urlpatterns = [
          views.SpecificDayView.as_view(), name='specific_day'),
     path('<int:todo_item_id>/edit_recurrences/',
          views.edit_recurrences, name='edit_recurrences'),
+    path('<int:todo_item_id>/add_subtask/',
+         views.create_subtask_model_form, name='add_subtask'),
+    path('<int:subtask_id>/complete_subtask/',
+         views.complete_subtask, name='complete_subtask'),
 
     path('month/', views.MonthView.as_view(), name='month'),
     path('month/<int:year>/<str:month>/',

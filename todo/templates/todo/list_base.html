@@ -69,23 +69,26 @@
                 {% endif %}
                 </li>
               </button>
-
+              
               <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
               <div id="collapse{{forloop.counter}}" class="collapse">
+                <!--body of the accordion card -->
                 <div class="card-body">
-                  <ul style="list-style-type: none;">
+                  <ul style="list-style-type:none">
                     {% if todo_item.description %}
-                    <li><strong>Description:</strong> {{ todo_item.description }}</li>
-                    {% endif %}
-                    {% if todo_item.location %}
+                    <li>
+                      <strong>Description:</strong> {{ todo_item.description }}
+                    </li>
+                    {% endif %} {% if todo_item.location %}
                     <li><strong>Location:</strong> {{ todo_item.location }}</li>
                     {% endif %}
                     {% if todo_item.recur_freq != 'NEVER' %}
                       <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
-                      <li><strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                      <li>
+                        <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                     {% endif %}
                     {% if todo_item.category != 'NN' %}
-                      <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                      <li><strong>Category:</strong> {{ todo_item.get_category_display }}</li>
                       {% if todo_item.category == 'AC' %}
                         {% if todo_item.course %}
                           <li><strong>Course:</strong> {{ todo_item.course }}</li>
@@ -97,6 +100,23 @@
                       {% endif %}
                     {% endif %}
                   </ul>
+                  {% if todo_item.subtask_set.all %}
+                  <ul>
+                    {% for subtask in todo_item.subtask_set.all %}
+                      {% if not subtask.completed %}
+                        <li>
+                          <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                            {{ subtask }}</a>
+                        </li>
+                      {% else %}
+                        <li>
+                          <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                            <del>{{ subtask }}</del></a>
+                        </li>
+                      {% endif %}
+                    {% endfor %}
+                  </ul>
+                  {% endif %}
                   <div class="row m-sm-3">
                     <div>
                       {% if not todo_item.completed %}
@@ -111,6 +131,10 @@
                       {% endif %}
                     </div>
                     <div class="ml-auto">
+                      <small class="m-2"
+                        ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                          >+ Add subtasks</a
+                        ></small>
                       <small class="m-2"
                         ><a href="{% url 'todo_list:detail' todo_item.id %}"
                           >🖊 Edit</a
@@ -130,6 +154,7 @@
       </ul>
       {% else %}
         {% block gifs %}{% endblock %}
+        <p>You have nothing to do!</p>
       {% endif %}
     </div>
   </div>

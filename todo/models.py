@@ -143,3 +143,13 @@ class ToDoItem(models.Model):
 class Note(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     text = models.TextField()
+
+
+class SubTask(models.Model):
+    todo = models.ForeignKey(ToDoItem, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+    detail = models.CharField(max_length=200, blank=True)
+    completed = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.detail
