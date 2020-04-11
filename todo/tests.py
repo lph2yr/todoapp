@@ -123,13 +123,14 @@ class SpecificDayViewTest(TestCase):
         testuser = User.objects.create_user(username='testuser', password='testpass')
         testuser.save()
 
-        c = Client()
-        c.login(username='testuser', password='testpass')
+        self.client.login(username='testuser', password='testpass')
 
         self.user = testuser
 
         self.course = create_course(new_course_name="Tester")
+        self.course.user = testuser
         self.ec = create_ec(new_name='ec')
+        self.ec.user=testuser
 
         create_todo(
             new_title="March 5th todo",
