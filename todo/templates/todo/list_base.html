@@ -93,6 +93,23 @@
                         {% endif %}
                       {% endif %}
                     </ul>
+                    {% if todo_item.subtask_set.all %}
+                    <ul>
+                      {% for subtask in todo_item.subtask_set.all %}
+                        {% if not subtask.completed %}
+                          <li>
+                            <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                              {{ subtask }}</a>
+                          </li>
+                        {% else %}
+                          <li>
+                            <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                              <del>{{ subtask }}</del></a>
+                          </li>
+                        {% endif %}
+                      {% endfor %}
+                    </ul>
+                    {% endif %}
                     <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}
@@ -107,6 +124,10 @@
                         {% endif %}
                       </div>
                       <div class="ml-auto">
+                        <small class="m-2"
+                          ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                            >+ Add subtasks</a
+                          ></small>
                         <small class="m-2"
                           ><a href="{% url 'todo_list:detail' todo_item.id %}"
                             >🖊 Edit</a

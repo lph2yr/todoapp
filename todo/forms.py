@@ -1,7 +1,10 @@
-from .models import ToDoItem, Course, Extracurricular
+from .models import ToDoItem, Course, Extracurricular, SubTask
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
 from django import forms
+
+from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
+from django.forms import modelformset_factory
 # https://pypi.org/project/django-tempus-dominus/
 from tempus_dominus.widgets import DateTimePicker, DatePicker
 
@@ -21,28 +24,42 @@ class ToDoForm(forms.ModelForm):
                                                       'collapse': True, }
                                              ),
                    'end_recur_date': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
-                                                           'append': 'fa fa-calendar',
-                                                           'icon_toggle': True, },
-                                                    options={'useCurrent': True,
-                                                             'collapse': True, }
-                                                    ),
-                   }
+                                                        'append': 'fa fa-calendar',
+                                                        'icon_toggle': True,},
+                                                 options={ 'useCurrent': True,
+                                                           'collapse': True,}
+                                                 ),
+                  }
+        # https://stackoverflow.com/questions/3010489/how-do-i-filter-values-in-a-django-form-using-modelform
+        def __init__(self, user=None, **kwargs):
+            super(ToDoForm, self).__init__(**kwargs)
+            if user:
+                self.fields['course'].queryset = Course.objects.filter(
+                    user=user)
+                self.fields['ec'].queryset = Extracurricular.objects.filter(
+                    user=user)
+            else:
+                self.fields['course'].queryset = Course.objects.filter(
+                    user__isnull=True)
+                self.fields['ec'].queryset = Extracurricular.objects.filter(
+                    user__isnull=True)
 
-    # https://stackoverflow.com/questions/3010489/how-do-i-filter-values-in-a-django-form-using-modelform
-    def __init__(self, user=None, **kwargs):
-        super(ToDoForm, self).__init__(**kwargs)
-        if user:
-            self.fields['course'].queryset = Course.objects.filter(
-                user=user)
-            self.fields['ec'].queryset = Extracurricular.objects.filter(
-                user=user)
-        else:
-            self.fields['course'].queryset = Course.objects.filter(
-                user__isnull=True)
-            self.fields['ec'].queryset = Extracurricular.objects.filter(
-                user__isnull=True)
+class SubTaskForm( forms.ModelForm ):
+    class Meta:
+        model = SubTask
+        fields = ['detail']
 
+SubTaskModelFormSet = modelformset_factory(
+    SubTask,
+    fields=('detail',),
+    extra=1,
+    widgets={'detail': forms.TextInput(attrs={
+        'class': 'form-control',
+        'placeholder': 'Create subtasks here'
+    })}
+)
 
+        
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
