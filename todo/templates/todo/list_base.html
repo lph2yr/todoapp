@@ -81,7 +81,7 @@
                           <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
                       {% if todo_item.category != 'NN' %}
-                        <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                        <li><strong>Category:</strong> {{ todo_item.get_category_display }}</li>
                         {% if todo_item.category == 'AC' %}
                           {% if todo_item.course %}
                             <li><strong>Course:</strong> {{ todo_item.course }}</li>
