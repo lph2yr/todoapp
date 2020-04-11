@@ -296,6 +296,7 @@ def edit_recurrences(request, todo_item_id):
 
 
 #https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+#function creates subtask with formset; creating multiple subtasks on the same page
 def create_subtask_model_form( request, todo_item_id ):
     template_name = 'todo/add_subtask_form.html'
     if request.method == 'POST':
@@ -316,7 +317,7 @@ def create_subtask_model_form( request, todo_item_id ):
         'todo_item': ToDoItem.objects.get(id=todo_item_id, user=request.user)
     })
 
-
+#subtask is crossed out when completed, but not gone
 def complete_subtask( request, subtask_id):
     completedSubTask = SubTask.objects.get(id=subtask_id, user = request.user)
     completedSubTask.completed = not completedSubTask.completed
