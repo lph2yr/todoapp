@@ -514,10 +514,10 @@ def delete_course(request, course_id):
     course.delete()
     return redirect('todo_list:course_list')
 
-
 ################ Academics View ######################
 
 #list Academics for "My academics" view
+
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
