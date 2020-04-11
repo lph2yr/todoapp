@@ -24,10 +24,10 @@ body {
 }
 
 /* https://github.com/twbs/bootstrap/issues/21943#issuecomment-591427539 */
-/* make the width 50% in medium and large screens */
+/* make the width 65% in medium and large screens */
 @media (min-width: 768px) {
-  .w-md-50 {
-    width: 50% !important;
+  .w-md-65 {
+    width: 65% !important;
   }
 }
 
@@ -47,6 +47,39 @@ nav {
 .ml-auto .dropdown-menu {
   left: auto !important;
   right: 0px;
+}
+
+/* https://codepen.io/ceg9498/post/creating-lined-paper */
+#notes {
+  width: 300px;
+  height: 500px;
+  font-family: Courier, monospace;
+}
+#notes-header {
+  background: linear-gradient(white, white 33px, pink 35px, pink 36px);
+  height: 37px;
+}
+#notes-title {
+  position: relative;
+  left: 10px;
+  top: 2px;
+  font-size: 30px;
+  font-weight: bold;
+}
+#notes-text {
+  position: relative;
+  font-size: 18px;
+  /* margin: 5px 0px 0px 0px; */
+  line-height: 27px;
+  background-color: white;
+  background: repeating-linear-gradient(
+    white,
+    white 25px,
+    #9198e5 26px,
+    #9198e5 27px
+  );
+  width: 300px;
+  height: 400px;
 }
 
 #rabbit_cheerleaders {
