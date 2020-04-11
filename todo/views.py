@@ -378,7 +378,7 @@ class DayView(generic.FormView):
 
     def get_queryset(self):
         # https://stackoverflow.com/questions/4668619/how-do-i-filter-query-objects-by-date-range-in-django used for filter
-        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+        return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
 
     def form_valid(self, form):
         # return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
@@ -390,6 +390,16 @@ class DayView(generic.FormView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(DayView, self).get(*args, **kwargs)
+
+
+# https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
+class SpecificDayView(generic.DayArchiveView):
+    template_name = 'todoitem_archive_day.html'
+    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    date_field = "duedate"
+    ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
@@ -437,29 +447,13 @@ class SpecificWeekView(generic.WeekArchiveView):
         return super(SpecificWeekView, self).get(*args, **kwargs)
 
 
-# https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
-class SpecificDayView(generic.DayArchiveView):
-    template_name = 'todoitem_archive_day.html'
-    date_field = "duedate"
-    ordering = 'duedate'
-    allow_future = True
-    allow_empty = True
-
-    def get_queryset(self):
-        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
-
-    def get(self, *args, **kwargs):
-        if not self.request.user.is_authenticated:
-            return redirect("/login/") #redirect to login if user isn't logged in
-        return super(SpecificDayView, self).get(*args, **kwargs)
-
 class MonthView(generic.FormView):
     template_name = 'todo/month_form.html'
     context_object_name = 'todo_list'
     form_class = MonthForm
 
     def get_queryset(self):
-        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+        return ToDoItem.objects.filter(user=self.request.user).order_by('duedate')
 
     def form_valid(self, form):
         url = str(form)
@@ -473,13 +467,11 @@ class MonthView(generic.FormView):
 
 class SpecificMonthView(generic.MonthArchiveView):
     template_name = 'todoitem_archive_month.html'
+    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = "duedate"
     allow_future = True
     allow_empty = True
-
-    def get_queryset(self):
-        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
 
 ################ Course view ###########################
 
