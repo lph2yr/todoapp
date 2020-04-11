@@ -17,6 +17,8 @@ urlpatterns = [
     path('today/', views.TodoTodayArchiveView.as_view(), name='archive_today'),
     path('day/<int:year>/<str:month>/<int:day>/', views.SpecificDayView.as_view(), name='specific_day'),
     path('<int:todo_item_id>/edit_recurrences/', views.edit_recurrences, name='edit_recurrences' ),
+    path('<int:todo_item_id>/add_subtask/', views.create_subtask_model_form, name='add_subtask'),
+    path('<int:subtask_id>/complete_subtask/', views.complete_subtask, name='complete_subtask'),
 
     path('week/', views.WeekView.as_view(), name='week'),
     path('<int:year>/week/<int:week>/', views.SpecificWeekView.as_view(), name='specific_week'),
