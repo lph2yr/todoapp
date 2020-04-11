@@ -456,8 +456,7 @@ class SpecificMonthView(generic.MonthArchiveView):
     allow_empty = True
 
 ################ Course view ###########################
-
-
+#add a course instance
 class AddCourseView(CreateView):
     model = Course
     template_name = "todo/add_course_form.html"
@@ -494,7 +493,7 @@ class EditCourseView(UpdateView):
         self.object.save()
         return redirect('todo_list:course_list')
 
-
+#list for filter courses/academics
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
     context_object_name = 'course_list'
@@ -516,6 +515,8 @@ def delete_course(request, course_id):
 
 
 ################ Academics View ######################
+
+#list Academics for "My academics" view
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
@@ -540,7 +541,9 @@ class AcademicsListView(generic.ListView):
         return super(AcademicsListView, self).get(*args, **kwargs)
 
 
-####### Extracurricular list view ########
+######################### Extracurricular list view ####################################
+
+#for filter EC view
 class ECToDoList(generic.ListView):
     template_name = 'todo/ec_todo_list.html'
     context_object_name = 'ec_list'
@@ -562,7 +565,7 @@ class ECToDoList(generic.ListView):
             return redirect("/login/")
         return super(ECToDoList, self).get(*args, **kwargs)
 
-
+#create an EC instance
 class AddEC(CreateView):
     model = Extracurricular
     template_name = "todo/add_ec_form.html"
@@ -584,7 +587,7 @@ class AddEC(CreateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
-
+#edit EC instance
 class EditEC(UpdateView):
     model = Extracurricular
     template_name = "todo/edit_ec_form.html"
@@ -604,9 +607,7 @@ class EditEC(UpdateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
-# purely EC list view
-
-
+# purely EC list view for "My Extracurriculars" view
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'ec_list'
@@ -627,7 +628,7 @@ def delete_ec(request, ec_id):
     return redirect('todo_list:ec_list')
 
 
-########## Job View #############
+################################### Job View ##########################################
 class JobListView(generic.ListView):
     template_name = 'todo/job_list.html'
     context_object_name = 'todo_list'
@@ -674,8 +675,6 @@ class SocialListView(generic.ListView):
         return ToDoItem.objects.filter(completed=False, category='SC', user=self.request.user).order_by('duedate')
 
 ###############################################################################
-
-
 class PersonalListView(generic.ListView):
     template_name = 'todo/personal_list.html'
     context_object_name = 'todo_list'
@@ -702,7 +701,6 @@ class PersonalListView(generic.ListView):
         return super(PersonalListView, self).get(*args, **kwargs)
 
 ###########################################################################
-
 
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'
