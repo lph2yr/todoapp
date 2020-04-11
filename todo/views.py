@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
 from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm
-from .models import ToDoItem, Course, Extracurricular
+from .models import ToDoItem, Course, Extracurricular, Note
 from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.dates import DayArchiveView
 from django.utils import timezone
@@ -299,6 +299,16 @@ class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
 
+    def get_context_data(self, **kwargs):
+        context = super(ToDoListView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        return context
+
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
         # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
@@ -326,6 +336,21 @@ class ToDoListView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(ToDoListView, self).get(*args, **kwargs)
+
+
+def save_notes(request):
+    if request.method == 'POST':
+        user = request.user
+        text = request.POST.get('notes', '')
+        print(user, user.id, text)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=user, text='')
+        user_note.text = text
+        user_note.save()
+        return redirect('todo_list:todo_list')
 
 
 class CompletedView(generic.ListView):
@@ -625,6 +650,8 @@ class JobListView(generic.ListView):
         return super(JobListView, self).get(*args, **kwargs)
 
 ############### Social View ###################
+
+
 class SocialListView(generic.ListView):
     template_name = 'todo/social_list.html'
     context_object_name = 'todo_list'
