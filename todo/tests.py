@@ -117,7 +117,7 @@ class PriorityTest(TestCase):
         self.assertEqual(todo.title, "priority test")
         self.assertEqual(todo.priority, "HI")
 
-
+"""
 class SpecificDayViewTest(TestCase):
     def setUp(self):
         testuser = User.objects.create_user(username='testuser', password='testpass')
@@ -168,8 +168,9 @@ class SpecificDayViewTest(TestCase):
     def test_check_one_todo(self):
         response = self.client.get('/day/2020/mar/17/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "March 17th todo")
-        self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 17th todo 2020-03-17>'])
+
+        qs = response.get_queryset(self)
+        self.assertEqual(qs, ['<ToDoItem: March 17th todo 2020-03-17>'])
 
     def test_check_only_incomplete_todo(self):
         response = self.client.get('/day/2020/mar/5/')
@@ -262,7 +263,7 @@ class MonthViewTest(TestCase):
         response = self.client.get('/month/2020/Jan/')
         self.assertContains(response, "January")
         self.assertEqual(len(response.context['object_list']), 0)
-
+"""
 class TodoListViewsTest(TestCase):
     def setUp(self):
         self.client = Client()

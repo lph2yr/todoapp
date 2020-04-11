@@ -513,6 +513,9 @@ class SpecificMonthView(generic.MonthArchiveView):
     allow_future = True
     allow_empty = True
 
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             # redirect to login if user isn't logged in
