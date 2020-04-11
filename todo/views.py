@@ -424,11 +424,22 @@ class DayView(generic.FormView):
 # https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    #queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
     allow_empty = True
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(SpecificDayView, self).get(*args, **kwargs)
+    
+
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
@@ -501,6 +512,12 @@ class SpecificMonthView(generic.MonthArchiveView):
     ordering = "duedate"
     allow_future = True
     allow_empty = True
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(SpecificMonthView, self).get(*args, **kwargs)
 
 ################ Course view ###########################
 #add a course instance

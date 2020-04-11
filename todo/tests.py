@@ -20,6 +20,7 @@ def create_todo(new_title, #only need to provide title if everything else is unc
                 new_course=None,
                 new_ec=None,
                 new_progress=0,
+                user='',
                 ):
     form_data = {'title': new_title,
                  'description': new_description,
@@ -117,10 +118,15 @@ class PriorityTest(TestCase):
         self.assertEqual(todo.priority, "HI")
 
 
-class DayViewTest(TestCase):
+class SpecificDayViewTest(TestCase):
     def setUp(self):
-        #Forces a login to occur, creates a test user if one does not exist
-        self.client.force_login(User.objects.get_or_create(username='testuser')[0])
+        testuser = User.objects.create_user(username='testuser', password='testpass')
+        testuser.save()
+
+        c = Client()
+        c.login(username='testuser', password='testpass')
+
+        self.user = testuser
 
         self.course = create_course(new_course_name="Tester")
         self.ec = create_ec(new_name='ec')
@@ -131,6 +137,7 @@ class DayViewTest(TestCase):
             new_completed=False,
             new_course=self.course.id,
             new_ec=self.ec.id,
+            user=testuser,
         )
 
         self.complete_3_5 = create_todo(
@@ -138,6 +145,7 @@ class DayViewTest(TestCase):
             new_duedate=datetime.datetime(2020, 3, 5, 9, 0),
             new_course=self.course.id,
             new_ec=self.ec.id,
+            user=testuser,
         )
         self.complete_3_5.completed = True
         self.complete_3_5.save()
@@ -147,29 +155,67 @@ class DayViewTest(TestCase):
             new_duedate=datetime.datetime(2020, 3, 17, 14, 0),
             new_course=self.course.id,
             new_ec=self.ec.id,
+            user=testuser,
         )
 
     def test_check_no_todos(self):
         response = self.client.get('/day/2020/mar/12/')
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, "You have no to-do items for this day!")
+        self.assertContains(response, "You have no to-do items for this day!")
         self.assertQuerysetEqual(response.context['object_list'], [])
 
     def test_check_one_todo(self):
         response = self.client.get('/day/2020/mar/17/')
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, "March 17th todo")
+        self.assertContains(response, "March 17th todo")
         self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 17th todo 2020-03-17>'])
 
     def test_check_only_incomplete_todo(self):
         response = self.client.get('/day/2020/mar/5/')
         self.assertEqual(response.status_code, 200)
-        #self.assertContains(response, "March 5th todo")
-        #self.assertNotContains(response, "March 5th todo completed")
+        self.assertContains(response, "March 5th todo")
+        self.assertNotContains(response, "March 5th todo completed")
         self.assertQuerysetEqual(response.context['object_list'], ['<ToDoItem: March 5th todo 2020-03-05>'])
 
-#class TodayViewTest(TestCase):
-    
+class TodayViewTest(TestCase):
+    def setUp(self):
+        #Forces a login to occur, creates a test user if one does not exist
+        self.client.force_login(User.objects.get_or_create(username='testuser')[0])
+
+        self.course = create_course(new_course_name="Tester")
+        self.ec = create_ec(new_name='ec')
+
+        create_todo(
+            new_title="Today's todo",
+            new_duedate=datetime.date.today(),
+            new_completed=False,
+            new_course=self.course.id,
+            new_ec=self.ec.id,
+        )
+        
+        self.complete_today = create_todo(
+            new_title="Today's todo completed",
+            new_duedate=datetime.date.today(),
+            new_course=self.course.id,
+            new_ec=self.ec.id,
+        )
+        self.complete_today.completed = True
+        self.complete_today.save()
+
+        tom_todo = create_todo(
+            new_title="Tomorrow's todo",
+            new_duedate=datetime.date.today() + datetime.timedelta(days=1),
+            new_course=self.course.id,
+            new_ec=self.ec.id,
+        )
+
+    def test_check_only_today_incomplete_appears(self):
+        response = self.client.get('/today/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Today's todo")
+        self.assertNotContains(response, "Today's todo completed")
+
+
 
 #class WeekViewTest(TestCase):
 
