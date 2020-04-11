@@ -4,12 +4,12 @@
 
 <div class="row">
   <div class="d-flex justify-content-center">
-    <h4>To-do items due on {{ day }}</h4>
+    <h4>To-do items due during the week of {{week|date:"D"}}, {{ week }}</h4>
   </div>
   <div class="col">
     <div class="d-flex justify-content-center">
-      <a href="/day/{{previous_day.year}}/{{previous_day|date:"b"}}/{{previous_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous day</a>
-      <a href="/day/{{next_day.year}}/{{next_day|date:"b"}}/{{next_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next day</a>
+      <a href="/{{previous_week.year}}/week/{{previous_week|date:"W"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous week</a>
+      <a href="/{{next_week.year}}/week/{{next_week|date:"W"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next week</a>
     </div>
   </div>
 </div>
@@ -108,7 +108,7 @@
         </div>
       </ul>
       {% else %}
-      <p>You have no to-do items for this day!</p>
+      <p>You have no to-do items due during this week!</p>
       {% endif %}
     </div>
   </div>
