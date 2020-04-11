@@ -82,7 +82,7 @@ $(document).on('click', '.remove-form-row', function(e){
 </div>
 
 <div class="row">
-  <div class="col">
+  <div class="col-6">
   <div class="d-flex justify-content-center">
     <div id="accordion">
       <!-- accordion is the template for collapsing bars -->
@@ -196,7 +196,7 @@ $(document).on('click', '.remove-form-row', function(e){
   </div>
   </div>
 
-  <div class="col">
+  <div class="d-flex justify-content-center">
 
     <form class="form-horizontal" method="POST" action="">
       {% csrf_token %}
@@ -213,20 +213,23 @@ $(document).on('click', '.remove-form-row', function(e){
             </div>
         </div>
       {% endfor %}
-      <div class="row spacer">
+      <div class="d-flex justify-content-center">
           <div class="col-3 offset-2">
               <button style="margin-top:5px;" type="submit" class="btn btn-block btn-primary">Create</button>
           </div>
       </div>
+
       <div class="row">
         <div class="col" style="margin-left:125px;">
           <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
         </div>
       </div>
+
     </form>
 
 
   </div>
+
 </div>
 
 
