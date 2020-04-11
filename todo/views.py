@@ -10,6 +10,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
 from django.core.mail import send_mail
+import calendar
 from .tasks import notify_email
 
 
@@ -455,6 +456,65 @@ class SpecificMonthView(generic.MonthArchiveView):
     ordering = "duedate"
     allow_future = True
     allow_empty = True
+
+def month_calendar_view(request, year, month):
+    month_num = 0
+    for abbr in calendar.month_abbr:
+        if month == abbr:
+            break
+        month_num += 1
+    calendar.setfirstweekday(calendar.SUNDAY)
+    month_matrix = calendar.monthcalendar(year, month_num)
+    class CalendarDay:
+        def __init__(self, date, date_todo_list, blank):
+            self.date = date
+            self.date_todo_list = date_todo_list
+            self.blank = blank
+        def __repr__(self):
+            return str(self)
+        def __str__(self):
+            return "Calendar Day: " + str(self.date) + "\tTodos: " + str(self.date_todo_list) + "\tBlank: " + str(self.blank)
+    calendar_day_list = []
+    for week_index in range(len(month_matrix)):
+        calendar_day_list.append([])
+        for day_index in range(7):
+            day_date = month_matrix[week_index][day_index]
+            if day_date == 0:
+                calendar_day_list[week_index].append(CalendarDay(day_date, [], True))
+            else:
+                day_datetime = datetime.date(year, month_num, day_date)
+                day_date_todos = ToDoItem.objects.filter(user=request.user, completed=False, duedate=day_datetime)
+                calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False))
+    template_name = 'todo/calendar_month.html'
+    return render(request, template_name, {
+        'calendar_day_list': calendar_day_list,
+        'num_weeks': len(calendar_day_list)/7+1,
+        'month_name': calendar.month_name[month_num],
+        'curr_year': year,
+        'curr_month': month,
+    })
+
+def month_calendar_prev(request, year, month):
+    month_names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    new_year = year
+    new_month = month
+    if(month=="Jan"):
+        new_year-=1
+        new_month="Dec"
+    else:
+        new_month=month_names[month_names.index(month)-1]
+    return redirect('todo_list:specific_month', year = new_year, month = new_month)
+
+def month_calendar_next(request, year, month):
+    month_names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    new_year = year
+    new_month = month
+    if(month=="Dec"):
+        new_year+=1
+        new_month="Jan"
+    else:
+        new_month=month_names[month_names.index(month)+1]
+    return redirect('todo_list:specific_month', year = new_year, month = new_month)
 
 ################ Course view ###########################
 #add a course instance
