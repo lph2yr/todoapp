@@ -7,8 +7,8 @@
 {% block filter %}{% endblock %} <!-- where titles will be-->
 
 <div class="row">
-  <!-- sidebar? -->
-  <!-- <div class="col">
+  <!-- sidebar -->
+  <!-- <div class="d-none d-lg-inline" id="notes">
       <div id="list-example" class="list-group">
         <a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a>
         <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
@@ -16,6 +16,15 @@
         <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
       </div>
     </div> -->
+  <div class="d-none d-lg-inline" id="notes">
+    <header id="notes-header">
+      <span id="notes-title">
+      Marilyn Monroe
+      </span>
+    </header>
+    <p id="notes-text">I believe that everything happens for a reason. People change so that you can learn to let go, things go wrong so that you appreciate them when they're right, you believe lies so you eventually learn to trust no one but yourself, and sometimes good things fall apart so better things can fall together.</p>
+  </div>
+
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if todo_list %}

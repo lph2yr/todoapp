@@ -49,6 +49,43 @@ nav {
   right: 0px;
 }
 
+/* https://codepen.io/ceg9498/post/creating-lined-paper */
+#notes {
+  width: 300px;
+  height: 500px;
+  font-family: Courier, monospace;
+  background-color: white;
+  background: repeating-linear-gradient(
+    white,
+    white 25px,
+    #9198e5 26px,
+    #9198e5 27px
+  );
+  background-position-y: 34px;
+  padding: 0;
+  margin-top: 50px;
+  margin-right: 15px;
+}
+
+#notes-header {
+  background: linear-gradient(white, white 33px, pink 35px, pink 36px);
+  height: 38px;
+}
+#notes-title {
+  position: relative;
+  left: 10px;
+  top: 3px;
+  font-size: 30px;
+  font-weight: bold;
+}
+#notes-text {
+  position: relative;
+  top: 27px;
+  font-size: 18px;
+  margin: 0 20px;
+  line-height: 27px;
+}
+
 #rabbit_cheerleaders {
   background: white url("images/rabbit_cheerleaders.gif") no-repeat;
   background-position: center;
