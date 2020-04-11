@@ -119,6 +119,6 @@ table td * {
 tbody {
   overflow: auto;
   display: block;
-  height: 300px;
+  height: 250px;
   width: 450px;
 }
