@@ -104,3 +104,21 @@ nav {
   background-position: center;
   background-size: 25% 50%;
 }
+
+table {
+  border-radius: 10px;
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+}
+
+table td,
+table td * {
+  vertical-align: top;
+}
+
+tbody {
+  overflow: auto;
+  display: block;
+  height: 250px;
+  width: 450px;
+}
