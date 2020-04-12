@@ -327,7 +327,7 @@ def complete_subtask(request, subtask_id):
     completedSubTask = SubTask.objects.get(id=subtask_id, user=request.user)
     completedSubTask.completed = not completedSubTask.completed
     completedSubTask.save()
-    return redirect('todo_list:todo_list')
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 class ToDoListView(generic.ListView):
@@ -415,7 +415,7 @@ def complete_todo(request, todo_item_id):
     completedToDo.completed = not completedToDo.completed
     completedToDo.save()
 
-    return redirect('todo_list:todo_list')
+    return redirect(request.META.get('HTTP_REFERER', '/'))
 
 
 def delete_all_completed(request):
