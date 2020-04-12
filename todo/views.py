@@ -449,13 +449,13 @@ class MonthView(generic.FormView):
         return super(MonthView, self).get(*args, **kwargs)
 
 
-class SpecificMonthView(generic.MonthArchiveView):
-    template_name = 'todoitem_archive_month.html'
-    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
-    date_field = "duedate"
-    ordering = "duedate"
-    allow_future = True
-    allow_empty = True
+# class SpecificMonthView(generic.MonthArchiveView):
+#     template_name = 'todoitem_archive_month.html'
+#     queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+#     date_field = "duedate"
+#     ordering = "duedate"
+#     allow_future = True
+#     allow_empty = True
 
 def month_calendar_view(request, year, month):
     month_num = 0
@@ -466,25 +466,30 @@ def month_calendar_view(request, year, month):
     calendar.setfirstweekday(calendar.SUNDAY)
     month_matrix = calendar.monthcalendar(year, month_num)
     class CalendarDay:
-        def __init__(self, date, date_todo_list, blank):
+        def __init__(self, date, date_todo_list, blank, size):
             self.date = date
             self.date_todo_list = date_todo_list
             self.blank = blank
+            self.size = size
         def __repr__(self):
             return str(self)
         def __str__(self):
-            return "Calendar Day: " + str(self.date) + "\tTodos: " + str(self.date_todo_list) + "\tBlank: " + str(self.blank)
+            return "Calendar Day: " + str(self.date) + "\tTodos: " + str(self.date_todo_list) + "\tBlank: " + str(self.blank) + "\tSize: " + str(self.size)
     calendar_day_list = []
     for week_index in range(len(month_matrix)):
         calendar_day_list.append([])
         for day_index in range(7):
             day_date = month_matrix[week_index][day_index]
             if day_date == 0:
-                calendar_day_list[week_index].append(CalendarDay(day_date, [], True))
+                calendar_day_list[week_index].append(CalendarDay(day_date, [], True, 0))
             else:
                 day_datetime = datetime.date(year, month_num, day_date)
-                day_date_todos = ToDoItem.objects.filter(user=request.user, completed=False, duedate=day_datetime)
-                calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False))
+                day_date_todos = ToDoItem.objects.filter(user=request.user, completed=False).exclude(duedate__lt=day_datetime).exclude(duedate__gt=day_datetime+datetime.timedelta(days=1))
+                day_size = int(len(day_date_todos)/4)
+                if len(day_date_todos) == 0:
+                    calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False, -1))
+                else:
+                    calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False, day_size))
     template_name = 'todo/calendar_month.html'
     return render(request, template_name, {
         'calendar_day_list': calendar_day_list,

@@ -5,27 +5,82 @@
         <h2><a style="text-decoration: none;" href="{% url 'todo_list:prev_month' year=curr_year month=curr_month%}">⬅️</a></h2>
     </div>
     <div class="d-flex flex-column align-items-center justify-content-center">
-        <div>
+        <div class="pb-4">
             <h1>{{month_name}}</h1>
         </div>
-        <div class="d-flex flex-row justify-content-around w-100">
-            <h3>S</h3>
-            <h3>M</h3>
-            <h3>T</h3>
-            <h3>W</h3>
-            <h3>T</h3>
-            <h3>F</h3>
-            <h3>S</h3>
+        <div class="d-flex flex-row justify-content-around w-100 pb-1">
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>S</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50;">
+                <h3>M</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>T</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>W</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>T</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>F</h3>
+            </div>
+            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 50px;">
+                <h3>S</h3>
+            </div>
         </div>
         {% for week in calendar_day_list %}
             <div class="d-flex flex-row justify-content-around w-100">
                 {% for day in week %}
                     {% if day.blank %}
-                        <div class="d-flex m-2 p-2" style="width: 100px; height: 100px;"></div>
+                        <div style="width: 125px; height: 125px;"></div>
                     {% else %}
-                        <div class="d-flex m-2 p-2 bg-light justify-content-center align-items-center" style="width: 100px; height: 100px; border-radius: 50%;">
-                            <h3>{{day.date}}</h3>
-                        </div>
+                        {% if day.size == -1 %}
+                            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 125px;">
+                                <div class="d-flex m-2 p-2 justify-content-center align-items-center">
+                                    <h3 class="mb-1" style="text-align: center;">
+                                        <a href="{% url 'todo_list:specific_day' year=curr_year month=curr_month day=day.date%}" style="text-decoration: none; color: black;">
+                                            {{day.date}}
+                                        </a>
+                                    </h3>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if day.size == 0 %}
+                            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 125px;">
+                                <div class="d-flex m-2 p-2 justify-content-center align-items-center" style="width: 65px; height: 65px; background-color: #B5EAD7; border-radius: 50%;">
+                                    <h3 class="mb-1" style="text-align: center;">
+                                        <a href="{% url 'todo_list:specific_day' year=curr_year month=curr_month day=day.date%}" style="text-decoration: none; color: black;">
+                                            {{day.date}}
+                                        </a>
+                                    </h3>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if day.size == 1 %}
+                            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 125px;">
+                                <div class="d-flex m-2 p-2 justify-content-center align-items-center" style="width: 90px; height: 90px; background-color: #FFFD96; border-radius: 50%;">
+                                    <h3 class="mb-1" style="text-align: center;">
+                                        <a href="{% url 'todo_list:specific_day' year=curr_year month=curr_month day=day.date%}" style="text-decoration: none; color: black;">
+                                            {{day.date}}
+                                        </a>
+                                    </h3>
+                                </div>
+                            </div>
+                        {% endif %}
+                        {% if day.size >= 2 %}
+                            <div class="d-flex justify-content-center align-items-center" style="width: 125px; height: 125px;">
+                                <div class="d-flex justify-content-center align-items-center" style="width: 120px; height: 120px; background-color: #FF6961; border-radius: 50%;">
+                                    <h3 class="mb-1" style="text-align: center;">
+                                        <a href="{% url 'todo_list:specific_day' year=curr_year month=curr_month day=day.date%}" style="text-decoration: none; color: black;">
+                                            {{day.date}}
+                                        </a>
+                                    </h3>
+                                </div>
+                            </div>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
             </div>
