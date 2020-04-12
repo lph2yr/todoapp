@@ -579,7 +579,6 @@ def month_calendar_view(request, year, month):
     template_name = 'todo/calendar_month.html'
     return render(request, template_name, {
         'calendar_day_list': calendar_day_list,
-        'num_weeks': len(calendar_day_list)/7+1,
         'month_name': calendar.month_name[month_num],
         'curr_year': year,
         'curr_month': month,
