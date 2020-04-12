@@ -61,6 +61,7 @@
 <!-- separate form fields: https://simpleisbetterthancomplex.com/article/2017/08/19/how-to-render-django-form-manually.html
 separating form field allows greater control for the front-end views
 -->
+
 <form action="" method="post">
   {% csrf_token %}
   <div class="d-flex justify-content-center">
@@ -69,6 +70,7 @@ separating form field allows greater control for the front-end views
     {{ form.source.errors }}
     {{ form.source }}
     <table>
+      <tbody>
       <tr>
         <th>{{ form.title.label_tag }}</th>
         <td>
@@ -157,6 +159,7 @@ separating form field allows greater control for the front-end views
           {{ form.progress }}
         </td>
       </tr>
+      </tbody>
     </table>
   </div>
 
@@ -164,6 +167,7 @@ separating form field allows greater control for the front-end views
     <button style="margin-top:5px;" type="submit" class="btn btn-success btn-sm" value="Submit" >Submit</button>
   </div>
 </form>
+
 
 <div class="d-flex justify-content-center">
   <a href="{% url 'todo_list:todo_list' %}">Cancel</a>

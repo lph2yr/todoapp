@@ -43,7 +43,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarCollapse">
-        <ul class="navbar-nav mr-auto">
+        <ul class="navbar-nav w-100">
           <li class="nav-item">
             <a class="nav-link" href="{% url 'todo_list:todo_list' %}"
               >Main To-do List</a
@@ -54,37 +54,35 @@
               >Completed items</a
             >
           </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Filter by
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}">Academics</a>
-              <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}">Extracurriculars</a>
-              <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
-              <a class="dropdown-item" href="{% url 'todo_list:social_list' %}">Social</a>
-              <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}">Personal</a>
-              <div class="dropdown-divider"></div>
-              <a class="dropdown-item" href="{% url 'todo_list:other_list' %}">Other</a>
-            </div>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <li class="nav-item dropdown ml-auto">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="userDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
               {{ user }}
             </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <a class="dropdown-item" href="{% url 'todo_list:course_list' %}">Your Courses</a>
-              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}">Your Extracurriculars</a>
-            </div>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="{% url 'todo_list:day' %}"
-              >Day view</a
+            <div
+              class="dropdown-menu dropdown-menu-right"
+              aria-labelledby="navbarDropdownMenuLink"
             >
+              <a class="dropdown-item" href="{% url 'todo_list:course_list' %}"
+                >Your Courses</a
+              >
+              <a class="dropdown-item" href="{% url 'todo_list:ec_list' %}"
+                >Your Extracurriculars</a
+              >
+              <a class="dropdown-item" href="{% url 'account_logout' %}"
+                >Log out</a
+              >
+            </div>
           </li>
         </ul>
       </div>
-      <a href="{% url 'account_logout' %}"> Log out</a>
     </nav>
 
     <div class="container">
@@ -118,8 +116,8 @@
 
     <script>
       // collapse navbar when clicking outside of it
-      $(document).ready(function() {
-        $(document).click(function(event) {
+      $(document).ready(function () {
+        $(document).click(function (event) {
           var target = $(event.target);
           var _mobileMenuOpen = $(".navbar-collapse").hasClass("show");
           if (_mobileMenuOpen === true && !target.hasClass("navbar-toggler")) {
@@ -130,4 +128,3 @@
     </script>
   </body>
 </html>
-

@@ -1,0 +1,251 @@
+{% extends 'todo/base.html' %} {% block content %}
+
+<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
+
+{# Include Bootstrap 4 and jQuery #}
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+{{ form.media }}
+
+<script type='text/javascript'>
+function updateElementIndex(el, prefix, ndx) {
+    var id_regex = new RegExp('(' + prefix + '-\\d+)');
+    var replacement = prefix + '-' + ndx;
+    if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+    if (el.id) el.id = el.id.replace(id_regex, replacement);
+    if (el.name) el.name = el.detail.replace(id_regex, replacement);
+}
+function cloneMore(selector, prefix) {
+    var newElement = $(selector).clone(true);
+    var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+    newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+      console.log(this);
+      if ($(this).attr('name')){
+            var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+            var id = 'id_' + name;
+            $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+        }
+    });
+    newElement.find('label').each(function() {
+        var forValue = $(this).attr('for');
+        if (forValue) {
+          forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+          $(this).attr({'for': forValue});
+        }
+    });
+    total++;
+    $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+    $(selector).after(newElement);
+    var conditionRow = $('.form-row:not(:last)');
+    conditionRow.find('.btn.add-form-row')
+    .removeClass('btn-success').addClass('btn-danger')
+    .removeClass('add-form-row').addClass('remove-form-row')
+    .html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>');
+    return false;
+}
+function deleteForm(prefix, btn) {
+    var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+    if (total > 1){
+        btn.closest('.form-row').remove();
+        var forms = $('.form-row');
+        $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+        for (var i=0, formCount=forms.length; i<formCount; i++) {
+            $(forms.get(i)).find(':input').each(function() {
+                updateElementIndex(this, prefix, i);
+            });
+        }
+    }
+    return false;
+}
+$(document).on('click', '.add-form-row', function(e){
+    e.preventDefault();
+    cloneMore('.form-row:last', 'form');
+    return false;
+});
+$(document).on('click', '.remove-form-row', function(e){
+    e.preventDefault();
+    deleteForm('form', $(this));
+    return false;
+});
+</script>
+
+<div class="row">
+  <div class="col">
+
+  </div>
+
+  <div class="col">
+    <div class="d-flex justify-content-start" style="margin-left:75px;">
+      <h3>Add subtask</h3>
+    </div>
+  </div>
+</div>
+
+
+<div class="row">
+  <div class="col">
+    <table>
+  <tbody>
+  <td>
+  <div class="d-flex justify-content-center">
+    <div id="accordion" style="width:440px;">
+      <!-- accordion is the template for collapsing bars -->
+      <div class="card">
+        <button
+          class="btn collapsed"
+          id="cardButton"
+          data-toggle="collapse"
+          data-target="#collapse{{todo_item.id}}"
+        >
+        <li class="list-group-item">
+          {% if todo_item.priority == "HI" and not todo_item.completed %}
+          <div class="card-header border border-danger" id="header{{todo_item.id}}">
+          {% elif todo_item.priority == "MD" and not todo_item.completed %}
+          <div class="card-header border border-warning" id="header{{todo_item.id}}">
+          {% else %}
+          <div class="card-header border bg-light" id="header{{todo_item.id}}">
+          {% endif %}
+
+          <p class="d-flex justify-content-start">
+            {% if not todo_item.completed %}
+              {{todo_item.title}}
+            {% else %}
+              <del>{{todo_item.title}}</del>
+            {% endif %}
+          </p>
+
+          <div class="d-flex justify-content-around mt-3">
+            {% if todo_item.completed %}
+              <small><i>Task Completed!</i></small>
+            {% endif %}
+            <small>due {{todo_item.duedate}}</small>
+          </div>
+          </div>
+            {% if todo_item.progress %}
+              <div class="progress" style="margin-top:3px;">
+                <div class="progress-bar bg-info" role="progressbar" style="width: {{todo_item.progress}}%;" aria-valuenow="{{todo_item.progress}}"
+                     aria-valuemin="0" aria-valuemax="100">{{todo_item.progress}}% completed!</div>
+              </div>
+            {% endif %}
+        </button>
+          <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
+          <div id="collapse{{todo_item.id}}" class="collapse">
+            <!--body of the accordion card -->
+            <div class="card-body">
+              <ul style="list-style-type:none">
+                {% if todo_item.description %}
+                <li>
+                  <strong>Description:</strong> {{ todo_item.description }}
+                </li>
+                {% endif %} {% if todo_item.location %}
+                <li><strong>Location:</strong> {{ todo_item.location }}</li>
+                {% endif %}
+                {% if todo_item.recur_freq != 'NEVER' %}
+                  <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                  <li>
+                    <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                {% endif %}
+                {% if todo_item.category != 'NN' %}
+                  <li><strong>Category:</strong> {{ todo_item.category }}</li>
+                  {% if todo_item.category == 'AC' %}
+                    {% if todo_item.course %}
+                      <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                    {% endif %}
+                  {% elif todo_item.category == 'EC' %}
+                    {% if todo_item.ec %}
+                      <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                    {% endif %}
+                  {% endif %}
+                {% endif %}
+              </ul>
+              {% if todo_item.subtask_set.all %}
+              <ul>
+                {% for subtask in todo_item.subtask_set.all %}
+                  <li>
+                    {{ subtask }}
+                  </li>
+                {% endfor %}
+              </ul>
+              {% endif %}
+              <div class="row m-sm-3">
+                <div>
+                  {% if not todo_item.completed %}
+                  <small><a
+                    class="text-success" href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                    >✅ Complete Task</a
+                  ></small>
+                  {% else %}
+                  <small><a
+                    href="{% url 'todo_list:complete_todo' todo_item.id %}"
+                  >Undo completion</a></small>
+                  {% endif %}
+                </div>
+                <div class="ml-auto">
+                  <small class="m-2"
+                    ><a href="{% url 'todo_list:detail' todo_item.id %}"
+                      >🖊 Edit</a
+                    ></small
+                  >
+                  <small><a
+                    class="text-danger" href="{% url 'todo_list:delete_todo_item' todo_item.id %}"
+                    >🗑 Delete</a
+                  ></small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </li>
+      </div>
+    </div>
+  </div>
+  </td>
+  </tbody>
+    </table>
+  </div>
+
+
+  <div class="col-6">
+    <div class="d-flex flex-column">
+      <form class="form-horizontal" method="POST" action="">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        <table id="add-subtask-table">
+          <tbody>
+            {% for form in formset %}
+              <tr>
+                <td>
+                  <div class="row form-row spacer">
+                      <div class="col-12">
+                          <div class="input-group">
+                              <strong style="margin-right:3px;">Subtask: </strong> {{form.detail}}
+                              <div class="input-group-append">
+                                  <button class="btn btn-success add-form-row"></button>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <div class="d-flex flex-column">
+            <div class="col-3 offset-2">
+                <button style="margin-top:5px;" type="submit" class="btn btn-block btn-primary">Create</button>
+            </div>
+        </div>
+
+        <div class="row">
+          <div class="col" style="margin-left:134px;">
+            <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
+          </div>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>
+
+
+{% endblock %}
