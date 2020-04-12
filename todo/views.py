@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views import generic
-from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm, SubTaskModelFormSet
-from .models import ToDoItem, Course, Extracurricular, SubTask
+from .forms import ToDoForm, CourseForm, DayForm, ECForm, MonthForm, SubTaskModelFormSet, WeekForm
+from .models import ToDoItem, Course, Extracurricular, Note, SubTask
 from django.views.generic.edit import CreateView, UpdateView
-from django.views.generic.dates import DayArchiveView
+from django.views.generic.dates import DayArchiveView, TodayArchiveView
 from django.utils import timezone
 import datetime
+from datetime import date
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
@@ -296,38 +297,52 @@ def edit_recurrences(request, todo_item_id):
     return redirect('todo_list:create_recurrences', todo_item_id=todo_item_id)
 
 
-#https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
-#function creates subtask with formset; creating multiple subtasks on the same page
-def create_subtask_model_form( request, todo_item_id ):
+# https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+# function creates subtask with formset; creating multiple subtasks on the same page
+def create_subtask_model_form(request, todo_item_id):
     template_name = 'todo/add_subtask_form.html'
     if request.method == 'POST':
-        formset = SubTaskModelFormSet( request.POST )
+        formset = SubTaskModelFormSet(request.POST)
         if formset.is_valid():
             for form in formset:
                 if form.cleaned_data.get('detail'):
                     obj = form.save()
-                    obj.todo = ToDoItem.objects.get(id = todo_item_id, user = request.user)
+                    obj.todo = ToDoItem.objects.get(
+                        id=todo_item_id, user=request.user)
                     obj.user = request.user
                     obj.save
                     form.save()
-            return redirect( 'todo_list:todo_list' )
+            return redirect('todo_list:todo_list')
     else:
         formset = SubTaskModelFormSet(queryset=SubTask.objects.none())
-    return render( request, template_name, {
+    return render(request, template_name, {
         'formset': formset,
         'todo_item': ToDoItem.objects.get(id=todo_item_id, user=request.user)
     })
 
-#subtask is crossed out when completed, but not gone
-def complete_subtask( request, subtask_id):
-    completedSubTask = SubTask.objects.get(id=subtask_id, user = request.user)
+# subtask is crossed out when completed, but not gone
+
+
+def complete_subtask(request, subtask_id):
+    completedSubTask = SubTask.objects.get(id=subtask_id, user=request.user)
     completedSubTask.completed = not completedSubTask.completed
     completedSubTask.save()
     return redirect('todo_list:todo_list')
 
+
 class ToDoListView(generic.ListView):
     template_name = 'todo/todo_list.html'
     context_object_name = 'todo_list'
+
+    def get_context_data(self, **kwargs):
+        context = super(ToDoListView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        return context
 
     def get_queryset(self):
         # update the priority twice a day if the due date is getting close
@@ -356,6 +371,21 @@ class ToDoListView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(ToDoListView, self).get(*args, **kwargs)
+
+
+def save_notes(request):
+    if request.method == 'POST':
+        user = request.user
+        text = request.POST.get('notes', '')
+        print(user, user.id, text)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=user, text='')
+        user_note.text = text
+        user_note.save()
+        return redirect('todo_list:todo_list')
 
 
 class CompletedView(generic.ListView):
@@ -424,11 +454,67 @@ class DayView(generic.FormView):
 # https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
-    queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    #queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
     allow_empty = True
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(SpecificDayView, self).get(*args, **kwargs)
+    
+
+
+class TodoTodayArchiveView(generic.TodayArchiveView):
+    template_name = 'todoitem_archive_day.html'
+    date_field = "duedate"
+    ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(TodoTodayArchiveView, self).get(*args, **kwargs)
+    
+class WeekView(generic.FormView):
+    template_name = 'todo/week_form.html'
+    context_object_name = 'todo_list'
+    form_class = WeekForm
+
+    today = date.today()
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(WeekView, self).get(*args, **kwargs)
+
+class SpecificWeekView(generic.WeekArchiveView):
+    template_name = 'todoitem_archive_week.html'
+    date_field = "duedate"
+    ordering = 'duedate'
+    allow_future = True
+    allow_empty = True
+
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            return redirect("/login/") #redirect to login if user isn't logged in
+        return super(SpecificWeekView, self).get(*args, **kwargs)
 
 
 class MonthView(generic.FormView):
@@ -521,8 +607,19 @@ def month_calendar_next(request, year, month):
         new_month=month_names[month_names.index(month)+1]
     return redirect('todo_list:specific_month', year = new_year, month = new_month)
 
+    def get_queryset(self):
+        return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(SpecificMonthView, self).get(*args, **kwargs)
+
 ################ Course view ###########################
-#add a course instance
+# add a course instance
+
+
 class AddCourseView(CreateView):
     model = Course
     template_name = "todo/add_course_form.html"
@@ -559,7 +656,9 @@ class EditCourseView(UpdateView):
         self.object.save()
         return redirect('todo_list:course_list')
 
-#list for filter courses/academics
+# list for filter courses/academics
+
+
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
     context_object_name = 'course_list'
@@ -581,7 +680,8 @@ def delete_course(request, course_id):
 
 ################ Academics View ######################
 
-#list Academics for "My academics" view
+# list Academics for "My academics" view
+
 
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
@@ -609,7 +709,7 @@ class AcademicsListView(generic.ListView):
 
 ######################### Extracurricular list view ####################################
 
-#for filter EC view
+# for filter EC view
 class ECToDoList(generic.ListView):
     template_name = 'todo/ec_todo_list.html'
     context_object_name = 'ec_list'
@@ -631,7 +731,9 @@ class ECToDoList(generic.ListView):
             return redirect("/login/")
         return super(ECToDoList, self).get(*args, **kwargs)
 
-#create an EC instance
+# create an EC instance
+
+
 class AddEC(CreateView):
     model = Extracurricular
     template_name = "todo/add_ec_form.html"
@@ -653,7 +755,9 @@ class AddEC(CreateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
-#edit EC instance
+# edit EC instance
+
+
 class EditEC(UpdateView):
     model = Extracurricular
     template_name = "todo/edit_ec_form.html"
@@ -674,6 +778,8 @@ class EditEC(UpdateView):
         return redirect('todo_list:ec_list')
 
 # purely EC list view for "My Extracurriculars" view
+
+
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'ec_list'
@@ -721,6 +827,8 @@ class JobListView(generic.ListView):
         return super(JobListView, self).get(*args, **kwargs)
 
 ############### Social View ###################
+
+
 class SocialListView(generic.ListView):
     template_name = 'todo/social_list.html'
     context_object_name = 'todo_list'
@@ -741,6 +849,8 @@ class SocialListView(generic.ListView):
         return ToDoItem.objects.filter(completed=False, category='SC', user=self.request.user).order_by('duedate')
 
 ###############################################################################
+
+
 class PersonalListView(generic.ListView):
     template_name = 'todo/personal_list.html'
     context_object_name = 'todo_list'
@@ -767,6 +877,7 @@ class PersonalListView(generic.ListView):
         return super(PersonalListView, self).get(*args, **kwargs)
 
 ###########################################################################
+
 
 class OtherListView(generic.ListView):
     template_name = 'todo/other_list.html'

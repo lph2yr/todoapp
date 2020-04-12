@@ -5,22 +5,18 @@
 {% block content %}
 
 <div class="row">
-  <div class="col">
-    <h4>Welcome {{user}}!</h4>
+  <div class="d-flex justify-content-center">
     <h4>To-do items due in the month of {{ month|date:"F, Y" }}</h4>
+  </div>
+  <div class="col">
+    <div class="d-flex justify-content-center">
+      <a href="/month/{{previous_month.year}}/{{previous_month|date:"b"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous month</a>
+      <a href="/month/{{next_month.year}}/{{next_month|date:"b"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next month</a>
+    </div>
   </div>
 </div>
 
 <div class="row">
-  <!-- sidebar? -->
-  <!-- <div class="col">
-      <div id="list-example" class="list-group">
-        <a class="list-group-item list-group-item-action" href="#list-item-1">Item 1</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-2">Item 2</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-3">Item 3</a>
-        <a class="list-group-item list-group-item-action" href="#list-item-4">Item 4</a>
-      </div>
-    </div> -->
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if object_list %}

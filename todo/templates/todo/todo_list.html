@@ -60,8 +60,14 @@
         View by
       </button>
       <div class="dropdown-menu" aria-labelledby="viewDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
+          Today
+        </a>
         <a class="dropdown-item" href="{% url 'todo_list:day' %}">
           Day view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:week' %}">
+          Week view
         </a>
         <a class="dropdown-item" href="{% url 'todo_list:month' %}">
           Month view
@@ -72,7 +78,7 @@
 
   <div class="d-flex justify-content-end col-6">
     <a
-      class="btn btn-sm btn-outline-secondary"
+      class="btn btn-sm btn-outline-primary"
       role="button"
       href="{% url 'todo_list:add_todo_item' %}"
       >+ Add Todo</a
