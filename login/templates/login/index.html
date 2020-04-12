@@ -1,12 +1,64 @@
 {% load socialaccount %}
 {% providers_media_js %}
+
+<!DOCTYPE html>
 <html>
-    <head>
-        <title>Google Registration</title>
-    </head>
-    <body>
-{{user}}
- <a href="{% provider_login_url "google" %}">Google Connect</a>      
-        
-    </body>
+
+<head>
+  <title>Personal Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{{ STATIC_URL }}/css/bootstrap.min.css" >
+  <link href="{{ STATIC_URL }}/css/bootstrap-social.css" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+  <script src="{{ STATIC_URL }}/js/bootstrap.min.js" ></script>
+
+  </script>
+</head>
+
+<body style="background-image:url('{{ STATIC_URL }}/background.jpg');background-position: center;
+  background-repeat: no-repeat;
+  background-size: auto; " >
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+      <img src="dashboard.png" width=40px alt="">
+      Personal Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+
+      </ul>
+    </div>
+  </nav>
+  <div class="container">
+
+  <div class="row align-items-center" style="padding-top:20%">
+    <div class="col">
+    </div>
+    <div style="col-md-4">
+      <div class="card animated fadeInUp" style="padding:30px;text-align:center;">
+        <div class="card-header">
+
+
+          Hello! To continue,please login by clicking the button below:</div>
+            <div class="card-body" style="margin:0px;padding:0px">
+
+              <a href="{% provider_login_url "google" %}">Google Connect</a>
+            <img src="google.svg.png">
+            Login via Google
+          </a>
+
+                      </div>
+      </div>
+    </div>
+
+      <div class="col">
+      </div>
+  </div>
+
+  <div class="row"></div>
+    </div>
+</body>
+
 </html>
