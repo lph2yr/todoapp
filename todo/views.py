@@ -10,9 +10,7 @@ from datetime import date
 import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
-from django.core.mail import send_mail
 import calendar
-from .tasks import notify_email
 
 
 ######################## TO DO view ################################
@@ -39,7 +37,6 @@ class AddToDoItemView(CreateView):
         else:
             self.object.user = self.request.user
             self.object.save()
-            # notify_email.delay(self.object.id)
             return redirect('todo_list:todo_list')
 
 
