@@ -276,6 +276,36 @@ class MonthViewTest(TestCase):
         self.assertContains(response, "January")
         self.assertEqual(len(response.context['object_list']), 0)
 """
+class CalendarMonthViewTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.user = User.objects.create_user(username="test_user", email="test_user@mail.site", password="test_password")
+        self.client.login(username="test_user", password="test_password")
+
+    def test_april_calendar_view(self):
+        response = self.client.get("/month/2020/Apr/")
+        self.assertContains(response, "April")
+
+    # def test_next_month(self):
+    #     response = self.client.get("/month/2020/Nov/")
+    #     self.assertContains(response, "November 2020")
+    #     response = self.client.get("/next_month/2020/Nov/")
+    #     print(response['location'])
+    #     self.assertContains(response, "December 2020")
+    #     response = self.client.get("/next_month/2020/Dec/")
+    #     print(response['location'])
+    #     self.assertContains(response, "January 2021")
+
+    # def test_prev_month(self):
+    #     response = self.client.get("/month/2020/Feb/")
+    #     self.assertContains(response, "February 2020")
+    #     response = self.client.get("/prev_month/2020/Feb/")
+    #     print(response['location'])
+    #     self.assertContains(response, "January 2020")
+    #     response = self.client.get("/prev_month/2020/Jan/")
+    #     print(response['location'])
+    #     self.assertContains(response, "December 2019")
+    
 
 
 class TodoListViewsTest(TestCase):

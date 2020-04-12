@@ -8,8 +8,8 @@
   </div>
   <div class="col">
     <div class="d-flex justify-content-center">
-      <a href="/day/{{previous_day.year}}/{{previous_day|date:"b"}}/{{previous_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous day</a>
-      <a href="/day/{{next_day.year}}/{{next_day|date:"b"}}/{{next_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next day</a>
+      <a href="/day/{{previous_day.year}}/{{previous_day|date:'b'}}/{{previous_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous day</a>
+      <a href="/day/{{next_day.year}}/{{next_day|date:'b'}}/{{next_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next day</a>
     </div>
   </div>
 </div>
@@ -66,14 +66,41 @@
                       {% endif %} {% if todo_item.location %}
                       <li><strong>Location:</strong> {{ todo_item.location }}</li>
                       {% endif %}
-                      {% if todo_item.recur_freq %}
-                      <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                      {% if todo_item.recur_freq != 'NEVER' %}
+                        <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
+                        <li>
+                          <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
-                      {% if todo_item.end_recur_date %}
-                      <li>
-                        <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
+                      {% if todo_item.category != 'NN' %}
+                        <li><strong>Category:</strong> {{ todo_item.get_category_display }}</li>
+                        {% if todo_item.category == 'AC' %}
+                          {% if todo_item.course %}
+                            <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                          {% endif %}
+                        {% elif todo_item.category == 'EC' %}
+                          {% if todo_item.ec %}
+                            <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                          {% endif %}
+                        {% endif %}
                       {% endif %}
                     </ul>
+                    {% if todo_item.subtask_set.all %}
+                      <ul>
+                        {% for subtask in todo_item.subtask_set.all %}
+                          {% if not subtask.completed %}
+                            <li>
+                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                {{ subtask }}</a>
+                            </li>
+                          {% else %}
+                            <li>
+                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                <del>{{ subtask }}</del></a>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
                     <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}

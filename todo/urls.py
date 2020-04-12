@@ -32,8 +32,9 @@ urlpatterns = [
     path('<int:year>/week/<int:week>/', views.SpecificWeekView.as_view(), name='specific_week'),
 
     path('month/', views.MonthView.as_view(), name='month'),
-    path('month/<int:year>/<str:month>/',
-         views.SpecificMonthView.as_view(), name='specific_month'),
+    path('month/<int:year>/<str:month>/', views.month_calendar_view, name='specific_month'),
+    path('next_month/<int:year>/<str:month>/', views.month_calendar_next, name='next_month'),
+    path('prev_month/<int:year>/<str:month>/', views.month_calendar_prev, name='prev_month'),
 
     path('job/', views.JobListView.as_view(), name='job_list'),
     path('social/', views.SocialListView.as_view(), name='social_list'),
