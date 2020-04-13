@@ -6,18 +6,22 @@
 <head>
   <title>Personal Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{{ STATIC_URL }}/css/bootstrap.min.css" >
-  <link href="{{ STATIC_URL }}/css/bootstrap-social.css" rel="stylesheet" />
+  <link rel="stylesheet" href="{% static '/css/bootstrap.min.css' %}" >
+  <link href="{% static 'css/bootstrap-social.css' %}" rel="stylesheet" />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
   <script src="{{ STATIC_URL }}/js/bootstrap.min.js" ></script>
 
 
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'login/css/login-styling.css' %}"
+  />
+
 </head>
 
-<body style="background-image:url('{{ STATIC_URL }}/background.jpg');background-position: center;
-  background-repeat: no-repeat;
-  background-size: auto; " >
+<body id="login-background">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <a class="navbar-brand" href="#">
       <img src="{% static 'login/images/dashboard.png' %}" width=40px alt="">
