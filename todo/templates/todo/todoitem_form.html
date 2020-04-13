@@ -1,58 +1,54 @@
 {% extends 'todo/base.html' %} {% block content %}
 
-<link rel="stylesheet" href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css">
-{# Include Bootstrap 4 and jQuery #}
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<link
+  rel="stylesheet"
+  href="https://netdna.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.css"
+/>
 {{ form.media }}
 
 <!-- https://social.technet.microsoft.com/Forums/ie/en-US/1eef2f5b-d664-4980-955b-6b24f1a66f74/unable-to-trigger-drodown-choice-fields-onchange-event-in-jquery-in-content-editor?forum=onlineservicessharepoint -->
-
 <script>
   //conditionally hide end_recur_date field when NEVER is selected for Repeat
-  $(document).ready(function() {
-      $('#endRecurDates').hide();
-      $('#recurFreq').change(function () {
-        var selected = $(this).find("option:selected").text();
-        if (selected !== "Never") {
-          $('#endRecurDates').show();
-        }
-        else {
-          $('#endRecurDates').hide();
-        }
-      });
+  $(document).ready(function () {
+    $("#endRecurDates").hide();
+    $("#recurFreq").change(function () {
+      var selected = $(this).find("option:selected").text();
+      if (selected !== "Never") {
+        $("#endRecurDates").show();
+      } else {
+        $("#endRecurDates").hide();
+      }
+    });
   });
-  </script>
+</script>
 
-  <script>
+<script>
   //conditionally show different fields when different categories is selected
-  $(document).ready(function() {
-      $('#courses').hide();
-      $('#ecs').hide();
-      $('#categories').change(function () {
-        var selected = $(this).find("option:selected").text();
-        if (selected === "Academics") {
-          $('#courses').show();
-          $('#ecs').hide();
-        }
-        else if (selected === "Extracurriculars") {
-          $('#courses').hide();
-          $('#ecs').show();
-        }
-        else {
-          $('#courses').hide();
-          $('ecs').hide();
-        }
-      });
+  $(document).ready(function () {
+    $("#courses").hide();
+    $("#ecs").hide();
+    $("#categories").change(function () {
+      var selected = $(this).find("option:selected").text();
+      if (selected === "Academics") {
+        $("#courses").show();
+        $("#ecs").hide();
+      } else if (selected === "Extracurriculars") {
+        $("#courses").hide();
+        $("#ecs").show();
+      } else {
+        $("#courses").hide();
+        $("ecs").hide();
+      }
+    });
   });
-  </script>
+</script>
 
-  <script>
+<script>
   //hide progress bar when adding a todo item
-  $(document).ready(function() {
-      $('#myProgress').hide();
+  $(document).ready(function () {
+    $("#myProgress").hide();
   });
-  </script>
+</script>
 
 <div class="d-flex justify-content-center">
   <h3>Add a to-do item</h3>
@@ -65,114 +61,102 @@ separating form field allows greater control for the front-end views
 <form id="todo-form" action="" method="post">
   {% csrf_token %}
   <div class="d-flex justify-content-center">
-    {{ form.non_field_errors }}
-
-    {{ form.source.errors }}
-    {{ form.source }}
+    {{ form.non_field_errors }} {{ form.source.errors }} {{ form.source }}
     <table>
       <tbody>
-      <tr>
-        <th>{{ form.title.label_tag }}</th>
-        <td>
+        <tr>
+          <th>{{ form.title.label_tag }}</th>
+          <td>
+            {{ form.title.errors }} {{ form.title }}
+          </td>
+        </tr>
 
-          {{ form.title.errors }}
-          {{ form.title }}
-        </td>
-      </tr>
+        <tr>
+          <th>{{ form.description.label_tag }}</th>
+          <td>
+            {{ form.description.errors }} {{ form.description }}
+          </td>
+        </tr>
 
-      <tr>
-        <th>{{ form.description.label_tag }}</th>
-        <td>
-          {{ form.description.errors }}
-          {{ form.description }}
-        </td>
-      </tr>
+        <tr>
+          <th>{{ form.duedate.label_tag }}</th>
+          <td>
+            {{ form.duedate.errors }} {{ form.duedate }}
+          </td>
+        </tr>
 
-      <tr>
-        <th>{{ form.duedate.label_tag }}</th>
-        <td>
-          {{ form.duedate.errors }}
-          {{ form.duedate }}
-        </td>
-      </tr>
+        <tr>
+          <th>{{ form.location.label_tag }}</th>
+          <td>
+            {{ form.location.errors }} {{ form.location }}
+          </td>
+        </tr>
 
-      <tr>
-        <th>{{ form.location.label_tag }}</th>
-        <td>
-          {{ form.location.errors }}
-          {{ form.location }}
-        </td>
-      </tr>
+        <tr class="form-group" id="recurFreq">
+          <th>{{ form.recur_freq.label_tag }}</th>
+          <td>
+            {{ form.recur_freq.errors }} {{ form.recur_freq }}
+          </td>
+        </tr>
 
-      <tr class="form-group" id="recurFreq">
-        <th>{{ form.recur_freq.label_tag }}</th>
-        <td>
-          {{ form.recur_freq.errors }}
-          {{ form.recur_freq }}
-        </td>
-      </tr>
+        <tr id="endRecurDates">
+          <th>{{ form.end_recur_date.label_tag }}</th>
+          <td>
+            {{ form.end_recur_freq.errors }} {{ form.end_recur_date }}
+          </td>
+        </tr>
 
-      <tr id="endRecurDates">
-        <th>{{ form.end_recur_date.label_tag }}</th>
-        <td>
-          {{ form.end_recur_freq.errors }}
-          {{ form.end_recur_date }}
-        </td>
-      </tr>
+        <tr>
+          <th>{{ form.priority.label_tag }}</th>
+          <td>
+            {{ form.priority.errors }} {{ form.priority }}
+          </td>
+        </tr>
 
-      <tr>
-        <th>{{ form.priority.label_tag }}</th>
-        <td>
-          {{ form.priority.errors }}
-          {{ form.priority }}
-        </td>
-      </tr>
+        <tr id="categories">
+          <th>{{ form.category.label_tag }}</th>
+          <td>
+            {{ form.category.errors }} {{ form.category }}
+          </td>
+        </tr>
 
-      <tr id="categories">
-        <th>{{ form.category.label_tag }}</th>
-        <td>
-          {{ form.category.errors }}
-          {{ form.category }}
-        </td>
-      </tr>
+        <tr id="courses">
+          <th>{{ form.course.label_tag }}</th>
+          <td>
+            {{ form.course.errors }} {{ form.course }}
+          </td>
+        </tr>
 
-      <tr id="courses">
-        <th>{{ form.course.label_tag }}</th>
-        <td>
-          {{ form.course.errors }}
-          {{ form.course }}
-        </td>
-      </tr>
+        <tr id="ecs">
+          <th>{{ form.ec.label_tag }}</th>
+          <td>
+            {{ form.ec.errors }} {{ form.ec }}
+          </td>
+        </tr>
 
-      <tr id="ecs">
-        <th>{{ form.ec.label_tag }}</th>
-        <td>
-          {{ form.ec.errors }}
-          {{ form.ec }}
-        </td>
-      </tr>
-
-      <tr id="myProgress">
-        <th>{{ form.progress.label_tag }}</th>
-        <td>
-          {{ form.progress.errors }}
-          {{ form.progress }}
-        </td>
-      </tr>
+        <tr id="myProgress">
+          <th>{{ form.progress.label_tag }}</th>
+          <td>
+            {{ form.progress.errors }} {{ form.progress }}
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 
   <div class="d-flex justify-content-center">
-    <button style="margin-top:5px;" type="submit" class="btn btn-success btn-sm" value="Submit" >Submit</button>
+    <button
+      style="margin-top: 5px;"
+      type="submit"
+      class="btn btn-success btn-sm"
+      value="Submit"
+    >
+      Submit
+    </button>
   </div>
   <div class="d-flex justify-content-center">
     <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
   </div>
 </form>
-
-
-
-
 
 {% endblock %}

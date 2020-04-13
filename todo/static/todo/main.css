@@ -1,13 +1,13 @@
-/* Sticky footer styles
--------------------------------------------------- */
+/* Sticky footer styles */
 html {
   position: relative;
   min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px; /* Margin bottom by footer height */
+  margin-bottom: 75px; /* Margin bottom by footer height, plus 15px extra */
 }
+
 .footer {
   position: absolute;
   bottom: 0;
@@ -104,13 +104,4 @@ nav {
   background: white url("images/burn_books.gif") no-repeat;
   background-position: center;
   background-size: 25% 50%;
-}
-
-#todo-form{
-    overflow-y:auto;
-}
-
-#add-subtask{
-    overflow-y:auto;
-    vertical-align:top;
 }
