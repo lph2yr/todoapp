@@ -1,12 +1,83 @@
+<!DOCTYPE html>
+<html>
 {% load socialaccount %}
 {% providers_media_js %}
-<html>
-    <head>
-        <title>Google Registration</title>
-    </head>
-    <body>
-{{user}}
- <a href="{% provider_login_url "google" %}">Google Connect</a>      
-        
-    </body>
+{% load static %}
+<head>
+  <title>Personal Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'login/css/bootstrap.min.css' %}" >
+  <link href="{% static 'login/css/bootstrap-social.css' %}" rel="stylesheet" />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css">
+  <script src="{% static 'login/js/bootstrap.min.js' %}" ></script>
+
+
+  <link
+    rel="stylesheet"
+    type="text/css"
+    href="{% static 'login/css/login-styling.css' %}"
+  />
+  
+
+</head>
+
+
+
+<body id="login-background"> <!-- moved background image styling into login-styling.css -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">
+      ‎‎ 📝 Personal Dashboard</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  
+
+      </ul>
+    </div>
+  </nav>
+  <div class="container" id="login-page">
+
+  <div class="row align-items-center" style="padding-top:20%">
+    <div class="col">
+    </div>
+    <div style="col-md-4">
+      <div class="card animated fadeInUp" style="padding:30px;text-align:center;">
+        <div class="card-header">
+
+
+          Hello! To continue, please login by clicking the button below:</div>
+            <div class="card-body" style="margin:0px;padding:0px">
+              <div class="row justify-content-center">
+                  <div class="col-md-7">
+                    <a class="btn btn-outline-dark" href="/accounts/google/login" role="button" style="margin-top:15px;padding-left:10%;padding-right:10%">
+                      <img width="20px" style="margin-bottom:3px; margin-right:5px" alt="Google sign-in" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+                      Login with Google
+                    </a>
+                  </div>
+                </div>
+                
+                <!-- Minified CSS and JS -->
+                <link   rel="stylesheet" 
+                        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
+                        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" 
+                        crossorigin="anonymous">
+                <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" 
+                        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" 
+                        crossorigin="anonymous">
+                </script>
+          </a>
+
+                      </div>
+      </div>
+    </div>
+
+      <div class="col">
+      </div>
+  </div>
+
+  <div class="row"></div>
+    </div>
+</body>
+
 </html>
