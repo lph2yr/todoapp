@@ -307,7 +307,7 @@ def create_subtask_model_form(request, todo_item_id):
                     obj.todo = ToDoItem.objects.get(
                         id=todo_item_id, user=request.user)
                     obj.user = request.user
-                    obj.save
+                    obj.save()
                     form.save()
             return redirect('todo_list:todo_list')
     else:
