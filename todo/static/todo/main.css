@@ -107,12 +107,10 @@ nav {
 }
 
 #todo-form{
-    height:300px;
     overflow-y:auto;
 }
 
 #add-subtask{
-    height: 350px;
     overflow-y:auto;
     vertical-align:top;
 }
