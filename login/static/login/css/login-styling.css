@@ -1,5 +1,5 @@
 #login-background{
-  background-image:url("images/background.jpg");
+  background-image:url("/static/login/images/background.jpg");
   background-position: center;
   background-repeat: no-repeat;
   background-size: auto;
