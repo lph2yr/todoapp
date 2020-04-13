@@ -3,6 +3,7 @@
 html {
   position: relative;
   min-height: 100%;
+  overflow: hidden;
 }
 body {
   margin-bottom: 60px; /* Margin bottom by footer height */
@@ -105,20 +106,13 @@ nav {
   background-size: 25% 50%;
 }
 
-table {
-  border-radius: 10px;
-  -moz-border-radius: 10px;
-  -webkit-border-radius: 10px;
+#todo-form{
+    height:300px;
+    overflow-y:auto;
 }
 
-table td,
-table td * {
-  vertical-align: top;
-}
-
-tbody {
-  overflow: auto;
-  display: block;
-  height: 250px;
-  width: 450px;
+#add-subtask{
+    height: 350px;
+    overflow-y:auto;
+    vertical-align:top;
 }

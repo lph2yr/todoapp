@@ -75,7 +75,7 @@ $(document).on('click', '.remove-form-row', function(e){
   </div>
 
   <div class="col">
-    <div class="d-flex justify-content-start" style="margin-left:75px;">
+    <div class="d-flex justify-content-center">
       <h3>Add subtask</h3>
     </div>
   </div>
@@ -204,12 +204,12 @@ $(document).on('click', '.remove-form-row', function(e){
   </div>
 
 
-  <div class="col-6">
-    <div class="d-flex flex-column">
+  <div id="add-subtask" class="col">
+    <div class="d-flex justify-content-center">
       <form class="form-horizontal" method="POST" action="">
         {% csrf_token %}
         {{ formset.management_form }}
-        <table id="add-subtask-table">
+        <table>
           <tbody>
             {% for form in formset %}
               <tr>
@@ -229,15 +229,17 @@ $(document).on('click', '.remove-form-row', function(e){
             {% endfor %}
           </tbody>
         </table>
-        <div class="d-flex flex-column">
-            <div class="col-3 offset-2">
+        <div class="d-flex justify-content-center">
+            <div class="col-4">
                 <button style="margin-top:5px;" type="submit" class="btn btn-block btn-primary">Create</button>
             </div>
         </div>
 
         <div class="row">
-          <div class="col" style="margin-left:134px;">
-            <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
+          <div class="col">
+            <div class="d-flex justify-content-center">
+              <a href="{% url 'todo_list:todo_list' %}">Cancel</a>
+            </div>
           </div>
         </div>
 
