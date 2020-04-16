@@ -31,12 +31,13 @@ class AddToDoItemView(CreateView):
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
     def form_valid(self, form):
-        self.object = form.save()
-        if (self.object.recur_freq != 'NEVER'):
+        object = form.save()
+        object.save()
+        if (object.recur_freq != 'NEVER'):
             return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
         else:
-            self.object.user = self.request.user
-            self.object.save()
+            object.user = self.request.user
+            object.save()
             return redirect('todo_list:todo_list')
 
 
@@ -216,7 +217,7 @@ class EditToDo(UpdateView):
                                                         recur_freq=recur_freqs,
                                                         end_recur_date=end_recur_dates,
                                                         category=categories,
-                                                        user=request.user,
+                                                        user=self.request.user,
                                                         )
 
                 # filter how many of the same event that is in the future

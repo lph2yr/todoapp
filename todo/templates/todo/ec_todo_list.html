@@ -10,6 +10,22 @@
 
 <body>
 <div>
+  <div class="row">
+    <div class="d-none d-lg-inline" id="notes">
+    <header id="notes-header">
+      <span id="notes-title">
+      Notes Area
+      </span>
+    </header>
+    <form action="{% url 'todo_list:notes' %}" method="post">
+      {% csrf_token %}
+      <label for="notes-text"></label>
+      <textarea type="text" name="notes" id="notes-text">{{note}}</textarea>
+      <button type="submit" class="btn btn-success btn-sm" value="Submit" >Save</button>
+    </form>
+  </div>
+
+    <div class="col">
     {% if ec_list %}
       <ul class="nav nav-tabs">
         {% for ec in ec_list %}
@@ -522,6 +538,8 @@
       </div>
     </div>
   {% endif %}
+  </div>
+</div>
 </div>
 </body>
 
