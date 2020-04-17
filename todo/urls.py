@@ -16,6 +16,7 @@ urlpatterns = [
     path('<int:todo_item_id>/change_all/', views.change_all, name='change_all'),
     path('add_todo_item/<int:todo_item_id>/create_recurrences/',
          views.create_recurrences, name='create_recurrences'),
+
     path('day/', views.DayView.as_view(), name='day'),
     path('day/<int:year>/<str:month>/<int:day>/',
          views.SpecificDayView.as_view(), name='specific_day'),
@@ -42,6 +43,7 @@ urlpatterns = [
     path('other/', views.OtherListView.as_view(), name='other_list'),
 
     path('academics/', views.AcademicsListView.as_view(), name='academics_list'),
+    path('academics/today/', views.AcademicsListTodayView.as_view(), name='academics_todo_list'),
     path('add_course/', views.AddCourseView.as_view(), name='add_course'),
     path('your_courses/', views.CourseListView.as_view(), name='course_list'),
     path('course/<int:course_id>/delete_course/',

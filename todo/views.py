@@ -34,7 +34,7 @@ class AddToDoItemView(CreateView):
         object = form.save()
         object.save()
         if (object.recur_freq != 'NEVER'):
-            return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
+            return redirect('todo_list:create_recurrences', todo_item_id=object.id)
         else:
             object.user = self.request.user
             object.save()
@@ -466,7 +466,6 @@ class SpecificDayView(generic.DayArchiveView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(SpecificDayView, self).get(*args, **kwargs)
-    
 
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
@@ -703,6 +702,28 @@ class AcademicsListView(generic.ListView):
             return redirect("/login/")
         return super(AcademicsListView, self).get(*args, **kwargs)
 
+class AcademicsListTodayView(generic.ListView):
+    template_name = 'todo/academics_today_list.html'
+    context_object_name = 'course_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        return Course.objects.filter(user=self.request.user).order_by('course_name')
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_course_todo_list'] = ToDoItem.objects.filter(
+            category='AC', course=None, user=self.request.user)
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(AcademicsListTodayView, self).get(*args, **kwargs)
 
 ######################### Extracurricular list view ####################################
 
