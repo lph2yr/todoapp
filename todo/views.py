@@ -34,7 +34,7 @@ class AddToDoItemView(CreateView):
         object = form.save()
         object.save()
         if (object.recur_freq != 'NEVER'):
-            return redirect('todo_list:create_recurrences', todo_item_id=self.object.id)
+            return redirect('todo_list:create_recurrences', todo_item_id=object.id)
         else:
             object.user = self.request.user
             object.save()
