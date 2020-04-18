@@ -68,9 +68,13 @@
           Filter by Today
         </button>
         <div class="dropdown-menu" aria-labelledby="filterDropdown">
-          <a class="dropdown-item" href="{% url 'todo_list:ec_today_todo_list' %}"
+          <a class="dropdown-item" href="#"
             >Today</a
           >
+          <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
+              >None</a
+            >
         </div>
       </div>
     </div>
@@ -126,6 +130,7 @@
                           <div id="accordion">
                             <!-- accordion is the template for collapsing bars -->
                             {% for todo_item in ec.todoitem_set.all %}
+                              {% if todo_item.is_today_duedate %}
                               <div class="card">
                                 <button
                                   class="btn collapsed"
@@ -225,6 +230,7 @@
                                   </div>
                                 </li>
                               </div>
+                              {% endif %}
                             {% endfor %}
                           </div>
                         </ul>
@@ -246,6 +252,7 @@
                           <div id="accordion">
                             <!-- accordion is the template for collapsing bars -->
                             {% for todo_item in ec.todoitem_set.all %}
+                              {% if todo_item.is_today_duedate %}
                               <div class="card">
                                 <button
                                   class="btn collapsed"
@@ -345,6 +352,7 @@
                                   </div>
                                 </li>
                               </div>
+                              {% endif %}
                             {% endfor %}
                           </div>
                         </ul>
@@ -368,6 +376,7 @@
                       <div id="accordion">
                         <!-- accordion is the template for collapsing bars -->
                         {% for todo_item in no_ec_todo_list %}
+                          {% if todo_item.is_today_duedate %}
                           <div class="card">
                             <button
                               class="btn collapsed"
@@ -467,6 +476,7 @@
                               </div>
                             </li>
                           </div>
+                          {% endif %}
                         {% endfor %}
                       </div>
                     </ul>
@@ -496,6 +506,7 @@
                   <div id="accordion">
                     <!-- accordion is the template for collapsing bars -->
                     {% for todo_item in no_ec_todo_list %}
+                      {% if todo_item.is_today_duedate %}
                       <div class="card">
                         <button
                           class="btn collapsed"
@@ -595,6 +606,7 @@
                           </div>
                         </li>
                       </div>
+                      {% endif %}
                     {% endfor %}
                   </div>
                 </ul>

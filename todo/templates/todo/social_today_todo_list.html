@@ -5,7 +5,7 @@
 <div class="row">
   <div class="col">
     <div class="row">
-      <h4 style="margin-bottom:10px;">Personal</h4>
+      <h4 style="margin-bottom:10px;">Social</h4>
     </div>
 
     <div class="row" style="margin-bottom:10px;">
@@ -68,9 +68,13 @@
           Filter by Today
         </button>
         <div class="dropdown-menu" aria-labelledby="filterDropdown">
-          <a class="dropdown-item" href="{% url 'todo_list:personal_today_todo_list' %}"
+          <a class="dropdown-item" href="#"
             >Today</a
           >
+          <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
+              >None</a
+            >
         </div>
       </div>
     </div>
