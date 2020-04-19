@@ -32,6 +32,7 @@ class AddToDoItemView(CreateView):
     # overriding form_valid function to redirect to create_recurrences when add a todo item
     def form_valid(self, form):
         object = form.save()
+        object.user = self.request.user
         object.save()
         if (object.recur_freq != 'NEVER'):
             return redirect('todo_list:create_recurrences', todo_item_id=object.id)
