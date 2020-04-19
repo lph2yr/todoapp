@@ -49,6 +49,8 @@ def create_recurrences(request, todo_item_id):
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
         due_date = todo_item.duedate  # get current duedate
+        if ( end_date < due_date ):
+            return redirect('todo_list:todo_list')
         if (todo_item.recur_freq == 'DAILY'):
             # find the time differences
             delta = end_date - (due_date + relativedelta(days=+1))
@@ -226,9 +228,6 @@ class EditToDo(UpdateView):
                     todo.save()
                     form.save_m2m()
                     if (todo.has_end_recur_date_changed or todo.has_recur_freq_changed or todo.has_duedate_changed):
-                        todo.has_end_recur_date_changed = False
-                        todo.has_recur_freq_changed = False
-                        todo.has_duedate_changed = False
                         return redirect('todo_list:create_recurrences', todo_item_id=todo.id)
                     else:
                         return redirect('todo_list:todo_list')
@@ -412,6 +411,7 @@ def complete_todo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id, user=request.user)
     completedToDo.completed = not completedToDo.completed
+    completedToDo.progress = 100
     completedToDo.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
@@ -467,7 +467,6 @@ class SpecificDayView(generic.DayArchiveView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(SpecificDayView, self).get(*args, **kwargs)
-    
 
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
@@ -614,16 +613,16 @@ def month_calendar_next(request, year, month):
             return redirect("/login/")
         return super(SpecificMonthView, self).get(*args, **kwargs)
 
+
 ################ Course view ###########################
+
 # add a course instance
-
-
 class AddCourseView(CreateView):
     model = Course
     template_name = "todo/add_course_form.html"
     form_class = CourseForm
 
-    # set title and duedate fields to be required
+
     def get_form(self, form_class=None):
         form = super(AddCourseView, self).get_form(form_class)
         form.fields['course_abbrev'].required = False
@@ -636,13 +635,13 @@ class AddCourseView(CreateView):
         self.object.save()
         return redirect('todo_list:course_list')
 
-
+#edit course
 class EditCourseView(UpdateView):
     model = Course
     template_name = "todo/edit_course_form.html"
     form_class = CourseForm
 
-    # set title and duedate fields to be required
+
     def get_form(self, form_class=None):
         form = super(EditCourseView, self).get_form(form_class)
         form.fields['course_abbrev'].required = False
@@ -655,8 +654,6 @@ class EditCourseView(UpdateView):
         return redirect('todo_list:course_list')
 
 # list for filter courses/academics
-
-
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
     context_object_name = 'course_list'
@@ -679,8 +676,6 @@ def delete_course(request, course_id):
 ################ Academics View ######################
 
 # list Academics for "My academics" view
-
-
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
@@ -704,6 +699,29 @@ class AcademicsListView(generic.ListView):
             return redirect("/login/")
         return super(AcademicsListView, self).get(*args, **kwargs)
 
+#filter to-do item by Category and duedate = today
+class AcademicsListTodayView(generic.ListView):
+    template_name = 'todo/academics_today_list.html'
+    context_object_name = 'course_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        return Course.objects.filter(user=self.request.user).order_by('course_name')
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_course_todo_list'] = ToDoItem.objects.filter(
+            category='AC', course=None, user=self.request.user)
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(AcademicsListTodayView, self).get(*args, **kwargs)
 
 ######################### Extracurricular list view ####################################
 
@@ -729,9 +747,32 @@ class ECToDoList(generic.ListView):
             return redirect("/login/")
         return super(ECToDoList, self).get(*args, **kwargs)
 
+#filter to-do by Category EC and duedate = today
+class ECTodayList( generic.ListView ):
+    template_name = 'todo/ec_today_todo_list.html'
+    context_object_name = 'ec_list'
+
+    def get_queryset(self):
+        # update the priority twice a day if the due date is getting close
+        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
+        return Extracurricular.objects.filter(user=self.request.user).order_by('name')
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['no_ec_todo_list'] = ToDoItem.objects.filter(
+            category='EC', course=None, user=self.request.user)
+        return context
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(ECTodayList, self).get(*args, **kwargs)
+
+
 # create an EC instance
-
-
 class AddEC(CreateView):
     model = Extracurricular
     template_name = "todo/add_ec_form.html"
@@ -743,7 +784,6 @@ class AddEC(CreateView):
         form.fields['detail'].required = False
         form.fields['start_date'].required = False
         form.fields['end_date'].required = False
-        form.fields['active'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -754,8 +794,6 @@ class AddEC(CreateView):
         return redirect('todo_list:ec_list')
 
 # edit EC instance
-
-
 class EditEC(UpdateView):
     model = Extracurricular
     template_name = "todo/edit_ec_form.html"
@@ -775,9 +813,8 @@ class EditEC(UpdateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
+
 # purely EC list view for "My Extracurriculars" view
-
-
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'ec_list'
@@ -824,6 +861,29 @@ class JobListView(generic.ListView):
             return redirect("/login/")
         return super(JobListView, self).get(*args, **kwargs)
 
+#filter by Job and duedate=today
+class JobTodayList( generic.ListView ):
+    template_name = 'todo/job_today_todo_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        now = timezone.now()
+        return ToDoItem.objects.filter(duedate__year = now.year,
+                                       duedate__month = now.month,
+                                       duedate__day = now.day,
+                                       completed=False,
+                                       category='JB',
+                                       user=self.request.user).order_by('duedate')
+
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(JobTodayList, self).get(*args, **kwargs)
+
 ############### Social View ###################
 
 
@@ -832,19 +892,29 @@ class SocialListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
-        # update the priority twice a day if the due date is getting close
-        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.filter(user=self.request.user):
-            timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
         return ToDoItem.objects.filter(completed=False, category='SC', user=self.request.user).order_by('duedate')
+
+class SocTodayList( generic.ListView ):
+    template_name = 'todo/social_today_todo_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        now = timezone.now()
+        return ToDoItem.objects.filter(duedate__year = now.year,
+                                       duedate__month = now.month,
+                                       duedate__day = now.day,
+                                       completed=False,
+                                       category='SC',
+                                       user=self.request.user).order_by('duedate')
+
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(SocTodayList, self).get(*args, **kwargs)
 
 ###############################################################################
 
@@ -854,18 +924,6 @@ class PersonalListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
-        # update the priority twice a day if the due date is getting close
-        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.filter(user=self.request.user):
-            timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
         return ToDoItem.objects.filter(completed=False, category='PS', user=self.request.user).order_by('duedate')
 
     def get(self, *args, **kwargs):
@@ -873,6 +931,29 @@ class PersonalListView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(PersonalListView, self).get(*args, **kwargs)
+
+class PersonalTodayList( generic.ListView ):
+    template_name = 'todo/personal_today_todo_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        now = timezone.now()
+        return ToDoItem.objects.filter(duedate__year = now.year,
+                                       duedate__month = now.month,
+                                       duedate__day = now.day,
+                                       completed=False,
+                                       category='PS',
+                                       user=self.request.user).order_by('duedate')
+
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(PersonalTodayList, self).get(*args, **kwargs)
+
 
 ###########################################################################
 
@@ -882,18 +963,6 @@ class OtherListView(generic.ListView):
     context_object_name = 'todo_list'
 
     def get_queryset(self):
-        # update the priority twice a day if the due date is getting close
-        # if datetime.datetime.utcnow().replace(tzinfo=timezone.utc).hour
-        for item in ToDoItem.objects.filter(user=self.request.user):
-            timediff = (item.duedate - timezone.now()) / \
-                datetime.timedelta(days=1)
-            if timediff <= 1:
-                item.priority = 'HI'
-            elif timediff <= 2:
-                item.priority = 'MD'
-            else:
-                item.priority = 'LO'
-            item.save()
         return ToDoItem.objects.filter(completed=False, category='OT', user=self.request.user).order_by('duedate')
 
     def get(self, *args, **kwargs):
@@ -901,5 +970,27 @@ class OtherListView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(OtherListView, self).get(*args, **kwargs)
+
+class OtherTodayList( generic.ListView ):
+    template_name = 'todo/other_today_todo_list.html'
+    context_object_name = 'todo_list'
+
+    def get_queryset(self):
+        now = timezone.now()
+        return ToDoItem.objects.filter(duedate__year = now.year,
+                                       duedate__month = now.month,
+                                       duedate__day = now.day,
+                                       completed=False,
+                                       category='OT',
+                                       user=self.request.user).order_by('duedate')
+
+
+        # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get(self, *args, **kwargs):
+        if not self.request.user.is_authenticated:
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
+        return super(OtherTodayList, self).get(*args, **kwargs)
 
 # https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value

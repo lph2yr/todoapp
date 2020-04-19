@@ -6,7 +6,7 @@
   <div class="d-flex justify-content-center">
     <h4>To-do items due on {{ day }}</h4>
   </div>
-  <div class="col">
+  <div class="col" style="margin-bottom:5px;">
     <div class="d-flex justify-content-center">
       <a href="/day/{{previous_day.year}}/{{previous_day|date:'b'}}/{{previous_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous day</a>
       <a href="/day/{{next_day.year}}/{{next_day|date:'b'}}/{{next_day.day}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next day</a>
@@ -15,6 +15,36 @@
 </div>
 
 <div class="row">
+  <div class="row">
+    <div class="dropdown">
+      <button
+        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+        href="#"
+        id="viewDropdown"
+        role="button"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        View by Dates
+      </button>
+      <div class="dropdown-menu" aria-labelledby="viewDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
+          Today
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:day' %}">
+          Day view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:week' %}">
+          Week view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:month' %}">
+          Month view
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if object_list %}

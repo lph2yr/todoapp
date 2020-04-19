@@ -68,9 +68,13 @@
           Filter by Today
         </button>
         <div class="dropdown-menu" aria-labelledby="filterDropdown">
-          <a class="dropdown-item" href="{% url 'todo_list:personal_today_todo_list' %}"
+          <a class="dropdown-item" href="#"
             >Today</a
           >
+          <div class="dropdown-divider"></div>
+            <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
+              >None</a
+            >
         </div>
       </div>
     </div>

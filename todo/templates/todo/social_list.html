@@ -4,7 +4,76 @@
 
 <div class="row">
   <div class="col">
-    <h4>Social</h4>
+    <div class="row">
+      <h4 style="margin-bottom:10px;">Social</h4>
+    </div>
+
+    <div class="row" style="margin-bottom:10px;">
+      <div class="dropdown">
+        <button
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          href="#"
+          id="filterDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Filter by Category
+        </button>
+        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+          <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
+            >Academics</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
+            >Extracurriculars</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
+          <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
+            >Social</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
+            >Personal</a
+          >
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'todo_list:other_list' %}"
+            >Other</a
+          >
+    </div>
+  </div>
+
+
+  <div class="col">
+  </div>
+  <div class="col">
+  </div>
+  <div class="col">
+  </div>
+  <div class="col">
+  </div><div class="col">
+  </div>
+
+  <div class="col">
+    <div class="row">
+      <div class="dropdown">
+        <button
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          href="#"
+          id="filterDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
+        >
+          Filter by Today
+        </button>
+        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+          <a class="dropdown-item" href="{% url 'todo_list:social_today_todo_list' %}"
+            >Today</a
+          >
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 

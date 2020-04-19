@@ -6,7 +6,7 @@
   <div class="d-flex justify-content-center">
     <h4>To-do items due during the week of {{week|date:"D"}}, {{ week }}</h4>
   </div>
-  <div class="col">
+  <div class="col" style="margin-bottom:5px;">
     <div class="d-flex justify-content-center">
       <a href="/{{previous_week.year}}/week/{{previous_week|date:"W"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Previous week</a>
       <a href="/{{next_week.year}}/week/{{next_week|date:"W"}}/" class="btn btn-outline-secondary" style="margin-top:5px;">Next week</a>
@@ -15,6 +15,36 @@
 </div>
 
 <div class="row">
+  <div class="row">
+    <div class="dropdown">
+      <button
+        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+        href="#"
+        id="viewDropdown"
+        role="button"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        View by Dates
+      </button>
+      <div class="dropdown-menu" aria-labelledby="viewDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
+          Today
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:day' %}">
+          Day view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:week' %}">
+          Week view
+        </a>
+        <a class="dropdown-item" href="{% url 'todo_list:month' %}">
+          Month view
+        </a>
+      </div>
+    </div>
+  </div>
+
   <div class="col">
     <div class="d-flex justify-content-center">
       {% if object_list %}
@@ -73,7 +103,37 @@
                       <li>
                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                       {% endif %}
+
+                      {% if todo_item.category != 'NN' %}
+                      <li><strong>Category:</strong> {{ todo_item.get_category_display }}</li>
+                      {% if todo_item.category == 'AC' %}
+                        {% if todo_item.course %}
+                          <li><strong>Course:</strong> {{ todo_item.course }}</li>
+                        {% endif %}
+                      {% elif todo_item.category == 'EC' %}
+                        {% if todo_item.ec %}
+                          <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
+                        {% endif %}
+                      {% endif %}
+                    {% endif %}
                     </ul>
+                    {% if todo_item.subtask_set.all %}
+                      <ul>
+                        {% for subtask in todo_item.subtask_set.all %}
+                          {% if not subtask.completed %}
+                            <li>
+                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                {{ subtask }}</a>
+                            </li>
+                          {% else %}
+                            <li>
+                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                <del>{{ subtask }}</del></a>
+                            </li>
+                          {% endif %}
+                        {% endfor %}
+                      </ul>
+                    {% endif %}
                     <div class="row m-sm-3">
                       <div>
                         {% if not todo_item.completed %}

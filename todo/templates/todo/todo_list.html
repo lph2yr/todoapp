@@ -14,7 +14,7 @@
 
 <div class="row mb-4">
   <div class="d-flex justify-content-start col-6">
-    <div class="dropdown">
+    <div class="dropdown" style="margin-right:5px;">
       <button
         class="btn btn-sm btn-outline-secondary dropdown-toggle"
         href="#"
@@ -24,7 +24,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        Filter by
+        Filter by Category
       </button>
       <div class="dropdown-menu" aria-labelledby="filterDropdown">
         <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
@@ -57,7 +57,7 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        View by
+        View by Dates
       </button>
       <div class="dropdown-menu" aria-labelledby="viewDropdown">
         <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
@@ -81,7 +81,8 @@
       class="btn btn-sm btn-outline-primary"
       role="button"
       href="{% url 'todo_list:add_todo_item' %}"
-      >+ Add Todo</a
+      style="margin-right:5px;"
+      >+ Add To-do</a
     >
     <!-- TODO: move delete all button into an edit page -->
     <a
