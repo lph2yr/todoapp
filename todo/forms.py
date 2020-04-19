@@ -19,7 +19,7 @@ class ToDoForm(forms.ModelForm):
                   'end_recur_date', 'priority', 'category', 'course', 'ec', 'progress']
         labels = {'recur_freq': mark_safe('Repeat'), 'end_recur_date': mark_safe(
             'End repeat'), 'duedate': mark_safe('Due Date'), }  # label and bold it
-        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 3}),
+        widgets = {'description': forms.Textarea(attrs={'cols': 35, 'rows': 5}),
                    'duedate': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
                                                     'append': 'fa fa-calendar',
                                                     'icon_toggle': True, },
@@ -47,7 +47,8 @@ class ToDoForm(forms.ModelForm):
                     user__isnull=True)
                 self.fields['ec'].queryset = Extracurricular.objects.filter(
                     user__isnull=True)
-        '''
+
+        ''' option?
         #https://stackoverflow.com/questions/53478438/django-forms-how-to-show-only-objects-associated-with-user-in-dropdown
         def __init__(self, *args, **kwargs):
             super().__init__(*args, **kwargs)
@@ -55,8 +56,8 @@ class ToDoForm(forms.ModelForm):
             if user:
                 self.fields['course'].queryset = user.course_set.all()
                 self.fields['ec'].queryset = user.extracurricular_set.all()
-
         '''
+
 class SubTaskForm( forms.ModelForm ):
     class Meta:
         model = SubTask

@@ -32,6 +32,7 @@ class AddToDoItemView(CreateView):
     # overriding form_valid function to redirect to create_recurrences when add a todo item
     def form_valid(self, form):
         object = form.save()
+        object.user = self.request.user
         object.save()
         if (object.recur_freq != 'NEVER'):
             return redirect('todo_list:create_recurrences', todo_item_id=object.id)
@@ -227,9 +228,6 @@ class EditToDo(UpdateView):
                     todo.save()
                     form.save_m2m()
                     if (todo.has_end_recur_date_changed or todo.has_recur_freq_changed or todo.has_duedate_changed):
-                        todo.has_end_recur_date_changed = False
-                        todo.has_recur_freq_changed = False
-                        todo.has_duedate_changed = False
                         return redirect('todo_list:create_recurrences', todo_item_id=todo.id)
                     else:
                         return redirect('todo_list:todo_list')
@@ -615,21 +613,16 @@ def month_calendar_next(request, year, month):
             return redirect("/login/")
         return super(SpecificMonthView, self).get(*args, **kwargs)
 
-#########################################################
-#specificday filter by name, category, course or ec
-
-
 
 ################ Course view ###########################
+
 # add a course instance
-
-
 class AddCourseView(CreateView):
     model = Course
     template_name = "todo/add_course_form.html"
     form_class = CourseForm
 
-    # set title and duedate fields to be required
+
     def get_form(self, form_class=None):
         form = super(AddCourseView, self).get_form(form_class)
         form.fields['course_abbrev'].required = False
@@ -642,13 +635,13 @@ class AddCourseView(CreateView):
         self.object.save()
         return redirect('todo_list:course_list')
 
-
+#edit course
 class EditCourseView(UpdateView):
     model = Course
     template_name = "todo/edit_course_form.html"
     form_class = CourseForm
 
-    # set title and duedate fields to be required
+
     def get_form(self, form_class=None):
         form = super(EditCourseView, self).get_form(form_class)
         form.fields['course_abbrev'].required = False
@@ -661,8 +654,6 @@ class EditCourseView(UpdateView):
         return redirect('todo_list:course_list')
 
 # list for filter courses/academics
-
-
 class CourseListView(generic.ListView):
     template_name = 'todo/course_list.html'
     context_object_name = 'course_list'
@@ -685,8 +676,6 @@ def delete_course(request, course_id):
 ################ Academics View ######################
 
 # list Academics for "My academics" view
-
-
 class AcademicsListView(generic.ListView):
     template_name = 'todo/academics_list.html'
     context_object_name = 'course_list'
@@ -710,6 +699,7 @@ class AcademicsListView(generic.ListView):
             return redirect("/login/")
         return super(AcademicsListView, self).get(*args, **kwargs)
 
+#filter to-do item by Category and duedate = today
 class AcademicsListTodayView(generic.ListView):
     template_name = 'todo/academics_today_list.html'
     context_object_name = 'course_list'
@@ -757,6 +747,7 @@ class ECToDoList(generic.ListView):
             return redirect("/login/")
         return super(ECToDoList, self).get(*args, **kwargs)
 
+#filter to-do by Category EC and duedate = today
 class ECTodayList( generic.ListView ):
     template_name = 'todo/ec_today_todo_list.html'
     context_object_name = 'ec_list'
@@ -782,8 +773,6 @@ class ECTodayList( generic.ListView ):
 
 
 # create an EC instance
-
-
 class AddEC(CreateView):
     model = Extracurricular
     template_name = "todo/add_ec_form.html"
@@ -795,7 +784,6 @@ class AddEC(CreateView):
         form.fields['detail'].required = False
         form.fields['start_date'].required = False
         form.fields['end_date'].required = False
-        form.fields['active'].required = False
         return form
 
     # overriding form_valid function to redirect to create_recurrences when add a todo item
@@ -806,8 +794,6 @@ class AddEC(CreateView):
         return redirect('todo_list:ec_list')
 
 # edit EC instance
-
-
 class EditEC(UpdateView):
     model = Extracurricular
     template_name = "todo/edit_ec_form.html"
@@ -827,9 +813,8 @@ class EditEC(UpdateView):
         self.object.save()
         return redirect('todo_list:ec_list')
 
+
 # purely EC list view for "My Extracurriculars" view
-
-
 class ECListView(generic.ListView):
     template_name = 'todo/ec_list.html'
     context_object_name = 'ec_list'
@@ -876,6 +861,7 @@ class JobListView(generic.ListView):
             return redirect("/login/")
         return super(JobListView, self).get(*args, **kwargs)
 
+#filter by Job and duedate=today
 class JobTodayList( generic.ListView ):
     template_name = 'todo/job_today_todo_list.html'
     context_object_name = 'todo_list'

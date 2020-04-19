@@ -57,11 +57,11 @@
         aria-haspopup="true"
         aria-expanded="false"
       >
-        View by
+        View by Dates
       </button>
       <div class="dropdown-menu" aria-labelledby="viewDropdown">
         <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
-          Due Today
+          Today
         </a>
         <a class="dropdown-item" href="{% url 'todo_list:day' %}">
           Day view
@@ -82,7 +82,7 @@
       role="button"
       href="{% url 'todo_list:add_todo_item' %}"
       style="margin-right:5px;"
-      >+ Add Todo</a
+      >+ Add To-do</a
     >
     <!-- TODO: move delete all button into an edit page -->
     <a

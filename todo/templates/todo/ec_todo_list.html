@@ -126,6 +126,7 @@
                           <div id="accordion">
                             <!-- accordion is the template for collapsing bars -->
                             {% for todo_item in ec.todoitem_set.all %}
+                              {% if not todo_item.completed %}
                               <div class="card">
                                 <button
                                   class="btn collapsed"
@@ -143,12 +144,9 @@
                                   {% endif %}
 
                                   <p class="d-flex justify-content-start">
-                                    {% if not todo_item.completed %}
-                                      {{todo_item.title}}
-                                    {% else %}
-                                      <del>{{todo_item.title}}</del>
-                                    {% endif %}
+                                    {{todo_item.title}}
                                   </p>
+
 
                                   <div class="d-flex justify-content-around mt-3">
                                     {% if todo_item.completed %}
@@ -183,19 +181,29 @@
                                           <li>
                                             <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                         {% endif %}
-                                        {% if todo_item.category != 'NN' %}
-                                          <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
-                                          {% if todo_item.category == 'AC' %}
-                                            {% if todo_item.course %}
-                                              <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                                            {% endif %}
-                                          {% elif todo_item.category == 'EC' %}
-                                            {% if todo_item.ec %}
-                                              <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                                            {% endif %}
-                                          {% endif %}
+                                        <li><strong>Category:</strong> {{ todo_item.get_category_display}}</li>
+                                        {% if todo_item.ec %}
+                                          <li><strong>Extracurricular:</strong> {{ todo_item.ec }}</li>
                                         {% endif %}
                                       </ul>
+                                      {% if todo_item.subtask_set.all %}
+                                        <ul>
+                                          {% for subtask in todo_item.subtask_set.all %}
+                                            {% if not subtask.completed %}
+                                              <li>
+                                                <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                                  {{ subtask }}</a>
+                                              </li>
+                                            {% else %}
+                                              <li>
+                                                <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                                  <del>{{ subtask }}</del></a>
+                                              </li>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </ul>
+                                      {% endif %}
+
                                       <div class="row m-sm-3">
                                         <div>
                                           {% if not todo_item.completed %}
@@ -211,6 +219,10 @@
                                         </div>
                                         <div class="ml-auto">
                                           <small class="m-2"
+                                          ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                                            >+ Add subtasks</a
+                                          ></small>
+                                          <small class="m-2"
                                             ><a href="{% url 'todo_list:detail' todo_item.id %}"
                                               >🖊 Edit</a
                                             ></small
@@ -225,6 +237,7 @@
                                   </div>
                                 </li>
                               </div>
+                              {% endif %}
                             {% endfor %}
                           </div>
                         </ul>
@@ -246,6 +259,7 @@
                           <div id="accordion">
                             <!-- accordion is the template for collapsing bars -->
                             {% for todo_item in ec.todoitem_set.all %}
+                              {% if not todo_item.completed %}
                               <div class="card">
                                 <button
                                   class="btn collapsed"
@@ -303,19 +317,28 @@
                                           <li>
                                             <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                         {% endif %}
-                                        {% if todo_item.category != 'NN' %}
-                                          <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
-                                          {% if todo_item.category == 'AC' %}
-                                            {% if todo_item.course %}
-                                              <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                                            {% endif %}
-                                          {% elif todo_item.category == 'EC' %}
-                                            {% if todo_item.ec %}
-                                              <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                                            {% endif %}
-                                          {% endif %}
+                                        <li><strong>Category:</strong> {{ todo_item.get_category_display}}</li>
+                                        {% if todo_item.ec %}
+                                          <li><strong>Extracurricular:</strong> {{ todo_item.ec }}</li>
                                         {% endif %}
                                       </ul>
+                                      {% if todo_item.subtask_set.all %}
+                                        <ul>
+                                          {% for subtask in todo_item.subtask_set.all %}
+                                            {% if not subtask.completed %}
+                                              <li>
+                                                <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                                  {{ subtask }}</a>
+                                              </li>
+                                            {% else %}
+                                              <li>
+                                                <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                                  <del>{{ subtask }}</del></a>
+                                              </li>
+                                            {% endif %}
+                                          {% endfor %}
+                                        </ul>
+                                      {% endif %}
                                       <div class="row m-sm-3">
                                         <div>
                                           {% if not todo_item.completed %}
@@ -331,6 +354,10 @@
                                         </div>
                                         <div class="ml-auto">
                                           <small class="m-2"
+                                          ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                                            >+ Add subtasks</a
+                                          ></small>
+                                          <small class="m-2"
                                             ><a href="{% url 'todo_list:detail' todo_item.id %}"
                                               >🖊 Edit</a
                                             ></small
@@ -345,6 +372,7 @@
                                   </div>
                                 </li>
                               </div>
+                              {% endif %}
                             {% endfor %}
                           </div>
                         </ul>
@@ -368,6 +396,7 @@
                       <div id="accordion">
                         <!-- accordion is the template for collapsing bars -->
                         {% for todo_item in no_ec_todo_list %}
+                          {% if not todo_item.completed %}
                           <div class="card">
                             <button
                               class="btn collapsed"
@@ -385,11 +414,7 @@
                               {% endif %}
 
                               <p class="d-flex justify-content-start">
-                                {% if not todo_item.completed %}
-                                  {{todo_item.title}}
-                                {% else %}
-                                  <del>{{todo_item.title}}</del>
-                                {% endif %}
+                                {{todo_item.title}}
                               </p>
 
                               <div class="d-flex justify-content-around mt-3">
@@ -425,19 +450,28 @@
                                       <li>
                                         <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                     {% endif %}
-                                    {% if todo_item.category != 'NN' %}
-                                      <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
-                                      {% if todo_item.category == 'AC' %}
-                                        {% if todo_item.course %}
-                                          <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                                        {% endif %}
-                                      {% elif todo_item.category == 'EC' %}
-                                        {% if todo_item.ec %}
-                                          <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                                        {% endif %}
+                                    <li><strong>Category:</strong> {{ todo_item.get_category_display}}</li>
+                                      {% if todo_item.ec %}
+                                        <li><strong>Extracurricular:</strong> {{ todo_item.ec }}</li>
                                       {% endif %}
-                                    {% endif %}
                                   </ul>
+                                  {% if todo_item.subtask_set.all %}
+                                    <ul>
+                                      {% for subtask in todo_item.subtask_set.all %}
+                                        {% if not subtask.completed %}
+                                          <li>
+                                            <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                              {{ subtask }}</a>
+                                          </li>
+                                        {% else %}
+                                          <li>
+                                            <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                              <del>{{ subtask }}</del></a>
+                                          </li>
+                                        {% endif %}
+                                      {% endfor %}
+                                    </ul>
+                                  {% endif %}
                                   <div class="row m-sm-3">
                                     <div>
                                       {% if not todo_item.completed %}
@@ -453,6 +487,10 @@
                                     </div>
                                     <div class="ml-auto">
                                       <small class="m-2"
+                                      ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                                        >+ Add subtasks</a
+                                      ></small>
+                                      <small class="m-2"
                                         ><a href="{% url 'todo_list:detail' todo_item.id %}"
                                           >🖊 Edit</a
                                         ></small
@@ -467,6 +505,7 @@
                               </div>
                             </li>
                           </div>
+                          {% endif %}
                         {% endfor %}
                       </div>
                     </ul>
@@ -496,6 +535,7 @@
                   <div id="accordion">
                     <!-- accordion is the template for collapsing bars -->
                     {% for todo_item in no_ec_todo_list %}
+                      {% if not todo_item.completed %}
                       <div class="card">
                         <button
                           class="btn collapsed"
@@ -513,11 +553,7 @@
                           {% endif %}
 
                           <p class="d-flex justify-content-start">
-                            {% if not todo_item.completed %}
                               {{todo_item.title}}
-                            {% else %}
-                              <del>{{todo_item.title}}</del>
-                            {% endif %}
                           </p>
 
                           <div class="d-flex justify-content-around mt-3">
@@ -553,19 +589,28 @@
                                   <li>
                                     <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
                                 {% endif %}
-                                {% if todo_item.category != 'NN' %}
-                                  <li><strong>Category:</strong> {{ todo_item.get_category_label }}</li>
-                                  {% if todo_item.category == 'AC' %}
-                                    {% if todo_item.course %}
-                                      <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                                    {% endif %}
-                                  {% elif todo_item.category == 'EC' %}
-                                    {% if todo_item.ec %}
-                                      <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                                    {% endif %}
-                                  {% endif %}
+                                <li><strong>Category:</strong> {{ todo_item.get_category_display}}</li>
+                                {% if todo_item.ec %}
+                                  <li><strong>Extracurricular:</strong> {{ todo_item.ec }}</li>
                                 {% endif %}
                               </ul>
+                              {% if todo_item.subtask_set.all %}
+                                <ul>
+                                  {% for subtask in todo_item.subtask_set.all %}
+                                    {% if not subtask.completed %}
+                                      <li>
+                                        <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                          {{ subtask }}</a>
+                                      </li>
+                                    {% else %}
+                                      <li>
+                                        <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
+                                          <del>{{ subtask }}</del></a>
+                                      </li>
+                                    {% endif %}
+                                  {% endfor %}
+                                </ul>
+                              {% endif %}
                               <div class="row m-sm-3">
                                 <div>
                                   {% if not todo_item.completed %}
@@ -581,6 +626,10 @@
                                 </div>
                                 <div class="ml-auto">
                                   <small class="m-2"
+                                  ><a href="{% url 'todo_list:add_subtask' todo_item.id %}"
+                                    >+ Add subtasks</a
+                                  ></small>
+                                  <small class="m-2"
                                     ><a href="{% url 'todo_list:detail' todo_item.id %}"
                                       >🖊 Edit</a
                                     ></small
@@ -595,6 +644,7 @@
                           </div>
                         </li>
                       </div>
+                    {% endif %}
                     {% endfor %}
                   </div>
                 </ul>
