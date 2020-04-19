@@ -33,6 +33,7 @@ class ToDoForm(forms.ModelForm):
                                                            'collapse': True,}
                                                  ),
                   }
+
         # https://stackoverflow.com/questions/3010489/how-do-i-filter-values-in-a-django-form-using-modelform
         def __init__(self, user=None, **kwargs):
             super(ToDoForm, self).__init__(**kwargs)
@@ -46,7 +47,16 @@ class ToDoForm(forms.ModelForm):
                     user__isnull=True)
                 self.fields['ec'].queryset = Extracurricular.objects.filter(
                     user__isnull=True)
+        '''
+        #https://stackoverflow.com/questions/53478438/django-forms-how-to-show-only-objects-associated-with-user-in-dropdown
+        def __init__(self, *args, **kwargs):
+            super().__init__(*args, **kwargs)
+            user = self.kwargs.get('user')
+            if user:
+                self.fields['course'].queryset = user.course_set.all()
+                self.fields['ec'].queryset = user.extracurricular_set.all()
 
+        '''
 class SubTaskForm( forms.ModelForm ):
     class Meta:
         model = SubTask

@@ -15,6 +15,7 @@
   {% csrf_token %}
   <div class="d-flex justify-content-center">
     <table>
+      {{form.fieldname.errors}}
       {{ form.as_table }}
     </table>
   </div>

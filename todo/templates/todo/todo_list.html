@@ -14,7 +14,7 @@
 
 <div class="row mb-4">
   <div class="d-flex justify-content-start col-6">
-    <div class="dropdown">
+    <div class="dropdown" style="margin-right:5px;">
       <button
         class="btn btn-sm btn-outline-secondary dropdown-toggle"
         href="#"
@@ -61,7 +61,7 @@
       </button>
       <div class="dropdown-menu" aria-labelledby="viewDropdown">
         <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
-          Today
+          Due Today
         </a>
         <a class="dropdown-item" href="{% url 'todo_list:day' %}">
           Day view
@@ -81,6 +81,7 @@
       class="btn btn-sm btn-outline-primary"
       role="button"
       href="{% url 'todo_list:add_todo_item' %}"
+      style="margin-right:5px;"
       >+ Add Todo</a
     >
     <!-- TODO: move delete all button into an edit page -->

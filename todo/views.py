@@ -48,6 +48,8 @@ def create_recurrences(request, todo_item_id):
     if (todo_item.recur_freq != 'NEVER'):
         end_date = todo_item.end_recur_date  # get end_recur_date from current obj
         due_date = todo_item.duedate  # get current duedate
+        if ( end_date < due_date ):
+            return redirect('todo_list:todo_list')
         if (todo_item.recur_freq == 'DAILY'):
             # find the time differences
             delta = end_date - (due_date + relativedelta(days=+1))
@@ -411,6 +413,7 @@ def complete_todo(request, todo_item_id):
     # Todo item to be completed
     completedToDo = ToDoItem.objects.get(id=todo_item_id, user=request.user)
     completedToDo.completed = not completedToDo.completed
+    completedToDo.progress = 100
     completedToDo.save()
 
     return redirect(request.META.get('HTTP_REFERER', '/'))
