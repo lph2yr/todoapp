@@ -11,6 +11,7 @@ import pytz
 from dateutil.relativedelta import relativedelta
 from django.http import HttpResponseRedirect
 import calendar
+import requests
 
 
 ######################## TO DO view ################################
@@ -335,6 +336,9 @@ class ToDoListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ToDoListView, self).get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+            ' - ' + resp['contents']['quotes'][0]['author']
         user_note = None
         try:
             user_note = Note.objects.get(user=self.request.user)

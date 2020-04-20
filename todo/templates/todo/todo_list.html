@@ -8,13 +8,12 @@
 </div>
 
 <div class="d-flex justify-content-center">
-  <!-- TODO: put a motivational message here, randomly generated/sent from the backend -->
-  <p><i>Let's get things done today!</i></p>
+  <p><i>{{ quote }}</i></p>
 </div>
 
 <div class="row mb-4">
   <div class="d-flex justify-content-start col-6">
-    <div class="dropdown" style="margin-right:5px;">
+    <div class="dropdown" style="margin-right: 5px;">
       <button
         class="btn btn-sm btn-outline-secondary dropdown-toggle"
         href="#"
@@ -81,7 +80,7 @@
       class="btn btn-sm btn-outline-primary"
       role="button"
       href="{% url 'todo_list:add_todo_item' %}"
-      style="margin-right:5px;"
+      style="margin-right: 5px;"
       >+ Add To-do</a
     >
     <!-- TODO: move delete all button into an edit page -->
