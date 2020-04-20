@@ -2,14 +2,11 @@ from .models import ToDoItem, Course, Extracurricular, SubTask
 from django.template.defaultfilters import mark_safe
 from django.utils import timezone
 from django import forms
-from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
-import datetime
-from datetime import date
-
-from tempus_dominus.widgets import DateTimePicker, DatePicker #https://pypi.org/project/django-tempus-dominus/
-from django.forms import modelformset_factory
 # https://pypi.org/project/django-tempus-dominus/
 from tempus_dominus.widgets import DateTimePicker, DatePicker
+import datetime
+from datetime import date
+from django.forms import modelformset_factory
 
 
 class ToDoForm(forms.ModelForm):
@@ -27,41 +24,40 @@ class ToDoForm(forms.ModelForm):
                                                       'collapse': True, }
                                              ),
                    'end_recur_date': DateTimePicker(attrs={'placeholder': 'yyyy-mm-dd HH:MM',
-                                                        'append': 'fa fa-calendar',
-                                                        'icon_toggle': True,},
-                                                 options={ 'useCurrent': True,
-                                                           'collapse': True,}
-                                                 ),
-                  }
+                                                           'append': 'fa fa-calendar',
+                                                           'icon_toggle': True, },
+                                                    options={'useCurrent': True,
+                                                             'collapse': True, }
+                                                    ),
+                   }
 
-        # https://stackoverflow.com/questions/3010489/how-do-i-filter-values-in-a-django-form-using-modelform
-        def __init__(self, user=None, **kwargs):
-            super(ToDoForm, self).__init__(**kwargs)
-            if user:
-                self.fields['course'].queryset = Course.objects.filter(
-                    user=user)
-                self.fields['ec'].queryset = Extracurricular.objects.filter(
-                    user=user)
-            else:
-                self.fields['course'].queryset = Course.objects.filter(
-                    user__isnull=True)
-                self.fields['ec'].queryset = Extracurricular.objects.filter(
-                    user__isnull=True)
+    def filter_course_and_ec(self, user=None):
+        if user:
+            self.fields['course'].queryset = Course.objects.filter(
+                user=user)
+            self.fields['ec'].queryset = Extracurricular.objects.filter(
+                user=user)
+        else:
+            self.fields['course'].queryset = Course.objects.filter(
+                user__isnull=True)
+            self.fields['ec'].queryset = Extracurricular.objects.filter(
+                user__isnull=True)
 
-        ''' option?
-        #https://stackoverflow.com/questions/53478438/django-forms-how-to-show-only-objects-associated-with-user-in-dropdown
-        def __init__(self, *args, **kwargs):
-            super().__init__(*args, **kwargs)
-            user = self.kwargs.get('user')
-            if user:
-                self.fields['course'].queryset = user.course_set.all()
-                self.fields['ec'].queryset = user.extracurricular_set.all()
-        '''
+    # # https://stackoverflow.com/questions/53478438/django-forms-how-to-show-only-objects-associated-with-user-in-dropdown
+    # def __init__(self, *args, **kwargs):
+    #      super().__init__(*args, **kwargs)
+    #       user = self.kwargs.get('user')
+    #        if user:
+    #             self.fields['course'].queryset = user.course_set.all()
+    #             self.fields['ec'].queryset = user.extracurricular_set.all()
+    #         print("uhhhhhh")
 
-class SubTaskForm( forms.ModelForm ):
+
+class SubTaskForm(forms.ModelForm):
     class Meta:
         model = SubTask
         fields = ['detail']
+
 
 SubTaskModelFormSet = modelformset_factory(
     SubTask,
@@ -73,7 +69,7 @@ SubTaskModelFormSet = modelformset_factory(
     })}
 )
 
-        
+
 class CourseForm(forms.ModelForm):
     class Meta:
         model = Course
@@ -167,14 +163,14 @@ class WeekForm(forms.Form):
         (NOV, 'Nov'),
         (DEC, 'Dec'),
     ]
-    month = forms.ChoiceField(choices = MONTH_CHOICES)
-    day = forms.CharField(max_length = 2)
-    year = forms.CharField(max_length = 4)
+    month = forms.ChoiceField(choices=MONTH_CHOICES)
+    day = forms.CharField(max_length=2)
+    year = forms.CharField(max_length=4)
 
     today = date.today()
-    
-    
-    #returns the custom url for the redirect
+
+    # returns the custom url for the redirect
+
     def __str__(self):
         intyear = int(self.cleaned_data['year'])
         intmonth = 2
@@ -182,7 +178,6 @@ class WeekForm(forms.Form):
         date = datetime.date(intyear, intmonth, intday)
 
         return date.strftime("%W")
-
 
 
 class MonthForm(forms.Form):

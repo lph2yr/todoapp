@@ -51,11 +51,13 @@ def create_course(
         new_course_name,
         new_course_abbrev="",
         new_course_prof="",
+        user=None
 ):
     return Course.objects.create(
         course_name=new_course_name,
         course_abbrev=new_course_abbrev,
-        course_prof=new_course_prof
+        course_prof=new_course_prof,
+        user=user
     )
 
 
@@ -65,14 +67,15 @@ def create_ec(
         new_start_date=datetime.date.today(),
         new_end_date=datetime.date.today(),
         new_active=True,
+        user=None
 ):
     return Extracurricular.objects.create(
         name=new_name,
         detail=new_details,
         start_date=new_start_date,
         end_date=new_end_date,
-        active=new_active
-    )
+        active=new_active,
+        user=user)
 
 
 class ToDoItemModelTests(TestCase):
@@ -122,6 +125,7 @@ class PriorityTest(TestCase):
         todo = l[0]  # only item in list
         self.assertEqual(todo.title, "priority test")
         self.assertEqual(todo.priority, "HI")
+
 
 """
 class SpecificDayViewTest(TestCase):
@@ -276,10 +280,13 @@ class MonthViewTest(TestCase):
         self.assertContains(response, "January")
         self.assertEqual(len(response.context['object_list']), 0)
 """
+
+
 class CalendarMonthViewTest(TestCase):
     def setUp(self):
         self.client = Client()
-        self.user = User.objects.create_user(username="test_user", email="test_user@mail.site", password="test_password")
+        self.user = User.objects.create_user(
+            username="test_user", email="test_user@mail.site", password="test_password")
         self.client.login(username="test_user", password="test_password")
 
     def test_april_calendar_view(self):
@@ -305,7 +312,6 @@ class CalendarMonthViewTest(TestCase):
     #     response = self.client.get("/prev_month/2020/Jan/")
     #     print(response['location'])
     #     self.assertContains(response, "December 2019")
-    
 
 
 class TodoListViewsTest(TestCase):
@@ -327,11 +333,14 @@ class ToDoItemFormTest(TestCase):
     """
 
     def setUp(self):
-        self.my_course = create_course(
-            new_course_name="Tester"
-        )
-
-        self.my_ec = create_ec(new_name='fun')
+        self.user1 = User.objects.create_user(
+            username="test_user", email="test_user@mail.site", password="test_password")
+        self.user2 = User.objects.create_user(
+            username="test_user2", email="test_user@mail.site", password="test_password")
+        self.course1 = create_course(new_course_name="Test1", user=self.user1)
+        self.course2 = create_course(new_course_name="Test2", user=self.user2)
+        self.ec1 = create_ec(new_name='fun1', user=self.user1)
+        self.ec2 = create_ec(new_name='fun2', user=self.user2)
 
         # this data will be passed into the Forms and create/update object
         self.data_form = {
@@ -343,8 +352,8 @@ class ToDoItemFormTest(TestCase):
             'end_recur_date': timezone.now(),
             'priority': 'LO',
             'category': 'NN',
-            'course': self.my_course.id,
-            'ec': self.my_ec.id,
+            'course': self.course2.id,
+            'ec': self.ec2.id,
             'progress': 0,
         }
 
@@ -355,16 +364,21 @@ class ToDoItemFormTest(TestCase):
 
     def test_correct_template_for_add_todo(self):
         self.data_form['title'] = "Test correct template used"
+        self.client.force_login(self.user2)
         response = self.client.post(
             reverse('todo_list:add_todo_item'), self.data_form)
         self.assertEqual(response.status_code, 200)
-
-        # make sure that add todo form is used
         self.assertTemplateUsed(response, 'todo/todoitem_form.html')
 
-    def tearDown(self):
-        del self.my_course
-        del self.data_form
+    def test_only_users_courses_in_form(self):
+        self.client.force_login(self.user1)
+        response = self.client.get(reverse('todo_list:add_todo_item'))
+        print(response.context)
+        self.assertEquals(self.user1, response.context['user'])
+        self.assertEquals(
+            self.course1, response.context['form'].fields['course'].queryset[0])
+        self.assertEquals(
+            self.ec1, response.context['form'].fields['ec'].queryset[0])
 
 
 class CreateDailyRecurrencesTest(TestCase):
