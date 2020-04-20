@@ -350,14 +350,12 @@ class ToDoListView(generic.ListView):
             items = ToDoItem.objects.filter(user=self.request.user)
 
         for item in items:
-            timediff = (item.duedate - timezone.now()) / \
+            daydiff = (item.duedate - timezone.now()) / \
                 datetime.timedelta(days=1)
-            if timediff <= 1:
+            if daydiff <= 1:
                 item.priority = 'HI'
-            elif timediff <= 2:
+            elif daydiff <= 2 and item.priority != 'HI':
                 item.priority = 'MD'
-            else:
-                item.priority = 'LO'
             item.save()
 
         if not self.request.user.is_authenticated:
@@ -481,9 +479,11 @@ class TodoTodayArchiveView(generic.TodayArchiveView):
 
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
-            return redirect("/login/") #redirect to login if user isn't logged in
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
         return super(TodoTodayArchiveView, self).get(*args, **kwargs)
-    
+
+
 class WeekView(generic.FormView):
     template_name = 'todo/week_form.html'
     context_object_name = 'todo_list'
@@ -496,8 +496,10 @@ class WeekView(generic.FormView):
 
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
-            return redirect("/login/") #redirect to login if user isn't logged in
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
         return super(WeekView, self).get(*args, **kwargs)
+
 
 class SpecificWeekView(generic.WeekArchiveView):
     template_name = 'todoitem_archive_week.html'
@@ -511,7 +513,8 @@ class SpecificWeekView(generic.WeekArchiveView):
 
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
-            return redirect("/login/") #redirect to login if user isn't logged in
+            # redirect to login if user isn't logged in
+            return redirect("/login/")
         return super(SpecificWeekView, self).get(*args, **kwargs)
 
 
@@ -549,14 +552,17 @@ def month_calendar_view(request, year, month):
         month_num += 1
     calendar.setfirstweekday(calendar.SUNDAY)
     month_matrix = calendar.monthcalendar(year, month_num)
+
     class CalendarDay:
         def __init__(self, date, date_todo_list, blank, size):
             self.date = date
             self.date_todo_list = date_todo_list
             self.blank = blank
             self.size = size
+
         def __repr__(self):
             return str(self)
+
         def __str__(self):
             return "Calendar Day: " + str(self.date) + "\tTodos: " + str(self.date_todo_list) + "\tBlank: " + str(self.blank) + "\tSize: " + str(self.size)
     calendar_day_list = []
@@ -565,15 +571,19 @@ def month_calendar_view(request, year, month):
         for day_index in range(7):
             day_date = month_matrix[week_index][day_index]
             if day_date == 0:
-                calendar_day_list[week_index].append(CalendarDay(day_date, [], True, 0))
+                calendar_day_list[week_index].append(
+                    CalendarDay(day_date, [], True, 0))
             else:
                 day_datetime = datetime.date(year, month_num, day_date)
-                day_date_todos = ToDoItem.objects.filter(user=request.user, completed=False).exclude(duedate__lt=day_datetime).exclude(duedate__gt=day_datetime+datetime.timedelta(days=1))
+                day_date_todos = ToDoItem.objects.filter(user=request.user, completed=False).exclude(
+                    duedate__lt=day_datetime).exclude(duedate__gt=day_datetime+datetime.timedelta(days=1))
                 day_size = int(len(day_date_todos)/4)
                 if len(day_date_todos) == 0:
-                    calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False, -1))
+                    calendar_day_list[week_index].append(
+                        CalendarDay(day_date, day_date_todos, False, -1))
                 else:
-                    calendar_day_list[week_index].append(CalendarDay(day_date, day_date_todos, False, day_size))
+                    calendar_day_list[week_index].append(
+                        CalendarDay(day_date, day_date_todos, False, day_size))
     template_name = 'todo/calendar_month.html'
     return render(request, template_name, {
         'calendar_day_list': calendar_day_list,
@@ -582,27 +592,31 @@ def month_calendar_view(request, year, month):
         'curr_month': month,
     })
 
+
 def month_calendar_prev(request, year, month):
-    month_names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May",
+                   "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     new_year = year
     new_month = month
-    if(month=="Jan"):
-        new_year-=1
-        new_month="Dec"
+    if(month == "Jan"):
+        new_year -= 1
+        new_month = "Dec"
     else:
-        new_month=month_names[month_names.index(month)-1]
-    return redirect('todo_list:specific_month', year = new_year, month = new_month)
+        new_month = month_names[month_names.index(month)-1]
+    return redirect('todo_list:specific_month', year=new_year, month=new_month)
+
 
 def month_calendar_next(request, year, month):
-    month_names=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
+    month_names = ["Jan", "Feb", "Mar", "Apr", "May",
+                   "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
     new_year = year
     new_month = month
-    if(month=="Dec"):
-        new_year+=1
-        new_month="Jan"
+    if(month == "Dec"):
+        new_year += 1
+        new_month = "Jan"
     else:
-        new_month=month_names[month_names.index(month)+1]
-    return redirect('todo_list:specific_month', year = new_year, month = new_month)
+        new_month = month_names[month_names.index(month)+1]
+    return redirect('todo_list:specific_month', year=new_year, month=new_month)
 
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
