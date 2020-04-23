@@ -157,6 +157,7 @@ class EditToDo(UpdateView):
         form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
+        form.filter_course_and_ec(user=self.request.user)
         return form
 
     # override form_valid to check to see if recur_freq has changed
