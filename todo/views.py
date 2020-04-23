@@ -311,6 +311,9 @@ def create_subtask_model_form(request, todo_item_id):
                         id=todo_item_id, user=request.user)
                     obj.user = request.user
                     obj.save()
+                    todo_item = obj.todo
+                    todo_item.number_of_subtasks += 1
+                    todo_item.save()
                     form.save()
             return redirect('todo_list:todo_list')
     else:
@@ -321,12 +324,32 @@ def create_subtask_model_form(request, todo_item_id):
     })
 
 # subtask is crossed out when completed, but not gone
-
-
+# update progress too
 def complete_subtask(request, subtask_id):
     completedSubTask = SubTask.objects.get(id=subtask_id, user=request.user)
     completedSubTask.completed = not completedSubTask.completed
     completedSubTask.save()
+
+    todo_item = completedSubTask.todo
+    if ( completedSubTask.completed == True ):
+        # update progress: increase in proportion of # of subtasks there are
+        increment_dec = (1 / todo_item.number_of_subtasks ) * 100
+        increment_int = round( increment_dec )
+        if ( todo_item.progress + increment_int <= 100 ):
+            todo_item.progress += increment_int
+        else:
+            todo_item.progress = 100
+    else:
+        #if reverse complete: subtask is not completed
+        increment_dec = (1 / todo_item.number_of_subtasks) * 100
+        increment_int = round(increment_dec)
+        if ( todo_item.progress - increment_int >= 0 ):
+            todo_item.progress -= increment_int
+        else:
+            todo_item.progress = 0
+
+    todo_item.save()
+
     return redirect(request.META.get('HTTP_REFERER', '/'))
 
 

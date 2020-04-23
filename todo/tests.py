@@ -78,27 +78,6 @@ def create_ec(
         user=user)
 
 
-class ToDoItemModelTests(TestCase):
-    def setUp(self):
-        self.course = create_course(new_course_name="Tester")
-        self.ec = create_ec(new_name='')
-
-    def test_same_is_today_duedate(self):
-        """
-       returns True if the duedate is the same as currentdate time
-        """
-        # create a new obj
-        todo = ToDoItem(
-            title="Test case 1",
-            duedate=datetime.datetime(2020, 2, 23, 9, 0),
-            course=self.course,
-            ec=self.ec,
-        )
-
-        day_dif = todo.is_today_duedate()
-        self.assertIs(day_dif, False)
-
-
 class PriorityTest(TestCase):
     def setUp(self):
         # Forces a login to occur, creates a test user if one does not exist
@@ -373,7 +352,7 @@ class ToDoItemFormTest(TestCase):
     def test_only_users_courses_in_form(self):
         self.client.force_login(self.user1)
         response = self.client.get(reverse('todo_list:add_todo_item'))
-        print(response.context)
+        #print(response.context)
         self.assertEquals(self.user1, response.context['user'])
         self.assertEquals(
             self.course1, response.context['form'].fields['course'].queryset[0])
