@@ -331,6 +331,8 @@ def complete_subtask(request, subtask_id):
     completedSubTask.save()
 
     todo_item = completedSubTask.todo
+    todo_item.number_of_subtasks = len( SubTask.objects.filter(user=todo_item.user) )
+    todo_item.save()
     if ( completedSubTask.completed == True ):
         # update progress: increase in proportion of # of subtasks there are
         increment_dec = (1 / todo_item.number_of_subtasks ) * 100
