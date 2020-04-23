@@ -94,7 +94,6 @@ class ToDoItemModelTests(TestCase):
             course=self.course,
             ec=self.ec,
         )
-
         day_dif = todo.is_today_duedate()
         self.assertIs(day_dif, False)
 
@@ -293,26 +292,6 @@ class CalendarMonthViewTest(TestCase):
         response = self.client.get("/month/2020/Apr/")
         self.assertContains(response, "April")
 
-    # def test_next_month(self):
-    #     response = self.client.get("/month/2020/Nov/")
-    #     self.assertContains(response, "November 2020")
-    #     response = self.client.get("/next_month/2020/Nov/")
-    #     print(response['location'])
-    #     self.assertContains(response, "December 2020")
-    #     response = self.client.get("/next_month/2020/Dec/")
-    #     print(response['location'])
-    #     self.assertContains(response, "January 2021")
-
-    # def test_prev_month(self):
-    #     response = self.client.get("/month/2020/Feb/")
-    #     self.assertContains(response, "February 2020")
-    #     response = self.client.get("/prev_month/2020/Feb/")
-    #     print(response['location'])
-    #     self.assertContains(response, "January 2020")
-    #     response = self.client.get("/prev_month/2020/Jan/")
-    #     print(response['location'])
-    #     self.assertContains(response, "December 2019")
-
 
 class TodoListViewsTest(TestCase):
     def setUp(self):
@@ -373,7 +352,7 @@ class ToDoItemFormTest(TestCase):
     def test_only_users_courses_in_form(self):
         self.client.force_login(self.user1)
         response = self.client.get(reverse('todo_list:add_todo_item'))
-        print(response.context)
+        #print(response.context)
         self.assertEquals(self.user1, response.context['user'])
         self.assertEquals(
             self.course1, response.context['form'].fields['course'].queryset[0])
