@@ -579,6 +579,9 @@ class MonthView(generic.FormView):
 #     allow_empty = True
 
 def month_calendar_view(request, year, month):
+    if year == 1 and month == 'curr':
+        year = datetime.datetime.now().year
+        month = calendar.month_abbr[datetime.datetime.now().month]
     month_num = 0
     for abbr in calendar.month_abbr:
         if month == abbr:

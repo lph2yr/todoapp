@@ -77,6 +77,24 @@ def create_ec(
         active=new_active,
         user=user)
 
+class ToDoItemModelTests(TestCase):
+    def setUp(self):
+        self.course = create_course(new_course_name="Tester")
+        self.ec = create_ec(new_name='')
+
+    def test_same_is_today_duedate(self):
+        """
+       returns True if the duedate is the same as currentdate time
+        """
+        # create a new obj
+        todo = ToDoItem(
+            title="Test case 1",
+            duedate=datetime.datetime(2020, 2, 23, 9, 0),
+            course=self.course,
+            ec=self.ec,
+        )
+        day_dif = todo.is_today_duedate()
+        self.assertIs(day_dif, False)
 
 class PriorityTest(TestCase):
     def setUp(self):
@@ -271,26 +289,6 @@ class CalendarMonthViewTest(TestCase):
     def test_april_calendar_view(self):
         response = self.client.get("/month/2020/Apr/")
         self.assertContains(response, "April")
-
-    # def test_next_month(self):
-    #     response = self.client.get("/month/2020/Nov/")
-    #     self.assertContains(response, "November 2020")
-    #     response = self.client.get("/next_month/2020/Nov/")
-    #     print(response['location'])
-    #     self.assertContains(response, "December 2020")
-    #     response = self.client.get("/next_month/2020/Dec/")
-    #     print(response['location'])
-    #     self.assertContains(response, "January 2021")
-
-    # def test_prev_month(self):
-    #     response = self.client.get("/month/2020/Feb/")
-    #     self.assertContains(response, "February 2020")
-    #     response = self.client.get("/prev_month/2020/Feb/")
-    #     print(response['location'])
-    #     self.assertContains(response, "January 2020")
-    #     response = self.client.get("/prev_month/2020/Jan/")
-    #     print(response['location'])
-    #     self.assertContains(response, "December 2019")
 
 
 class TodoListViewsTest(TestCase):

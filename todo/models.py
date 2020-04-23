@@ -138,7 +138,7 @@ class ToDoItem(models.Model):
     def is_today_duedate(self):
         now = django.utils.timezone.now()
         due = self.duedate
-        is_same = now.day == due.day
+        is_same = (now.day == due.day and now.month == due.month and now.year == due.year)
         return is_same
 
 
