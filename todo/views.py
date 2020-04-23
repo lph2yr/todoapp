@@ -157,6 +157,7 @@ class EditToDo(UpdateView):
         form.fields['end_recur_date'].required = True
         form.fields['course'].required = False
         form.fields['ec'].required = False
+        form.filter_course_and_ec(user=self.request.user)
         return form
 
     # override form_valid to check to see if recur_freq has changed
@@ -331,6 +332,8 @@ def complete_subtask(request, subtask_id):
     completedSubTask.save()
 
     todo_item = completedSubTask.todo
+    todo_item.number_of_subtasks = len( SubTask.objects.filter(user=todo_item.user) )
+    todo_item.save()
     if ( completedSubTask.completed == True ):
         # update progress: increase in proportion of # of subtasks there are
         increment_dec = (1 / todo_item.number_of_subtasks ) * 100
