@@ -123,6 +123,8 @@ class ToDoItem(models.Model):
     # array storing id of future events associated with current object
     future_events = ArrayField(models.IntegerField(
         default=0), default=list, null=True)
+    number_of_subtasks = models.IntegerField( default=0 )
+
     # https://stackoverflow.com/questions/36617145/django-arrayfield-null-true-migration-with-postgresql
     tracker = FieldTracker()  # track changes to fields
 

@@ -77,7 +77,6 @@ def create_ec(
         active=new_active,
         user=user)
 
-
 class ToDoItemModelTests(TestCase):
     def setUp(self):
         self.course = create_course(new_course_name="Tester")
@@ -96,7 +95,6 @@ class ToDoItemModelTests(TestCase):
         )
         day_dif = todo.is_today_duedate()
         self.assertIs(day_dif, False)
-
 
 class PriorityTest(TestCase):
     def setUp(self):
