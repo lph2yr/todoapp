@@ -88,18 +88,6 @@ nav {
   background-position: center;
 }
 
-#finished_all_work {
-  background: white url("images/finished_all_work.gif") no-repeat;
-  background-position: 10% 50%;
-  background-size: 20% 30%;
-}
-
-#finished_all_work2 {
-  background: white url("images/finished_all_work.gif") no-repeat;
-  background-position: 90% 50%;
-  background-size: 20% 30%;
-}
-
 #burnbooks {
   background: white url("images/burn_books.gif") no-repeat;
   background-position: center;
