@@ -15,67 +15,70 @@
 </div>
 
 <div class="row mb-4">
-  <div class="d-flex justify-content-start col-6">
-    <div class="dropdown" style="margin-right: 5px;">
-      <button
-        class="btn btn-sm btn-outline-secondary dropdown-toggle"
-        href="#"
-        id="filterDropdown"
-        role="button"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        Filter by Category
-      </button>
-      <div class="dropdown-menu" aria-labelledby="filterDropdown">
-        <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
-          >Academics</a
+  <div clas="col">
+    <div class="d-flex justify-content-start col-6">
+      <div class="dropdown" style="margin-right: 5px;">
+        <button
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          href="#"
+          id="filterDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
         >
-        <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
-          >Extracurriculars</a
+          Filter by Category
+        </button>
+        <div class="dropdown-menu" aria-labelledby="filterDropdown">
+          <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
+            >Academics</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
+            >Extracurriculars</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
+          <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
+            >Social</a
+          >
+          <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
+            >Personal</a
+          >
+          <div class="dropdown-divider"></div>
+          <a class="dropdown-item" href="{% url 'todo_list:other_list' %}"
+            >Other</a
+          >
+        </div>
+      </div>
+  
+      <div class="dropdown">
+        <button
+          class="btn btn-sm btn-outline-secondary dropdown-toggle"
+          href="#"
+          id="viewDropdown"
+          role="button"
+          data-toggle="dropdown"
+          aria-haspopup="true"
+          aria-expanded="false"
         >
-        <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
-        <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
-          >Social</a
-        >
-        <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
-          >Personal</a
-        >
-        <div class="dropdown-divider"></div>
-        <a class="dropdown-item" href="{% url 'todo_list:other_list' %}"
-          >Other</a
-        >
+          View by Dates
+        </button>
+        <div class="dropdown-menu" aria-labelledby="viewDropdown">
+          <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
+            Today
+          </a>
+          <a class="dropdown-item" href="/{% now "Y" %}/week/{% now "W" %}">
+            This week
+          </a>
+          <a class="dropdown-item" href="{% url 'todo_list:specific_month' year=1 month='curr' %}">
+            This month
+          </a>
+        </div>
       </div>
     </div>
-
-    <div class="dropdown">
-      <button
-        class="btn btn-sm btn-outline-secondary dropdown-toggle"
-        href="#"
-        id="viewDropdown"
-        role="button"
-        data-toggle="dropdown"
-        aria-haspopup="true"
-        aria-expanded="false"
-      >
-        View by Dates
-      </button>
-      <div class="dropdown-menu" aria-labelledby="viewDropdown">
-        <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
-          Today
-        </a>
-        <a class="dropdown-item" href="{% url 'todo_list:day' %}">
-          Day view
-        </a>
-        <a class="dropdown-item" href="{% url 'todo_list:week' %}">
-          Week view
-        </a>
-        <a class="dropdown-item" href="{% url 'todo_list:specific_month' year=1 month='curr' %}">
-          Month view
-        </a>
-      </div>
+    <div class="d-flex justify-content-center">
+      <a href="{% url 'todo_list:week' %}" type="button" class="btn btn-outline-secondary">Specific week</a>
     </div>
+    
   </div>
 </div>
 

@@ -62,14 +62,11 @@
         <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
           Today
         </a>
-        <a class="dropdown-item" href="{% url 'todo_list:day' %}">
-          Day view
-        </a>
-        <a class="dropdown-item" href="{% url 'todo_list:week' %}">
-          Week view
+        <a class="dropdown-item" href="/{% now "Y" %}/week/{% now "W" %}">
+          This week
         </a>
         <a class="dropdown-item" href="{% url 'todo_list:specific_month' year=1 month='curr' %}">
-          Month view
+          This month
         </a>
       </div>
     </div>
