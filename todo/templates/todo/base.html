@@ -68,8 +68,59 @@
           </li>
           <li class="nav-item">
             <a class="nav-link" href="{% url 'todo_list:completed' %}"
-              >Completed items</a
+              >Completed to-dos</a
             >
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="userDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Add
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-left"
+              aria-labelledby="navbarDropdownMenuLink"
+            >
+              <a class="dropdown-item" href="{% url 'todo_list:add_todo_item' %}"
+                >Add a to-do</a
+              >
+              <a class="dropdown-item" href="{% url 'todo_list:add_ec' %}"
+                >Add a course</a
+              >
+              <a class="dropdown-item" href="{% url 'todo_list:add_course' %}"
+                >Add an extracurricular</a
+              >
+            </div>
+          </li>
+          <li class="nav-item dropdown">
+            <a
+              class="nav-link dropdown-toggle"
+              href="#"
+              id="userDropdown"
+              role="button"
+              data-toggle="dropdown"
+              aria-haspopup="true"
+              aria-expanded="false"
+            >
+              Delete
+            </a>
+            <div
+              class="dropdown-menu dropdown-menu-left"
+              aria-labelledby="navbarDropdownMenuLink"
+            >
+              <a class="dropdown-item" href="{% url 'todo_list:delete_all_incompleted' %}"
+                >Delete all incomplete todos</a
+              >
+              <a class="dropdown-item" href="{% url 'todo_list:delete_all_completed' %}"
+                >Delete all complete todos</a
+              >
+            </div>
           </li>
           <li class="nav-item dropdown ml-auto">
             <a

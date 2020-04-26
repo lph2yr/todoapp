@@ -75,22 +75,6 @@
     </div>
   </div>
 
-  <div class="d-flex justify-content-end col-6">
-    <a
-      class="btn btn-sm btn-outline-primary"
-      role="button"
-      href="{% url 'todo_list:add_todo_item' %}"
-      style="margin-right: 5px;"
-      >+ Add To-do</a
-    >
-    <!-- TODO: move delete all button into an edit page -->
-    <a
-      class="btn btn-sm btn-outline-danger"
-      role="button"
-      href="{% url 'todo_list:delete_all_incompleted' %}"
-      >- Delete all</a
-    >
-  </div>
 </div>
 
 {% endblock %} {% block gifs %}
