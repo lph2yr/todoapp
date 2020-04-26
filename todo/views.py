@@ -527,6 +527,10 @@ class WeekView(generic.FormView):
 
     today = date.today()
 
+    def form_valid(self, form):
+        url = str(form)
+        return HttpResponseRedirect(url)
+
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False, user=self.request.user).order_by('duedate')
 
