@@ -1,41 +1,63 @@
 {% extends 'todo/base.html' %} {% block content %}
+
+
 <div class="d-flex flex-row">
-    <div class="dropdown">
-        <button
-            class="btn btn-sm btn-outline-secondary dropdown-toggle"
-            href="#"
-            id="viewDropdown"
-            role="button"
-            data-toggle="dropdown"
-            aria-haspopup="true"
-            aria-expanded="false"
-        >
-            View by Dates
-        </button>
-        <div class="dropdown-menu" aria-labelledby="viewDropdown">
-            <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
-                Today
+    <div class="d-flex flex-column">
+        <div class="d-flex flex-row">
+            <a href="{% url 'todo_list:month' %}">
+                <button
+                    class="btn btn-sm btn-outline-secondary w-100"
+                    href="{% url 'todo_list:month' %}"
+                    role="button"
+                >
+                    Specific Month
+                </button>
             </a>
-            <a class="dropdown-item" href="{% url 'todo_list:day' %}">
-                Day view
-            </a>
-            <a class="dropdown-item" href="{% url 'todo_list:week' %}">
-                Week view
-            </a>
-            <a class="dropdown-item" href="{% url 'todo_list:specific_month' year=1 month='curr' %}">
-                Month view
-            </a>
+
+            <div class="dropdown">
+                <button
+                    class="btn btn-sm btn-outline-secondary dropdown-toggle"
+                    href="#"
+                    id="viewDropdown"
+                    role="button"
+                    data-toggle="dropdown"
+                    aria-haspopup="true"
+                    aria-expanded="false"
+                >
+                    View by Dates
+                </button>
+                <div class="dropdown-menu" aria-labelledby="viewDropdown">
+                    <a class="dropdown-item" href="{% url 'todo_list:archive_today' %}">
+                        Today
+                    </a>
+                    <a class="dropdown-item" href="{% url 'todo_list:day' %}">
+                        Day view
+                    </a>
+                    <a class="dropdown-item" href="{% url 'todo_list:week' %}">
+                        Week view
+                    </a>
+                    <a class="dropdown-item" href="{% url 'todo_list:specific_month' year=1 month='curr' %}">
+                        Month view
+                    </a>
+                </div>
+            </div>
         </div>
-        <a href="{% url 'todo_list:month' %}">
-            <button
-                class="btn btn-sm btn-outline-secondary w-100"
-                href="{% url 'todo_list:month' %}"
-                role="button"
-            >
-                Specific Month
-            </button>
-        </a>
+        <div class="d-none d-lg-inline" id="notes">
+            <header id="notes-header">
+              <span id="notes-title">
+              Notes Area
+              </span>
+            </header>
+            <form action="{% url 'todo_list:notes' %}" method="post">
+              {% csrf_token %}
+              <label for="notes-text"></label>
+              <textarea type="text" name="notes" id="notes-text">{{note}}</textarea>
+              <button type="submit" class="btn btn-success btn-sm" value="Submit" >Save</button>
+            </form>
+          </div>
     </div>
+    
+    
     <!-- Previous Month Button -->
     <div class="d-flex align-items-center mr-5">
         <h2><a style="text-decoration: none;" href="{% url 'todo_list:prev_month' year=curr_year month=curr_month%}">⬅️</a></h2>

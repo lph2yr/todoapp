@@ -1,6 +1,6 @@
-{% extends 'todo/base.html' %}
+{% extends 'todo/list_base.html' %}
 
-{% block content %}
+{% block filter %}
 
 <div class="row">
   <div class="d-flex justify-content-center">
@@ -14,8 +14,41 @@
   </div>
 </div>
 
-<div class="row">
-  <div class="row">
+<div class="row mb-4">
+  <div class="d-flex justify-content-start col-6">
+    <div class="dropdown" style="margin-right: 5px;">
+      <button
+        class="btn btn-sm btn-outline-secondary dropdown-toggle"
+        href="#"
+        id="filterDropdown"
+        role="button"
+        data-toggle="dropdown"
+        aria-haspopup="true"
+        aria-expanded="false"
+      >
+        Filter by Category
+      </button>
+      <div class="dropdown-menu" aria-labelledby="filterDropdown">
+        <a class="dropdown-item" href="{% url 'todo_list:academics_list' %}"
+          >Academics</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:ec_todo_list' %}"
+          >Extracurriculars</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:job_list' %}">Job</a>
+        <a class="dropdown-item" href="{% url 'todo_list:social_list' %}"
+          >Social</a
+        >
+        <a class="dropdown-item" href="{% url 'todo_list:personal_list' %}"
+          >Personal</a
+        >
+        <div class="dropdown-divider"></div>
+        <a class="dropdown-item" href="{% url 'todo_list:other_list' %}"
+          >Other</a
+        >
+      </div>
+    </div>
+
     <div class="dropdown">
       <button
         class="btn btn-sm btn-outline-secondary dropdown-toggle"
@@ -44,132 +77,6 @@
       </div>
     </div>
   </div>
-
-  <div class="col">
-    <div class="d-flex justify-content-center">
-      {% if object_list %}
-      <ul class="w-50 list-group">
-        <div id="accordion">
-          <!-- accordion is the template for collapsing bars -->
-          {% for todo_item in object_list %}
-            <div class="card">
-              <button
-                class="btn collapsed"
-                id="cardButton"
-                data-toggle="collapse"
-                data-target="#collapse{{forloop.counter}}"
-              >
-              <li class="list-group-item">
-                {% if todo_item.priority == "HI" and not todo_item.completed %}
-                <div class="card-header border border-danger" id="header{{forloop.counter}}">
-                {% elif todo_item.priority == "MD" and not todo_item.completed %}
-                <div class="card-header border border-warning" id="header{{forloop.counter}}">
-                {% else %}
-                <div class="card-header border bg-light" id="header{{forloop.counter}}">
-                {% endif %}
-                
-                <p class="d-flex justify-content-start">
-                  {% if not todo_item.completed %}
-                    {{todo_item.title}}
-                  {% else %}
-                    <del>{{todo_item.title}}</del>
-                  {% endif %}
-                </p>
-
-                <div class="d-flex justify-content-around mt-3">
-                  {% if todo_item.completed %}
-                  <small><i>Task Completed!</i></small>
-                  {% endif %}
-                  <small>due {{todo_item.duedate}}</small>
-                </div>
-                </div>
-              </button>
-                <!--forloop.counter gives each instance of todo_item a different id so each box collapses independently of each other -->
-                <div id="collapse{{forloop.counter}}" class="collapse">
-                  <!--body of the accordion card -->
-                  <div class="card-body">
-                    <ul style="list-style-type:none">
-                      {% if todo_item.description %}
-                      <li>
-                        <strong>Description:</strong> {{ todo_item.description }}
-                      </li>
-                      {% endif %} {% if todo_item.location %}
-                      <li><strong>Location:</strong> {{ todo_item.location }}</li>
-                      {% endif %}
-                      {% if todo_item.recur_freq != 'NEVER' %}
-                        <li><strong>Repeat:</strong> {{ todo_item.recur_freq }}</li>
-                        <li>
-                          <strong>End repeat:</strong> {{ todo_item.end_recur_date }}</li>
-                      {% endif %}
-                      {% if todo_item.category != 'NN' %}
-                        <li><strong>Category:</strong> {{ todo_item.get_category_display }}</li>
-                        {% if todo_item.category == 'AC' %}
-                          {% if todo_item.course %}
-                            <li><strong>Course:</strong> {{ todo_item.course }}</li>
-                          {% endif %}
-                        {% elif todo_item.category == 'EC' %}
-                          {% if todo_item.ec %}
-                            <li><strong>Activity:</strong> {{ todo_item.ec }}</li>
-                          {% endif %}
-                        {% endif %}
-                      {% endif %}
-                    </ul>
-                    {% if todo_item.subtask_set.all %}
-                      <ul>
-                        {% for subtask in todo_item.subtask_set.all %}
-                          {% if not subtask.completed %}
-                            <li>
-                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
-                                {{ subtask }}</a>
-                            </li>
-                          {% else %}
-                            <li>
-                              <a href="{% url 'todo_list:complete_subtask' subtask.id %}">
-                                <del>{{ subtask }}</del></a>
-                            </li>
-                          {% endif %}
-                        {% endfor %}
-                      </ul>
-                    {% endif %}
-                    <div class="row m-sm-3">
-                      <div>
-                        {% if not todo_item.completed %}
-                        <small><a
-                          href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                          >✅ Complete Task</a
-                        ></small>
-                        {% else %}
-                        <small><a
-                          href="{% url 'todo_list:complete_todo' todo_item.id %}"
-                        >Undo completion</a></small>
-                        {% endif %}
-                      </div>
-                      <div class="ml-auto">
-                        <small class="m-1"
-                          ><a href="{% url 'todo_list:detail' todo_item.id %}"
-                          >🖊 Edit</a
-                          ></small
-                        >
-                        <small>
-                          <a href="{% url 'todo_list:delete_todo_item' todo_item.id %}">
-                            🗑 Delete
-                          </a>
-                        </small>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            </div>
-          {% endfor %}
-        </div>
-      </ul>
-      {% else %}
-      <p>You have no to-do items for this day!</p>
-      {% endif %}
-    </div>
-  </div>
 </div>
-
 
 {% endblock %}

@@ -486,6 +486,7 @@ class DayView(generic.FormView):
 class SpecificDayView(generic.DayArchiveView):
     template_name = 'todoitem_archive_day.html'
     #queryset = ToDoItem.objects.filter(completed=False).order_by('duedate')
+    context_object_name = 'todo_list'
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
@@ -503,6 +504,7 @@ class SpecificDayView(generic.DayArchiveView):
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
+    context_object_name = 'todo_list'
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
@@ -537,6 +539,7 @@ class WeekView(generic.FormView):
 
 class SpecificWeekView(generic.WeekArchiveView):
     template_name = 'todoitem_archive_week.html'
+    context_object_name = 'todo_list'
     date_field = "duedate"
     ordering = 'duedate'
     allow_future = True
