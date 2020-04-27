@@ -430,6 +430,17 @@ class CompletedView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(CompletedView, self).get(*args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super(CompletedView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        print(context)
+        return context
 
 
 def delete_todo(request, todo_item_id):
@@ -481,6 +492,10 @@ class DayView(generic.FormView):
             return redirect("/login/")
         return super(DayView, self).get(*args, **kwargs)
 
+    
+
+    
+
 
 # https://docs.djangoproject.com/en/3.0/ref/class-based-views/generic-date-based/#dayarchiveview
 class SpecificDayView(generic.DayArchiveView):
@@ -501,6 +516,15 @@ class SpecificDayView(generic.DayArchiveView):
             return redirect("/login/")
         return super(SpecificDayView, self).get(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(SpecificDayView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        return context
 
 class TodoTodayArchiveView(generic.TodayArchiveView):
     template_name = 'todoitem_archive_day.html'
@@ -518,6 +542,16 @@ class TodoTodayArchiveView(generic.TodayArchiveView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(TodoTodayArchiveView, self).get(*args, **kwargs)
+    
+    def get_context_data(self, **kwargs):
+        context = super(TodoTodayArchiveView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        return context
 
 
 class WeekView(generic.FormView):
@@ -558,6 +592,16 @@ class SpecificWeekView(generic.WeekArchiveView):
             return redirect("/login/")
         return super(SpecificWeekView, self).get(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super(SpecificWeekView, self).get_context_data(**kwargs)
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        return context
+
 
 class MonthView(generic.FormView):
     template_name = 'todo/month_form.html'
@@ -575,6 +619,8 @@ class MonthView(generic.FormView):
         if not self.request.user.is_authenticated:
             return redirect("/login/")
         return super(MonthView, self).get(*args, **kwargs)
+
+    
 
 
 # class SpecificMonthView(generic.MonthArchiveView):
@@ -596,6 +642,14 @@ def month_calendar_view(request, year, month):
         month_num += 1
     calendar.setfirstweekday(calendar.SUNDAY)
     month_matrix = calendar.monthcalendar(year, month_num)
+
+
+    #https://vsupalov.com/django-cbv-vs-fbv-beginner/
+    user_note = None
+    try:
+        user_note = Note.objects.get(user=request.user)
+    except Note.DoesNotExist:
+        user_note = Note.objects.create(user=request.user, text='')
 
     class CalendarDay:
         def __init__(self, date, date_todo_list, blank, size):
@@ -634,7 +688,9 @@ def month_calendar_view(request, year, month):
         'month_name': calendar.month_name[month_num],
         'curr_year': year,
         'curr_month': month,
+        'note': user_note.text,
     })
+
 
 
 def month_calendar_prev(request, year, month):
