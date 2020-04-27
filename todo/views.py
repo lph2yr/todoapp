@@ -807,6 +807,19 @@ class AcademicsListView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
         context['no_course_todo_list'] = ToDoItem.objects.filter(
             category='AC', course=None, user=self.request.user)
         return context
@@ -833,6 +846,18 @@ class AcademicsListTodayView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
         context['no_course_todo_list'] = ToDoItem.objects.filter(
             category='AC', course=None, user=self.request.user)
         return context
@@ -858,6 +883,20 @@ class ECToDoList(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        context['no_course_todo_list'] = ToDoItem.objects.filter(
+            category='AC', course=None, user=self.request.user)
         # add list objects without a specific ec object but is categorized as ec
         context['no_ec_todo_list'] = ToDoItem.objects.filter(
             category='EC', ec=None, user=self.request.user)
@@ -885,6 +924,20 @@ class ECTodayList(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+        context['no_course_todo_list'] = ToDoItem.objects.filter(
+            category='AC', course=None, user=self.request.user)
         context['no_ec_todo_list'] = ToDoItem.objects.filter(
             category='EC', course=None, user=self.request.user)
         return context
@@ -981,6 +1034,23 @@ class JobListView(generic.ListView):
             item.save()
         return ToDoItem.objects.filter(completed=False, category='JB', user=self.request.user).order_by('duedate')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
+
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             # redirect to login if user isn't logged in
@@ -1005,6 +1075,23 @@ class JobTodayList(generic.ListView):
 
         # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
+
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
             # redirect to login if user isn't logged in
@@ -1021,6 +1108,23 @@ class SocialListView(generic.ListView):
     def get_queryset(self):
         return ToDoItem.objects.filter(completed=False, category='SC', user=self.request.user).order_by('duedate')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
+
 
 class SocTodayList(generic.ListView):
     template_name = 'todo/social_today_todo_list.html'
@@ -1036,6 +1140,23 @@ class SocTodayList(generic.ListView):
                                        user=self.request.user).order_by('duedate')
 
         # https://docs.djangoproject.com/en/3.0/topics/class-based-views/generic-display/
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
 
     def get(self, *args, **kwargs):
         if not self.request.user.is_authenticated:
@@ -1059,6 +1180,23 @@ class PersonalListView(generic.ListView):
             return redirect("/login/")
         return super(PersonalListView, self).get(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
+
 
 class PersonalTodayList(generic.ListView):
     template_name = 'todo/personal_today_todo_list.html'
@@ -1081,6 +1219,23 @@ class PersonalTodayList(generic.ListView):
             return redirect("/login/")
         return super(PersonalTodayList, self).get(*args, **kwargs)
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
+
 
 ###########################################################################
 
@@ -1097,6 +1252,23 @@ class OtherListView(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(OtherListView, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
 
 
 class OtherTodayList(generic.ListView):
@@ -1119,5 +1291,22 @@ class OtherTodayList(generic.ListView):
             # redirect to login if user isn't logged in
             return redirect("/login/")
         return super(OtherTodayList, self).get(*args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        resp = requests.get('https://quotes.rest/qod').json()
+        if 'error' in resp:
+            context['quote'] = "Let's get things done today"
+        else:
+            context['quote'] = resp['contents']['quotes'][0]['quote'] + \
+                               ' - ' + resp['contents']['quotes'][0]['author']
+        user_note = None
+        try:
+            user_note = Note.objects.get(user=self.request.user)
+        except Note.DoesNotExist:
+            user_note = Note.objects.create(user=self.request.user, text='')
+        context['note'] = user_note.text
+
+        return context
 
 # https://stackoverflow.com/questions/15566999/how-to-show-form-input-fields-based-on-select-value
