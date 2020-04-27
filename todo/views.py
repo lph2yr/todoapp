@@ -643,6 +643,14 @@ def month_calendar_view(request, year, month):
     calendar.setfirstweekday(calendar.SUNDAY)
     month_matrix = calendar.monthcalendar(year, month_num)
 
+
+
+    user_note = None
+    try:
+        user_note = Note.objects.get(user=request.user)
+    except Note.DoesNotExist:
+        user_note = Note.objects.create(user=request.user, text='')
+
     class CalendarDay:
         def __init__(self, date, date_todo_list, blank, size):
             self.date = date
@@ -680,6 +688,7 @@ def month_calendar_view(request, year, month):
         'month_name': calendar.month_name[month_num],
         'curr_year': year,
         'curr_month': month,
+        'note': user_note.text,
     })
 
 
