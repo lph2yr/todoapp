@@ -644,7 +644,7 @@ def month_calendar_view(request, year, month):
     month_matrix = calendar.monthcalendar(year, month_num)
 
 
-
+    #https://vsupalov.com/django-cbv-vs-fbv-beginner/
     user_note = None
     try:
         user_note = Note.objects.get(user=request.user)
