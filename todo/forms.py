@@ -43,15 +43,6 @@ class ToDoForm(forms.ModelForm):
             self.fields['ec'].queryset = Extracurricular.objects.filter(
                 user__isnull=True)
 
-    # # https://stackoverflow.com/questions/53478438/django-forms-how-to-show-only-objects-associated-with-user-in-dropdown
-    # def __init__(self, *args, **kwargs):
-    #      super().__init__(*args, **kwargs)
-    #       user = self.kwargs.get('user')
-    #        if user:
-    #             self.fields['course'].queryset = user.course_set.all()
-    #             self.fields['ec'].queryset = user.extracurricular_set.all()
-    #         print("uhhhhhh")
-
 
 class SubTaskForm(forms.ModelForm):
     class Meta:
